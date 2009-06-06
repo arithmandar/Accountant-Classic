@@ -1,4 +1,5 @@
-﻿--[[
+﻿--$Id$
+--[[
  Accountant 
     v2.1 - 2.3: 
     By Sabaki (sabaki@gmail.com)
