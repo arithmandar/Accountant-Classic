@@ -1,4 +1,4 @@
---[[
+﻿--[[
  Accountant 
     v2.1 - 2.3: 
     By Sabaki (sabaki@gmail.com)
@@ -38,6 +38,7 @@ local Accountant_CursorHasItem_old;
 function Accountant_RegisterEvents()
 	this:RegisterEvent("MERCHANT_SHOW");
 	this:RegisterEvent("MERCHANT_CLOSED");
+	this:RegisterEvent("MERCHANT_UPDATE");
 
 	this:RegisterEvent("QUEST_COMPLETE");
 	this:RegisterEvent("QUEST_FINISHED");
@@ -151,10 +152,10 @@ function Accountant_OnLoad()
 	};
 
 	-- hooks
-	Accountant_RepairAllItems_old = RepairAllItems;
-	RepairAllItems = Accountant_RepairAllItems;
-	Accountant_CursorHasItem_old = CursorHasItem;
-	CursorHasItem = Accountant_CursorHasItem;
+--	Accountant_RepairAllItems_old = RepairAllItems;
+--	RepairAllItems = Accountant_RepairAllItems;
+--	Accountant_CursorHasItem_old = CursorHasItem;
+--	CursorHasItem = Accountant_CursorHasItem;
 
 	-- tabs
 	AccountantFrameTab1:SetText(ACCLOC_SESS);
@@ -302,13 +303,16 @@ function Accountant_OnEvent(event)
 		Accountant_Mode = "MERCH";
 	elseif event == "MERCHANT_CLOSED" then
 		Accountant_Mode = "";
+	elseif event == "MERCHANT_UPDATE" then
+		if (InRepairMode() == true) then
+			Accountant_Mode = "REPAIRS";
+		end
 	elseif event == "TAXIMAP_OPENED" then
 		Accountant_Mode = "TAXI";
 	elseif event == "TAXIMAP_CLOSED" then
 		-- Commented out due to taximap closing before money transaction
 		-- Accountant_Mode = "";
 	elseif event == "LOOT_OPENED" then
-		
 		Accountant_Mode = "LOOT";
 	elseif event == "LOOT_CLOSED" then
 		-- Commented out due to loot window closing before money transaction
@@ -508,7 +512,7 @@ function ACC_Print(msg)
 end
 
 function Accountant_ShowUsage()
-	QM_Print("/accountant log\n");
+	ACC_Print("/accountant log\n");
 end
 
 function Accountant_ResetData()
