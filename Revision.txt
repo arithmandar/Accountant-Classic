@@ -1,5 +1,8 @@
 Revision History:
 =================
+v 2.42 (June 01, 2007)
+* Update TOC to support WoW 2.1.0
+
 v 2.41 (Apr. 25, 2007)
 * Fixed repair not detecting problem
 * Fixed the targeting error
