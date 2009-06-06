@@ -1,5 +1,4 @@
 --[[
-$HeadURL$
 $Id$
 ]]
 ACCOUNTANT_OPTIONS_TITLE = "Accountant Options";

@@ -1,5 +1,4 @@
 --[[
-$HeadURL$
 $Id$
 ]]
 ACCOUNTANT_BUTTON_TOOLTIP = "Toggle Accountant";

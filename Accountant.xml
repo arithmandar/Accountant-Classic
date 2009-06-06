@@ -1,5 +1,4 @@
 <!--
-$HeadURL$
 $Id$
 -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
@@ -507,7 +506,7 @@ $Id$
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab4" inherits="AccountantTabTemplate" id="4" text="Month">
+			<Button name="$parentTab4" inherits="AccountantTabTemplate" id="4" text="Total">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
 						<Offset>
@@ -516,7 +515,7 @@ $Id$
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab5" inherits="AccountantTabTemplate" id="5" text="Total">
+			<Button name="$parentTab5" inherits="AccountantTabTemplate" id="5" text="All Chars">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>

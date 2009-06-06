@@ -1,5 +1,4 @@
 ﻿--[[
-$HeadURL$
 $Id$
 ]]
 --[[
@@ -21,7 +20,7 @@ $Id$
   Thiou for the French loc, Snj & JokerGermany for the German loc 
   ---------------------------------------------------------------------
    v 2.4:
-     Updated by: Arith Hsu (arithmandarjp@yahoo.co.jp)
+     Updated by: Arith
 ]]
 
 Accountant_Version = GetAddOnMetadata("Accountant", "Version");
@@ -523,9 +522,18 @@ end
 function Accountant_ResetData()
 	local type = Accountant_LogModes[Accountant_CurrentTab];
 	if type == "Total" then
-		type = "overall";
+		type = ACCLOC_TOTAL;
+	elseif type == "Session" then
+		type = ACCLOC_SESS;
+	elseif type == "Day" then
+		type = ACCLOC_DAY;
+	elseif type == "Week" then
+		type = ACCLOC_WEEK;
+	else
+
 	end
-	StaticPopupDialogs["ACCOUNTANT_RESET"].text = ACCLOC_RESET_CONF.." "..type.." "..ACCLOC_TOTAL.."?";
+	
+	StaticPopupDialogs["ACCOUNTANT_RESET"].text = ACCLOC_RESET_CONF.."\""..type.."\"?";
 	local dialog = StaticPopup_Show("ACCOUNTANT_RESET","weeee");
 end
 
