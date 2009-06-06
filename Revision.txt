@@ -1,0 +1,24 @@
+Revision History:
+=================
+v 2.4 (Apr. 22, 2007)
+* Updated UI Version Number to support WoW 2.0.12
+* Cross-server is now supported in this version
+* zhTW and zhCN localizations are now added
+
+v 2.3
+* Updated UI Version Number
+* Localization file included
+
+v 2.2
+* Localization file included 
+* Will now track share gold loot while in party.( thanks too Rophy for the awesome code.)
+* cleaned up some codes
+
+v 2.1 
+* Updated UI Version Number 
+* Localization file included 
+* Fixed Typos in program. 
+
+v 2.0 
+* Updated UI Version Number 
+* Localization file included
