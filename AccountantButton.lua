@@ -1,4 +1,7 @@
--- $Id$
+--[[
+$HeadURL$
+$Id$
+]]
 ACCOUNTANT_BUTTON_TOOLTIP = "Toggle Accountant";
 
 function AccountantButton_OnClick()

@@ -1,4 +1,7 @@
-﻿--$Id$
+﻿--[[
+$HeadURL$
+$Id$
+]]
 --[[
  Accountant 
     v2.1 - 2.3: 
