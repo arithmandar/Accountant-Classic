@@ -152,8 +152,8 @@ function Accountant_OnLoad()
 	};
 
 	-- hooks
---	Accountant_RepairAllItems_old = RepairAllItems;
---	RepairAllItems = Accountant_RepairAllItems;
+	Accountant_RepairAllItems_old = RepairAllItems;
+	RepairAllItems = Accountant_RepairAllItems;
 --	Accountant_CursorHasItem_old = CursorHasItem;
 --	CursorHasItem = Accountant_CursorHasItem;
 
