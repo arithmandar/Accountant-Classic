@@ -18,8 +18,6 @@ function AccountantOptions_OnShow()
 	AccountantSliderButtonPosText:SetText(ACCLOC_BUTPOS);
 	AccountantOptionsFrameWeekLabel:SetText(ACCLOC_STARTWEEK);
 
-
-
 	AccountantOptionsFrameToggleButton:SetChecked(Accountant_SaveData[GetCVar("realmName")][UnitName("player")]["options"].showbutton);
 	AccountantSliderButtonPos:SetValue(Accountant_SaveData[GetCVar("realmName")][UnitName("player")]["options"].buttonpos);
 	UIDropDownMenu_Initialize(AccountantOptionsFrameWeek, AccountantOptionsFrameWeek_Init);

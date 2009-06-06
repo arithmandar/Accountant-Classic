@@ -1,6 +1,6 @@
 ﻿if ( GetLocale() == "zhTW" ) then
 -- Header
-ACCLOC_TITLE		=	"Accountant";
+ACCLOC_TITLE		=	"Accountant Classic";
 ACCLOC_TOT_IN		=	"總收入";
 ACCLOC_TOT_OUT		=	"總支出";
 ACCLOC_NET			=	"淨收益/虧損";

@@ -16,7 +16,7 @@
 	<Button name="AccountantTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				AccountantTab_OnClick();
+				AccountantTab_OnClick(self);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -121,7 +121,7 @@
                 </Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTopLeft" file="Interface\AddOns\Accountant\AccountantFrame-TopLeft">
+				<Texture name="$parentTopLeft" file="Interface\AddOns\Accountant_Classic\AccountantFrame-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -129,7 +129,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopRight" file="Interface\AddOns\Accountant\AccountantFrame-TopRight">
+				<Texture name="$parentTopRight" file="Interface\AddOns\Accountant_Classic\AccountantFrame-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -137,7 +137,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotLeft" file="Interface\AddOns\Accountant\AccountantFrame-BotLeft">
+				<Texture name="$parentBotLeft" file="Interface\AddOns\Accountant_Classic\AccountantFrame-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -149,7 +149,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotRight" file="Interface\AddOns\Accountant\AccountantFrame-BotRight">
+				<Texture name="$parentBotRight" file="Interface\AddOns\Accountant_Classic\AccountantFrame-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -434,7 +434,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -481,7 +481,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Button name="$parentTab1" inherits="AccountantTabTemplate" id="1">
+			<Button name="$parentTab1" inherits="AccountantTabTemplate" id="1" text="Session">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -490,7 +490,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" inherits="AccountantTabTemplate" id="2">
+			<Button name="$parentTab2" inherits="AccountantTabTemplate" id="2" text="Day">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>
@@ -499,7 +499,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab3" inherits="AccountantTabTemplate" id="3">
+			<Button name="$parentTab3" inherits="AccountantTabTemplate" id="3" text="Week">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
 						<Offset>
@@ -508,7 +508,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab4" inherits="AccountantTabTemplate" id="4">
+			<Button name="$parentTab4" inherits="AccountantTabTemplate" id="4" text="Month">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
 						<Offset>
@@ -517,7 +517,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab5" inherits="AccountantTabTemplate" id="5">
+			<Button name="$parentTab5" inherits="AccountantTabTemplate" id="5" text="Total">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>
@@ -533,28 +533,28 @@
 				-- Make Frame Moveable.
 				tinsert(UISpecialFrames, "AccountantFrame");
 				UIPanelWindows["AccountantFrame"] = { area = "left", pushable = 11 };
-				this:RegisterForDrag("LeftButton");
+				self:RegisterForDrag("LeftButton");
 
 				-- Setup
-				Accountant_RegisterEvents();
+				Accountant_RegisterEvents(self);
 			</OnLoad>
 			<OnShow>
-				Accountant_OnShow();
+				Accountant_OnShow(self);
 			</OnShow>
 			<OnHide>
-				Accountant_OnHide();
+				Accountant_OnHide(self);
 			</OnHide>
 			<OnEvent>
 				Accountant_OnEvent(event);
 			</OnEvent>
 			<OnDragStart>
-				this:StartMoving();
+				self:StartMoving();
 			</OnDragStart>
 			<OnDragStop>
-				this:StopMovingOrSizing();
+				self:StopMovingOrSizing();
 			</OnDragStop>
 			<OnMouseUp>
-				this:StopMovingOrSizing();
+				self:StopMovingOrSizing();
 			</OnMouseUp>
 		</Scripts>
 	</Frame>

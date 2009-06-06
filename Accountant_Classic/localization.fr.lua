@@ -3,7 +3,7 @@
 if (GetLocale() == "frFR") then
 
 -- Header
-ACCLOC_TITLE		=	"Accountant";
+ACCLOC_TITLE		=	"Accountant Classic";
 ACCLOC_TOT_IN		=	"Rentr\195\169es Totales";
 ACCLOC_TOT_OUT		=	"D\195\169penses Totales";
 ACCLOC_NET			=	"B\195\169n\195\169fices/Pertes Nettes";

@@ -4,7 +4,7 @@
 if (GetLocale() == "deDE") then
 
 -- Header
-ACCLOC_TITLE		=	"Accountant";
+ACCLOC_TITLE		=	"Accountant Classic";
 ACCLOC_TOT_IN		=	"Einnahmen";
 ACCLOC_TOT_OUT		=	"Ausgaben";
 ACCLOC_NET			=	"Netto Ertrag / Verlust";
