@@ -23,8 +23,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<NormalTexture file="Interface\AddOns\Accountant\AccountantButton-Up"/>
-				<PushedTexture file="Interface\AddOns\Accountant\AccountantButton-Down"/>
+				<NormalTexture file="Interface\AddOns\Accountant_Classic\AccountantButton-Up"/>
+				<PushedTexture file="Interface\AddOns\Accountant_Classic\AccountantButton-Down"/>
 				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 				<Scripts>
 					<OnClick>

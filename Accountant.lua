@@ -35,41 +35,42 @@ Accountant_Player = "";
 Accountant_Server = "";
 local Accountant_RepairAllItems_old;
 local Accountant_CursorHasItem_old;
-function Accountant_RegisterEvents()
-	this:RegisterEvent("MERCHANT_SHOW");
-	this:RegisterEvent("MERCHANT_CLOSED");
-	this:RegisterEvent("MERCHANT_UPDATE");
 
-	this:RegisterEvent("QUEST_COMPLETE");
-	this:RegisterEvent("QUEST_FINISHED");
+function Accountant_RegisterEvents(self)
+	self:RegisterEvent("MERCHANT_SHOW");
+	self:RegisterEvent("MERCHANT_CLOSED");
+	self:RegisterEvent("MERCHANT_UPDATE");
+
+	self:RegisterEvent("QUEST_COMPLETE");
+	self:RegisterEvent("QUEST_FINISHED");
 	
-	this:RegisterEvent("LOOT_OPENED");
-	this:RegisterEvent("LOOT_CLOSED");
+	self:RegisterEvent("LOOT_OPENED");
+	self:RegisterEvent("LOOT_CLOSED");
 	
-	this:RegisterEvent("TAXIMAP_OPENED");
-	this:RegisterEvent("TAXIMAP_CLOSED");
+	self:RegisterEvent("TAXIMAP_OPENED");
+	self:RegisterEvent("TAXIMAP_CLOSED");
 
-	this:RegisterEvent("TRADE_SHOW");
-	this:RegisterEvent("TRADE_CLOSE");
+	self:RegisterEvent("TRADE_SHOW");
+	self:RegisterEvent("TRADE_CLOSE");
 	
-	this:RegisterEvent("MAIL_SHOW");
-	this:RegisterEvent("MAIL_CLOSED");
+	self:RegisterEvent("MAIL_SHOW");
+	self:RegisterEvent("MAIL_CLOSED");
 
-	this:RegisterEvent("TRAINER_SHOW");
-	this:RegisterEvent("TRAINER_CLOSED");
+	self:RegisterEvent("TRAINER_SHOW");
+	self:RegisterEvent("TRAINER_CLOSED");
 
-	this:RegisterEvent("AUCTION_HOUSE_SHOW");
-	this:RegisterEvent("AUCTION_HOUSE_CLOSED");
+	self:RegisterEvent("AUCTION_HOUSE_SHOW");
+	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 
-	this:RegisterEvent("CHAT_MSG_MONEY");
+	self:RegisterEvent("CHAT_MSG_MONEY");
 
-	this:RegisterEvent("PLAYER_MONEY");
+	self:RegisterEvent("PLAYER_MONEY");
 
-	this:RegisterEvent("UNIT_NAME_UPDATE");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("UNIT_NAME_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
-function Accountant_SetLabels()
+function Accountant_SetLabels(self)
 	if Accountant_CurrentTab == 5 then
 		AccountantFrameSource:SetText(ACCLOC_CHAR);
 		AccountantFrameIn:SetText(ACCLOC_MONEY);
@@ -109,11 +110,11 @@ function Accountant_SetLabels()
 	local name = this:GetName();
 	local header = getglobal(name.."TitleText");
 	if ( header ) then 
-		header:SetText(ACCLOC_TITLE.." "..Accountant_Version);
+		header:SetText(ACCLOC_TITLE);
 	end
 end
 
-function Accountant_OnLoad()	
+function Accountant_OnLoad(self)	
 
 	Accountant_Player = UnitName("player");
 	Accountant_Server = GetCVar("realmName");
@@ -159,20 +160,20 @@ function Accountant_OnLoad()
 
 	-- tabs
 	AccountantFrameTab1:SetText(ACCLOC_SESS);
-	PanelTemplates_TabResize(10, AccountantFrameTab1);
+	PanelTemplates_TabResize(AccountantFrameTab1, 10);
 	AccountantFrameTab2:SetText(ACCLOC_DAY);
-	PanelTemplates_TabResize(10, AccountantFrameTab1);
+	PanelTemplates_TabResize(AccountantFrameTab2, 10);
 	AccountantFrameTab3:SetText(ACCLOC_WEEK);
-	PanelTemplates_TabResize(10, AccountantFrameTab2);
+	PanelTemplates_TabResize(AccountantFrameTab3, 10);
 	AccountantFrameTab4:SetText(ACCLOC_TOTAL);
-	PanelTemplates_TabResize(10, AccountantFrameTab4);
+	PanelTemplates_TabResize(AccountantFrameTab4, 10);
 	AccountantFrameTab5:SetText(ACCLOC_CHARS);
-	PanelTemplates_TabResize(10, AccountantFrameTab5);
+	PanelTemplates_TabResize(AccountantFrameTab5, 10);
 	PanelTemplates_SetNumTabs(AccountantFrame, 5);
 	PanelTemplates_SetTab(AccountantFrame, AccountantFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantFrame);
 	
-	ACC_Print(ACCLOC_TITLE.." " .. Accountant_Version .. " "..ACCLOC_LOADED);
+	ACC_Print(ACCLOC_TITLE.." "..ACCLOC_LOADED);
 end
 
 function Accountant_LoadData()
@@ -353,9 +354,9 @@ function Accountant_OnShareMoney(event, arg1)
               local gold, silver, copper, money, oldMode 
 
 -- Parse the message for money gained. 
-              _, _, gold = string.find(arg1, "(%d+) " .. GOLD) 
-              _, _, silver = string.find(arg1, "(%d+) " .. SILVER) 
-              _, _, copper = string.find(arg1, "(%d+) " .. COPPER) 
+              _, _, gold = string.find(arg1, "(%d+)" .. GOLD_AMOUNT) 
+              _, _, silver = string.find(arg1, "(%d+)" .. SILVER_AMOUNT) 
+              _, _, copper = string.find(arg1, "(%d+)" .. COPPER_AMOUNT) 
               if gold then gold = tonumber(gold) else gold = 0 end 
               if silver then silver = tonumber(silver) else silver = 0 end 
               if copper then copper = tonumber(copper) else copper = 0 end 
@@ -502,7 +503,7 @@ function Accountant_OnShow()
 end
 
 function Accountant_OnHide()
-	if MYADDONS_ACTIVE_OPTIONSFRAME == this then
+	if MYADDONS_ACTIVE_OPTIONSFRAME == self then
 		ShowUIPanel(myAddOnsFrame);
 	end
 end
@@ -574,9 +575,9 @@ function Accountant_UpdateLog()
 	end
 end
 
-function AccountantTab_OnClick()
-	PanelTemplates_SetTab(AccountantFrame, this:GetID());
-	Accountant_CurrentTab = this:GetID();
+function AccountantTab_OnClick(self)
+	PanelTemplates_SetTab(AccountantFrame, self:GetID());
+	Accountant_CurrentTab = self:GetID();
 	PlaySound("igCharacterInfoTab");
 	Accountant_OnShow();
 end

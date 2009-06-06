@@ -1,5 +1,5 @@
 ﻿-- Header
-ACCLOC_TITLE		=	"Accountant";
+ACCLOC_TITLE		=	"Accountant Classic";
 ACCLOC_TOT_IN		=	"Total Incomings";
 ACCLOC_TOT_OUT		=	"Total Outgoings";
 ACCLOC_NET			=	"Net Profit / Loss";
