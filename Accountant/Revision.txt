@@ -1,9 +1,7 @@
 Revision History:
 =================
-v 2.41b2 (Apr. 25, 2007)
+v 2.41 (Apr. 25, 2007)
 * Fixed repair not detecting problem
-
-v 2.41b1 (Apr. 23, 2007)
 * Fixed the targeting error
 
 v 2.4 (Apr. 22, 2007)
