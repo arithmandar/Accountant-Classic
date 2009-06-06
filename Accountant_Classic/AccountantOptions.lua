@@ -1,3 +1,4 @@
+-- $Id$
 ACCOUNTANT_OPTIONS_TITLE = "Accountant Options";
 
 function AccountantOptions_Toggle()
