@@ -1,0 +1,8 @@
+package-as: Accountant_Classic
+
+manual-changelog:
+    filename: Revision.txt
+    markup-type: plain
+    
+enable-nolib-creation: yes
+
