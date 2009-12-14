@@ -4,6 +4,9 @@ Known Issue(s):
 
 Revision History:
 =================
+* v2.5.02 (Dec. 14, 2009)
+  - Update TOC to support WoW 3.3.0
+
 * v2.5.02 (Aug. 22, 2009)
   - Update TOC to support WoW 3.2.0
   
