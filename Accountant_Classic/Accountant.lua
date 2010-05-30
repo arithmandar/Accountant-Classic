@@ -596,9 +596,11 @@ end
 
 -- hooks
 
-function Accountant_RepairAllItems()
-	Accountant_Mode = "REPAIRS";
-	Accountant_RepairAllItems_old();
+function Accountant_RepairAllItems(guildBankRepair)
+	if (not guildBankRepair) then
+		Accountant_Mode = "REPAIRS";
+	end
+	Accountant_RepairAllItems_old(guildBankRepair);
 end
 
 function Accountant_CursorHasItem()

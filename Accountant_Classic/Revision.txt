@@ -4,6 +4,9 @@ Known Issue(s):
 
 Revision History:
 =================
+* v2.5.04 (May 30, 2010)
+  - Exclude the gear repair fee which was withdrew from guild bank
+
 * v2.5.03 (Dec. 14, 2009)
   - Update TOC to support WoW 3.3.0
 
