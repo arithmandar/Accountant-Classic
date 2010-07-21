@@ -1,0 +1,13 @@
+## Interface: 30300
+## Title: Accountant Classic
+## Title-zhTW: |cFF00FF00[資訊]|rAccountant Classic 個人會計
+## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
+## Title-zhCN: |cFF00FF00[信息]|rAccountant Classic 个人会计
+## Notes-zhCN: |cff00CC33追踪每个角色的所有收入与支出状况，并可显示当日小计、当周小计、以及自有记录起的总计。并可显示所有角色的总金额。|r
+## Description: Logs your WoW incomings / outgoings
+## SavedVariables: Accountant_SaveData,Accountant_Options
+## Version: 2.5.04
+
+Accountant.xml
+AccountantButton.xml
+AccountantOptions.xml
