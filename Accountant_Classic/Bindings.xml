@@ -1,8 +1,0 @@
-<!--
-$Id$
--->
-<Bindings>
-	<Binding name="ACCOUNTANTTOG" header="ACCOUNTANT">
-		AccountantButton_OnClick();
-	</Binding>
-</Bindings>
