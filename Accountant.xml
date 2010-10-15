@@ -119,7 +119,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
                 </Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTopLeft" file="Interface\AddOns\Accountant_Classic\AccountantFrame-TopLeft">
+				<Texture name="$parentTopLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -127,7 +127,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopRight" file="Interface\AddOns\Accountant_Classic\AccountantFrame-TopRight">
+				<Texture name="$parentTopRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -135,7 +135,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotLeft" file="Interface\AddOns\Accountant_Classic\AccountantFrame-BotLeft">
+				<Texture name="$parentBotLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -147,7 +147,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotRight" file="Interface\AddOns\Accountant_Classic\AccountantFrame-BotRight">
+				<Texture name="$parentBotRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>

@@ -85,9 +85,9 @@ function Accountant_SetLabels(self)
 		AccountantFrameTotalOutValue:SetText("");
 		AccountantFrameTotalFlowValue:SetText("");
 		for i = 1, 15, 1 do
-			getglobal("AccountantFrameRow"..i.."Title"):SetText("");
-			getglobal("AccountantFrameRow"..i.."In"):SetText("");
-			getglobal("AccountantFrameRow"..i.."Out"):SetText("");
+			_G["AccountantFrameRow"..i.."Title"]:SetText("");
+			_G["AccountantFrameRow"..i.."In"]:SetText("");
+			_G["AccountantFrameRow"..i.."Out"]:SetText("");
 		end
 		AccountantFrameResetButton:Hide();
 		return;
@@ -105,13 +105,13 @@ function Accountant_SetLabels(self)
 	InPos = 1
 	for key,value in pairs(Accountant_Data) do
 		Accountant_Data[key].InPos = InPos;
-		getglobal("AccountantFrameRow"..InPos.."Title"):SetText(Accountant_Data[key].Title);
+		_G["AccountantFrameRow"..InPos.."Title"]:SetText(Accountant_Data[key].Title);
 		InPos = InPos + 1;
 	end
 
 	-- Set the header
-	local name = this:GetName();
-	local header = getglobal(name.."TitleText");
+	local name = self:GetName();
+	local header = _G[name.."TitleText"];
 	if ( header ) then 
 		header:SetText(ACCLOC_TITLE);
 	end
@@ -449,10 +449,10 @@ function Accountant_OnShow()
 		TotalOut = 0;
 		mode = Accountant_LogModes[Accountant_CurrentTab];
 		for key,value in pairs(Accountant_Data) do
-			row = getglobal("AccountantFrameRow" ..Accountant_Data[key].InPos.."In");
+			row = _G["AccountantFrameRow"..Accountant_Data[key].InPos.."In"];
 			row:SetText(Accountant_NiceCash(Accountant_Data[key][mode].In));
 			TotalIn = TotalIn + Accountant_Data[key][mode].In;
-			row = getglobal("AccountantFrameRow" ..Accountant_Data[key].InPos.."Out");
+			row = _G["AccountantFrameRow"..Accountant_Data[key].InPos.."Out"];
 			TotalOut = TotalOut + Accountant_Data[key][mode].Out;
 			row:SetText(Accountant_NiceCash(Accountant_Data[key][mode].Out));
 		end
@@ -478,13 +478,13 @@ function Accountant_OnShow()
 		local alltotal = 0;
 		local i=1;
 		for char,charvalue in pairs(Accountant_SaveData[Accountant_Server]) do
-			getglobal("AccountantFrameRow" ..i.."Title"):SetText(char);
+			_G["AccountantFrameRow" ..i.."Title"]:SetText(char);
 			if Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"] ~= nil then
-				getglobal("AccountantFrameRow" ..i.."In"):SetText(Accountant_NiceCash(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
+				_G["AccountantFrameRow" ..i.."In"]:SetText(Accountant_NiceCash(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
 				alltotal = alltotal + Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"];
-				getglobal("AccountantFrameRow" ..i.."Out"):SetText(Accountant_SaveData[Accountant_Server][char]["options"]["date"]);
+				_G["AccountantFrameRow" ..i.."Out"]:SetText(Accountant_SaveData[Accountant_Server][char]["options"]["date"]);
 			else
-				getglobal("AccountantFrameRow" ..i.."In"):SetText("Unknown");
+				_G["AccountantFrameRow" ..i.."In"]:SetText("Unknown");
 			end
 			i=i+1;
 		end

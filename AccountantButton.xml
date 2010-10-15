@@ -26,8 +26,8 @@ $Id: AccountantButton.xml 17 2009-06-06 14:07:52Z arith $
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<NormalTexture file="Interface\AddOns\Accountant_Classic\AccountantButton-Up"/>
-				<PushedTexture file="Interface\AddOns\Accountant_Classic\AccountantButton-Down"/>
+				<NormalTexture file="Interface\AddOns\Accountant_Classic\Images\AccountantButton-Up"/>
+				<PushedTexture file="Interface\AddOns\Accountant_Classic\Images\AccountantButton-Down"/>
 				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 				<Scripts>
 					<OnClick>
