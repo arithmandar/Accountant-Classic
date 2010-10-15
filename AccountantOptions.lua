@@ -1,7 +1,7 @@
 --[[
 $Id: AccountantOptions.lua 17 2009-06-06 14:07:52Z arith $
 ]]
-ACCOUNTANT_OPTIONS_TITLE = "Accountant Options";
+ACCOUNTANT_OPTIONS_TITLE = ACCLOC_OPTS;
 
 function AccountantOptions_Toggle()
 	if(AccountantOptionsFrame:IsVisible()) then
@@ -11,8 +11,16 @@ function AccountantOptions_Toggle()
 	end
 end
 
-function AccountantOptions_OnLoad()
+function AccountantOptions_OnLoad(panel)
 	UIPanelWindows['AccountantOptionsFrame'] = {area = 'center', pushable = 0};
+	
+--	panel = _G["AccountantOptionsFrame"];
+	panel.name = ACCLOC_TITLE;
+	InterfaceOptions_AddCategory(panel);
+	if (LibStub:GetLibrary("LibAboutPanel", true)) then
+		LibStub("LibAboutPanel").new(ACCLOC_TITLE, "Accountant_Classic");
+	end
+
 end
 
 
@@ -27,8 +35,8 @@ function AccountantOptions_OnShow()
 	UIDropDownMenu_SetSelectedID(AccountantOptionsFrameWeek, Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].weekstart);
 end
 
-function AccountantOptions_OnHide()
-	if(MYADDONS_ACTIVE_OPTIONSFRAME == this) then
+function AccountantOptions_OnHide(self)
+	if(MYADDONS_ACTIVE_OPTIONSFRAME == self) then
 		ShowUIPanel(myAddOnsFrame);
 	end
 end
@@ -44,7 +52,7 @@ function AccountantOptionsFrameWeek_Init()
 	end
 end
 
-function AccountantOptionsFrameWeek_OnClick()
-	UIDropDownMenu_SetSelectedID(AccountantOptionsFrameWeek, this:GetID());
-	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].weekstart = this:GetID();
+function AccountantOptionsFrameWeek_OnClick(self)
+	UIDropDownMenu_SetSelectedID(AccountantOptionsFrameWeek, self:GetID());
+	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].weekstart = self:GetID();
 end

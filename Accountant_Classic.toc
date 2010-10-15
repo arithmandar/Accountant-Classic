@@ -1,13 +1,24 @@
-## Interface: 40000
+﻿## Interface: 40000
 ## Title: Accountant Classic
+## Notes: A basic tool to track your monetary incomings and outgoings within WoW.
+## Author: Arith
+## Version: 2.5.05
+## X-eMail: arithmandarjp@yahoo.co.jp
+## X-Credits: Sabaki, Shadow, Rophy
+## X-License: GPLv2
+## X-Website: http://wow.curseforge.com/addons/accountant-classic/
+## X-Category: Unit Frames
+## X-Localizations: enUS, frFR, deDE, zhCN, zhTW
+## X-Donate: https://www.paypal.com/cgi-bin/webscr?return=http%3A%2F%2Fwow.curseforge.com%2Faddons%2Faccountant-classic%2F&cn=Add+special+instructions+to+the+addon+author%28s%29&business=arithmandar%40gmail.com&bn=PP-DonationsBF%3Abtn_donateCC_LG.gif%3ANonHosted&cancel_return=http%3A%2F%2Fwow.curseforge.com%2Faddons%2Faccountant-classic%2F&lc=US&item_name=Accountant+Classic+%28from+CurseForge.com%29&cmd=_donations&rm=1&no_shipping=1&currency_code=USD
 ## Title-zhTW: |cFF00FF00[資訊]|rAccountant Classic 個人會計
 ## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
 ## Title-zhCN: |cFF00FF00[信息]|rAccountant Classic 个人会计
 ## Notes-zhCN: |cff00CC33追踪每个角色的所有收入与支出状况，并可显示当日小计、当周小计、以及自有记录起的总计。并可显示所有角色的总金额。|r
 ## Description: Logs your WoW incomings / outgoings
-## SavedVariables: Accountant_SaveData,Accountant_Options
-## Version: 2.5.05
+## SavedVariables: Accountant_SaveData, Accountant_Options
 
+Libs\Libs.xml
+Locale\Locales.xml
 Accountant.xml
 AccountantButton.xml
 AccountantOptions.xml

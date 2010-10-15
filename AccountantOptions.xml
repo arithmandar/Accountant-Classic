@@ -25,7 +25,7 @@ $Id: AccountantOptions.xml 17 2009-06-06 14:07:52Z arith $
 			<Layer level="ARTWORK">
 				<Texture name="AccountantOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
-						<AbsDimension x="256" y="64"/>
+						<AbsDimension x="300" y="64"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP">
@@ -74,8 +74,8 @@ $Id: AccountantOptions.xml 17 2009-06-06 14:07:52Z arith $
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
+						_G[self:GetName().."High"]:SetText();
+						_G[self:GetName().."Low"]:SetText();
 						AccountantSliderButtonPos:SetMinMaxValues(0,360);
 						AccountantSliderButtonPos:SetValueStep(1);
 					</OnLoad>
@@ -128,11 +128,14 @@ $Id: AccountantOptions.xml 17 2009-06-06 14:07:52Z arith $
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				AccountantOptions_OnLoad(self);
+			</OnLoad>
 			<OnShow>
-				AccountantOptions_OnShow();
+				AccountantOptions_OnShow(self);
 			</OnShow>
 			<OnHide>
-				AccountantOptions_OnHide();
+				AccountantOptions_OnHide(self);
 			</OnHide>
 		</Scripts>
 	</Frame>

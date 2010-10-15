@@ -3,11 +3,6 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="localization.en.lua"/>
-	<Script file="localization.tw.lua"/>
-	<Script file="localization.cn.lua"/>
-	<Script file="localization.de.lua"/>
-	<Script file="localization.fr.lua"/>
 	<Script file="Accountant.lua"/>
 
 	<!-- Item Row Template -->
@@ -543,7 +538,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				Accountant_OnHide(self);
 			</OnHide>
 			<OnEvent>
-				Accountant_OnEvent(event);
+				Accountant_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnDragStart>
 				self:StartMoving();

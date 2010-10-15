@@ -6,6 +6,8 @@ Revision History:
 =================
 * v2.5.05 (Oct. 15, 2010)
   - Fixed to support WoW 4.0
+  - Added option panel to WoW default addon option panel
+  - Added About panel
 
 * v2.5.04 (May 30, 2010)
   - Exclude the gear repair fee which was withdrew from guild bank
