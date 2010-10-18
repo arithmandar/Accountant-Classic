@@ -4,10 +4,17 @@ $Id: AccountantOptions.lua 17 2009-06-06 14:07:52Z arith $
 ACCOUNTANT_OPTIONS_TITLE = ACCLOC_OPTS;
 
 function AccountantOptions_Toggle()
+--[[
 	if(AccountantOptionsFrame:IsVisible()) then
 		AccountantOptionsFrame:Hide();
 	else
 		AccountantOptionsFrame:Show();
+	end
+]]
+	if(InterfaceOptionsFrame:IsVisible()) then
+		InterfaceOptionsFrame:Hide();
+	else
+		InterfaceOptionsFrame_OpenToCategory("Accountant Classic");
 	end
 end
 
