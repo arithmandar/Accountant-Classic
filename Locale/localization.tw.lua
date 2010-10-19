@@ -54,7 +54,7 @@ ACCLOC_WD_SAT		= "星期六";
 ACCLOC_DONE		= "完成";
 
 -- Misc
-ACCLOC_RESET_CONF	= "你確定你要歸零";
+ACCLOC_RESET_CONF	= "你確定你要歸零?";
 ACCLOC_NEWPROFILE	= "新的 Accountant 資料已建立給";
 ACCLOC_LOADPROFILE	= "讀取 Accountant 資料給";
 ACCLOC_LOADED		= "已讀取";
