@@ -4,6 +4,9 @@
 
 Revision History:
 =================
+* v2.5.07 (Oct. 20, 2010)
+  - Fix incorrect ending of Korean translation issue
+
 * v2.5.06 (Oct. 19, 2010)
   - Korean translation added - thanks to 막내 (maknae)
   - Option button now will call InterfaceOptionsFrame

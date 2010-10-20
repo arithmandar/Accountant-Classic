@@ -65,3 +65,5 @@ ACCLOC_CENT		= "코";
 -- Key Bindings headers
 BINDING_HEADER_ACCOUNTANT	= "Accountant";
 BINDING_NAME_ACCOUNTANTTOG	= "Toggle Accountant";
+
+end
