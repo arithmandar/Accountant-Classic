@@ -2,12 +2,12 @@
 ## Title: Accountant Classic
 ## Notes: A basic tool to track your monetary incomings and outgoings within WoW.
 ## Author: Arith
-## Version: 2.5.05
+## Version: 2.5.08
 ## X-eMail: arithmandarjp@yahoo.co.jp
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-License: GPLv2
 ## X-Website: http://wow.curseforge.com/addons/accountant-classic/
-## X-Category: Unit Frames
+## X-Category: Information
 ## X-Localizations: enUS, frFR, deDE, zhCN, zhTW
 ## X-Donate: https://www.paypal.com/cgi-bin/webscr?return=http%3A%2F%2Fwow.curseforge.com%2Faddons%2Faccountant-classic%2F&cn=Add+special+instructions+to+the+addon+author%28s%29&business=arithmandar%40gmail.com&bn=PP-DonationsBF%3Abtn_donateCC_LG.gif%3ANonHosted&cancel_return=http%3A%2F%2Fwow.curseforge.com%2Faddons%2Faccountant-classic%2F&lc=US&item_name=Accountant+Classic+%28from+CurseForge.com%29&cmd=_donations&rm=1&no_shipping=1&currency_code=USD
 ## Title-zhTW: |cFF00FF00[資訊]|rAccountant Classic 個人會計

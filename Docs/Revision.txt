@@ -4,6 +4,10 @@
 
 Revision History:
 =================
+* v2.5.08 (Oct. 27, 2010)
+  - Added LibDataBroker and CallbackHandler libraries
+  - Added support for Titan Panel
+
 * v2.5.07 (Oct. 20, 2010)
   - Fix incorrect ending of Korean translation issue
 

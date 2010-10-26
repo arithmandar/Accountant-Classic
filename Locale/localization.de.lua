@@ -5,6 +5,7 @@ if (GetLocale() == "deDE") then
 
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
+ACCLOC_TIP		= "Linke Maustaste drücken, um Accountant Classic zu öffnen.\nRechte Maustaste drücken, um die Accountant Classic Optionen anzuzeigen.";
 ACCLOC_TOT_IN		= "Einnahmen";
 ACCLOC_TOT_OUT		= "Ausgaben";
 ACCLOC_NET		= "Netto Ertrag / Verlust";

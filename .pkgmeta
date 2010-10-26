@@ -7,6 +7,7 @@ manual-changelog:
 externals:
     Libs/LibAboutPanel: git://git.curseforge.net/wow/libaboutpanel/mainline.git
     Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
+    Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
 
 license-output: Docs/LICENSE.txt
 

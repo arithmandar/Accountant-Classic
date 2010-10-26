@@ -1,6 +1,7 @@
 ﻿if ( GetLocale() == "koKR" ) then
 -- Header
 ACCLOC_TITLE		= "가계부";
+ACCLOC_TIP		= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.";
 ACCLOC_TOT_IN		= "총수입";
 ACCLOC_TOT_OUT		= "총지출";
 ACCLOC_NET		= "순이익 / 손해";
