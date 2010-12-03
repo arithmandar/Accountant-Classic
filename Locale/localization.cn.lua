@@ -62,6 +62,7 @@ ACCLOC_LOADED		= "已读取";
 ACCLOC_GOLD		= "金";
 ACCLOC_SILVER		= "银";
 ACCLOC_CENT		= "铜";
+ACCLOC_ABOUT		= "关于";
 
 -- Key Bindings headers
 BINDING_HEADER_ACCOUNTANT	= "Accountant";

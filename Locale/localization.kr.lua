@@ -62,6 +62,7 @@ ACCLOC_LOADED		= "로드됨";
 ACCLOC_GOLD		= "골 ";
 ACCLOC_SILVER		= "실 ";
 ACCLOC_CENT		= "코";
+ACCLOC_ABOUT		= "대하여";
 
 -- Key Bindings headers
 BINDING_HEADER_ACCOUNTANT	= "Accountant";

@@ -65,6 +65,7 @@ ACCLOC_LOADED		= "Charg\195\169";
 ACCLOC_GOLD		= "g ";
 ACCLOC_SILVER		= "s ";
 ACCLOC_CENT		= "c";
+ACCLOC_ABOUT		= "A propos";
 
 -- Key Bindings headers
 BINDING_HEADER_ACCOUNTANT	= "Accountant";
