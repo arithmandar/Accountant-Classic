@@ -23,7 +23,7 @@ ACCLOC_UPDATED		= "Aktualisiert";
 -- Section Labels
 ACCLOC_LOOT		= "Beute";
 ACCLOC_QUEST		= "Quest Belohnung";
-ACCLOC_MERCH		= "H\195\164ndler";
+ACCLOC_MERCH		= "Händler";
 ACCLOC_TRADE		= "Handelsfenster";
 ACCLOC_MAIL		= "Post";
 ACCLOC_TRAIN		= "Ausbildungskosten";

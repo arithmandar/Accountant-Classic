@@ -5,30 +5,30 @@ if (GetLocale() == "frFR") then
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
 ACCLOC_TIP		= "Clic-Gauche pour ouvrir Accountant Classic.\nClic-Droit pour les options d'Accountant Classic.";
-ACCLOC_TOT_IN		= "Rentr\195\169es Totales";
-ACCLOC_TOT_OUT		= "D\195\169penses Totales";
-ACCLOC_NET		= "B\195\169n\195\169fices/Pertes Nettes";
+ACCLOC_TOT_IN		= "Rentrées Totales";
+ACCLOC_TOT_OUT		= "Dépenses Totales";
+ACCLOC_NET		= "Bénéfices/Pertes Nettes";
 ACCLOC_NETLOSS		= "Pertes Nettes ";
-ACCLOC_NETPROF		= "B\195\169n\195\169fices Nets";
+ACCLOC_NETPROF		= "Bénéfices Nets";
 ACCLOC_SOURCE		= "Sources";
-ACCLOC_IN		= "Rentr\195\169es";
-ACCLOC_OUT		= "D\195\169penses";
-ACCLOC_WEEKSTART	= "D\195\169but de Semaine";
+ACCLOC_IN		= "Rentrées";
+ACCLOC_OUT		= "Dépenses";
+ACCLOC_WEEKSTART	= "Début de Semaine";
 ACCLOC_SUM		= "Somme Totale";
 ACCLOC_CHAR		= "Personnage";
 ACCLOC_MONEY		= "Argent";
 ACCLOC_UPDATED		= "Mis jour";
 
 -- Section Labels
-ACCLOC_LOOT		= "Ramass\195\169";
-ACCLOC_QUEST		= "R\195\169compense Qu\195\170tes";
+ACCLOC_LOOT		= "Ramassé";
+ACCLOC_QUEST		= "Récompense Quêtes";
 ACCLOC_MERCH		= "Marchands";
-ACCLOC_TRADE		= "Fen\195\170tre d'Echange";
+ACCLOC_TRADE		= "Fenêtre d'Echange";
 ACCLOC_MAIL		= "Courrier";
-ACCLOC_TRAIN		= "Co\195\187t Entra\195\174nement";
+ACCLOC_TRAIN		= "Coût Entraînement";
 ACCLOC_TAXI		= "Prix du Taxi";
 ACCLOC_OTHER		= "Inconnu";
-ACCLOC_REPAIR		= "Co\195\187t R\195\169paration";
+ACCLOC_REPAIR		= "Coût Réparation";
 ACCLOC_AUC		= "Hotel des Ventes";
 
 -- Buttons
@@ -47,7 +47,7 @@ ACCLOC_CHARS		= "Persos";
 ACCLOC_OPTS		= "Accountant Options";
 ACCLOC_MINIBUT		= "Afficher le Bouton de la Minimap";
 ACCLOC_BUTPOS		= "Position du bouton de la Minimap";
-ACCLOC_STARTWEEK	= "D\195\169but de Semaine";
+ACCLOC_STARTWEEK	= "Début de Semaine";
 ACCLOC_WD_SUN		= "Dimanche";
 ACCLOC_WD_MON		= "Lundi";
 ACCLOC_WD_TUE		= "Mardi";
@@ -58,10 +58,10 @@ ACCLOC_WD_SAT		= "Samedi";
 ACCLOC_DONE		= "Done";
 
 -- Misc
-ACCLOC_RESET_CONF	= "Es-tu sur de vouloir r\195\169initialiser la";
-ACCLOC_NEWPROFILE	= "Nouveau profil Accountant cr\195\169\195\169 pour";
+ACCLOC_RESET_CONF	= "Es-tu sur de vouloir réinitialiser la";
+ACCLOC_NEWPROFILE	= "Nouveau profil Accountant créé pour";
 ACCLOC_LOADPROFILE	= "Loaded Accountant Profile for";
-ACCLOC_LOADED		= "Charg\195\169";
+ACCLOC_LOADED		= "Chargé";
 ACCLOC_GOLD		= "g ";
 ACCLOC_SILVER		= "s ";
 ACCLOC_CENT		= "c";
