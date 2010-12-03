@@ -16,7 +16,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 
 	<Frame name="AccountantRowTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="320" y="19"/>
+			<AbsDimension x="482" y="19"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -33,7 +33,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="225" y="-4"/>
+								<AbsDimension x="323" y="-4"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -42,7 +42,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="317" y="-4"/>
+								<AbsDimension x="480" y="-4"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -89,7 +89,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 	<!-- Main Window -->
 	<Frame name="AccountantFrame" toplevel="true" enableMouse="true" frameStrata="HIGH" movable="true" parent="UIParent" hidden="true">
 		<Size>
-			<AbsDimension x="384" y="514"/>
+			<AbsDimension x="512" y="512"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -124,7 +124,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				</Texture>
 				<Texture name="$parentTopRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-TopRight">
 					<Size>
-						<AbsDimension x="128" y="256"/>
+						<AbsDimension x="256" y="256"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
@@ -144,7 +144,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				</Texture>
 				<Texture name="$parentBotRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-BotRight">
 					<Size>
-						<AbsDimension x="128" y="256"/>
+						<AbsDimension x="256" y="256"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
@@ -179,7 +179,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="204" y="-93"/>
+								<AbsDimension x="265" y="-93"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -188,7 +188,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="295" y="-93"/>
+								<AbsDimension x="422" y="-93"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -204,9 +204,9 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				</FontString>
 				<FontString name="$parentTotalInValue" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="193" y="-39"/>
+								<AbsDimension x="300" y="-39"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -222,9 +222,9 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				</FontString>
 				<FontString name="$parentTotalOutValue" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="193" y="-55"/>
+								<AbsDimension x="300" y="-55"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -240,9 +240,9 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				</FontString>
 				<FontString name="$parentTotalFlowValue" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="193" y="-71"/>
+								<AbsDimension x="300" y="-71"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -251,7 +251,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="310" y="-39"/>
+								<AbsDimension x="450" y="-39"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -409,7 +409,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-30" y="-8"/>
+							<AbsDimension x="4" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -421,7 +421,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRight" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-43" y="81"/>
+							<AbsDimension x="-10" y="81"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -450,6 +450,24 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 			</Button>
 			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="ACCLOC_RESET">
 				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentOptionsButton" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Accountant_ResetData();
+					</OnClick>
+				</Scripts>
+			</Button>
+<!--
+			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="ACCLOC_RESET">
+				<Size>
 					<AbsDimension x="60" y="22"/>
 				</Size>
 				<Anchors>
@@ -465,11 +483,12 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					</OnClick>
 				</Scripts>
 			</Button>
+-->
 			<Frame name="AccountantMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="180" y="100"/>
+							<AbsDimension x="266" y="98"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

@@ -4,6 +4,11 @@
 
 Revision History:
 =================
+* v2.5.09 (Dec. 4, 2010)
+  - Update LibAboutPanel version to 1.51
+  - Fix missing About panel
+  - Enlarge Accountant frame size
+
 * v2.5.08 (Oct. 27, 2010)
   - Added LibDataBroker and CallbackHandler libraries
   - Added support for Titan Panel

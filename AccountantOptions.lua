@@ -25,9 +25,9 @@ function AccountantOptions_OnLoad(panel)
 	panel.name = ACCLOC_TITLE;
 	InterfaceOptions_AddCategory(panel);
 	if (LibStub:GetLibrary("LibAboutPanel", true)) then
+		-- lib.new(parent, addonname);
 		LibStub("LibAboutPanel").new(ACCLOC_TITLE, "Accountant_Classic");
 	end
-
 end
 
 
