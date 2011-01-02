@@ -29,6 +29,15 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<Button name="$parentDelete" inherits="UIPanelCloseButton">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTitle" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Button>
 				<FontString name="$parentIn" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">

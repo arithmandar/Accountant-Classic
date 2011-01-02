@@ -284,6 +284,33 @@ function Accountant_LoadData()
 		cdate = string.sub(cdate,0,8);
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] = cdate;
 	end
+
+	--Duplicate below from OnShow as the dat and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
+	-- Check to see if the day has rolled over
+	cdate = date();
+	cdate = string.sub(cdate,0,8);
+	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] ~= cdate then
+		-- Its a new day! clear out the day tab
+		for mode,value in pairs(Accountant_Data) do
+			Accountant_Data[mode]["Day"].In = 0;
+			Accountant_SaveData[Accountant_Server][Accountant_Player]["data"][mode]["Day"].In = 0;
+			Accountant_Data[mode]["Day"].Out = 0;
+			Accountant_SaveData[Accountant_Server][Accountant_Player]["data"][mode]["Day"].Out = 0;
+		end
+	end
+	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] = cdate;
+	-- Check to see if the week has rolled over
+	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] ~= Accountant_WeekStart() then
+		-- Its a new week! clear out the week tab
+		for mode,value in pairs(Accountant_Data) do
+			Accountant_Data[mode]["Week"].In = 0;
+			Accountant_SaveData[Accountant_Server][Accountant_Player]["data"][mode]["Week"].In = 0;
+			Accountant_Data[mode]["Week"].Out = 0;
+			Accountant_SaveData[Accountant_Server][Accountant_Player]["data"][mode]["Week"].Out = 0;
+		end
+	end
+	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] = Accountant_WeekStart();
+	
 end
 
 function Accountant_Slash(msg)
@@ -518,6 +545,7 @@ function Accountant_OnShow()
 			_G["AccountantFrameRow" ..i.."Title"]:SetText(char);
 			if Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"] ~= nil then
 				_G["AccountantFrameRow" ..i.."In"]:SetText(Accountant_NiceCash(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
+				--_G["AccountantFrameRow" ..i.."Delete"]:SetText("Delete");
 				alltotal = alltotal + Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"];
 				_G["AccountantFrameRow" ..i.."Out"]:SetText(Accountant_SaveData[Accountant_Server][char]["options"]["date"]);
 			else

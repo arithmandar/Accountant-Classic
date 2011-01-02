@@ -2,7 +2,7 @@
 ## Title: Accountant Classic
 ## Notes: A basic tool to track your monetary incomings and outgoings within WoW.
 ## Author: Arith Hsu
-## Version: 2.5.09
+## Version: 2.5.10
 ## X-eMail: arithmandarjp@yahoo.co.jp
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-License: GPLv2
