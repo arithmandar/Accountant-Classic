@@ -19,7 +19,7 @@ $Id: Accountant.lua 25 2010-05-30 15:35:45Z arith $
 	Everyone who commented and voted for the mod on curse-gaming.com
   Thiou for the French loc, Snj & JokerGermany for the German loc
   ---------------------------------------------------------------------
-  v2.4 - :
+  v2.4 - current version:
      Updated by: Arith
 ]]
 
