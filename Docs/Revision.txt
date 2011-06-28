@@ -4,6 +4,9 @@
 
 Revision History:
 =================
+* v2.5.12 (Jun. 29, 2011)
+  - TOC update to support WoW 4.2
+
 * v2.5.11 (Apr. 30, 2011)
   - TOC update to support WoW 4.1
 
