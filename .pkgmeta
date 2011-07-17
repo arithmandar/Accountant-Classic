@@ -4,11 +4,17 @@ manual-changelog:
     filename: Docs/Revision.txt
     markup-type: plain
 
+enable-nolib-creation: yes
+
 externals:
-    Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
+    Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/trunk
     Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+    Libs/LibDataBroker-1.1: git://git.wowace.com/wow/libdatabroker-1-1/mainline.git
+    Libs/LibAboutPanel: git://git.curseforge.net/wow/libaboutpanel/mainline.git
 
 ignore:
+    - Libs/LibDataBroker-1.1
+    - Libs/LibAboutPanel
     - Images/AccountantFrame-BotLeft.psd
     - Images/AccountantFrame-BotRight.psd
     - Images/AccountantFrame-TopLeft.psd

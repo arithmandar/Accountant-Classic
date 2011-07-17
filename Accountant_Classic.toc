@@ -3,13 +3,7 @@
 ## Notes: A basic tool to track your monetary incomings and outgoings within WoW.
 ## Author: Arith Hsu
 ## Version: 2.5.12
-## X-eMail: arithmandarjp@yahoo.co.jp
-## X-Credits: Sabaki, Shadow, Rophy
-## X-License: GPLv2
-## X-Website: http://wow.curseforge.com/addons/accountant-classic/
-## X-Category: Information
-## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR
-## X-Donate: https://www.paypal.com/cgi-bin/webscr?return=http%3A%2F%2Fwow.curseforge.com%2Faddons%2Faccountant-classic%2F&cn=Add+special+instructions+to+the+addon+author%28s%29&business=arithmandar%40gmail.com&bn=PP-DonationsBF%3Abtn_donateCC_LG.gif%3ANonHosted&cancel_return=http%3A%2F%2Fwow.curseforge.com%2Faddons%2Faccountant-classic%2F&lc=US&item_name=Accountant+Classic+%28from+CurseForge.com%29&cmd=_donations&rm=1&no_shipping=1&currency_code=USD
+## OptionalDeps: LibDataBroker-1.1, LibAboutPanel, CallbackHandler-1.0
 ## Title-zhTW: |cFF00FF00[資訊]|rAccountant Classic 個人會計
 ## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
 ## Title-zhCN: |cFF00FF00[信息]|rAccountant Classic 个人会计
@@ -17,6 +11,13 @@
 ## Title-koKR: |cFF00FF00[가계부]|rAccountant Classic 애드온
 ## Notes-koKR: |cff00CC33나만의 수입 지출을 쉽게 볼수있는 와우 가계부입니다.|r
 ## Description: Logs your WoW incomings / outgoings
+## X-eMail: arithmandarjp@yahoo.co.jp
+## X-Credits: Sabaki, Shadow, Rophy
+## X-License: GPLv2
+## X-Website: http://wow.curseforge.com/addons/accountant-classic/
+## X-Category: Information
+## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR
+## X-Donate: http://pledgie.com/campaigns/13746
 ## SavedVariables: Accountant_SaveData, Accountant_Options
 
 Libs\Libs.xml
