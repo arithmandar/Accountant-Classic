@@ -13,7 +13,6 @@ externals:
     Libs/LibAboutPanel: git://git.curseforge.net/wow/libaboutpanel/mainline.git
 
 ignore:
-    - Libs/LibDataBroker-1.1
     - Libs/LibAboutPanel
     - Images/AccountantFrame-BotLeft.psd
     - Images/AccountantFrame-BotRight.psd
