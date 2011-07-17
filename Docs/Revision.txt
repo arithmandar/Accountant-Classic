@@ -4,6 +4,9 @@
 
 Revision History:
 =================
+* v2.5.13 alpha (Jul. 18, 2011)
+  - Packaging method update
+
 * v2.5.12 (Jun. 29, 2011)
   - TOC update to support WoW 4.2
 
