@@ -2,8 +2,8 @@
 ## Title: Accountant Classic
 ## Notes: A basic tool to track your monetary incomings and outgoings within WoW.
 ## Author: Arith Hsu
-## Version: 2.5.12
-## OptionalDeps: LibDataBroker-1.1, LibAboutPanel, CallbackHandler-1.0
+## Version: 2.5.13
+## OptionalDeps: LibAboutPanel, CallbackHandler-1.0
 ## Title-zhTW: |cFF00FF00[資訊]|rAccountant Classic 個人會計
 ## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
 ## Title-zhCN: |cFF00FF00[信息]|rAccountant Classic 个人会计
@@ -14,7 +14,7 @@
 ## X-eMail: arithmandarjp@yahoo.co.jp
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-License: GPLv2
-## X-Website: http://wow.curseforge.com/addons/accountant-classic/
+## X-Website: http://wow.curse.com/downloads/wow-addons/details/accountant-classic.aspx
 ## X-Category: Information
 ## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR
 ## X-Donate: http://pledgie.com/campaigns/13746

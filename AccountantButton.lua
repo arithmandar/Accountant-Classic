@@ -3,11 +3,11 @@ $Id: AccountantButton.lua 17 2009-06-06 14:07:52Z arith $
 ]]
 
 function AccountantButton_OnEnter(self)
-    GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-    GameTooltip:SetText(ACCLOC_TITLE);
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(ACCLOC_TITLE);
 	GameTooltipTextLeft1:SetTextColor(1, 1, 1);
-    GameTooltip:AddLine(ACCLOC_TIP);
-    GameTooltip:Show();
+	GameTooltip:AddLine(ACCLOC_TIP);
+	GameTooltip:Show();
 end
 
 function AccountantButton_OnClick()

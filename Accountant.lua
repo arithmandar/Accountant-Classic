@@ -74,6 +74,7 @@ function Accountant_RegisterEvents(self)
 end
 
 function Accountant_SetLabels(self)
+	-- if current tab is All Chars tab
 	if Accountant_CurrentTab == 5 then
 		AccountantFrameSource:SetText(ACCLOC_CHAR);
 		AccountantFrameIn:SetText(ACCLOC_MONEY);
@@ -86,34 +87,37 @@ function Accountant_SetLabels(self)
 		AccountantFrameTotalFlowValue:SetText("");
 		for i = 1, 15, 1 do
 			_G["AccountantFrameRow"..i.."Title"]:SetText("");
+			_G["AccountantFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 3, -2);
 			_G["AccountantFrameRow"..i.."In"]:SetText("");
 			_G["AccountantFrameRow"..i.."Out"]:SetText("");
 		end
 		AccountantFrameResetButton:Hide();
 		return;
-	end
-	AccountantFrameResetButton:Show();
+	else
+		AccountantFrameResetButton:Show();
 
-	AccountantFrameSource:SetText(ACCLOC_SOURCE);
-	AccountantFrameIn:SetText(ACCLOC_IN);
-	AccountantFrameOut:SetText(ACCLOC_OUT);
-	AccountantFrameTotalIn:SetText(ACCLOC_TOT_IN..":");
-	AccountantFrameTotalOut:SetText(ACCLOC_TOT_OUT..":");
-	AccountantFrameTotalFlow:SetText(ACCLOC_NET..":");
+		AccountantFrameSource:SetText(ACCLOC_SOURCE);
+		AccountantFrameIn:SetText(ACCLOC_IN);
+		AccountantFrameOut:SetText(ACCLOC_OUT);
+		AccountantFrameTotalIn:SetText(ACCLOC_TOT_IN..":");
+		AccountantFrameTotalOut:SetText(ACCLOC_TOT_OUT..":");
+		AccountantFrameTotalFlow:SetText(ACCLOC_NET..":");
 
-	-- Row Labels (auto generate)
-	InPos = 1
-	for key,value in pairs(Accountant_Data) do
-		Accountant_Data[key].InPos = InPos;
-		_G["AccountantFrameRow"..InPos.."Title"]:SetText(Accountant_Data[key].Title);
-		InPos = InPos + 1;
-	end
+		-- Row Labels (auto generate)
+		InPos = 1
+		for key,value in pairs(Accountant_Data) do
+			Accountant_Data[key].InPos = InPos;
+			_G["AccountantFrameRow"..InPos.."Title"]:SetText(Accountant_Data[key].Title);
+			_G["AccountantFrameRow"..InPos.."Title"]:SetPoint("TOPLEFT", 3, -2);
+			InPos = InPos + 1;
+		end
 
-	-- Set the header
-	local name = AccountantFrame:GetName();
-	local header = _G[name.."TitleText"];
-	if ( header ) then
-		header:SetText(ACCLOC_TITLE);
+		-- Set the header
+		local name = AccountantFrame:GetName();
+		local header = _G[name.."TitleText"];
+		if ( header ) then
+			header:SetText(ACCLOC_TITLE);
+		end
 	end
 end
 
@@ -204,16 +208,16 @@ end
 
 function Accountant_LoadData()
 	Accountant_Data = {};
-	Accountant_Data["LOOT"] = {Title = ACCLOC_LOOT};
-	Accountant_Data["MERCH"] = {Title = ACCLOC_MERCH};
-	Accountant_Data["QUEST"] = {Title = ACCLOC_QUEST};
-	Accountant_Data["TRADE"] = {Title = ACCLOC_TRADE};
-	Accountant_Data["MAIL"] = {Title = ACCLOC_MAIL};
-	Accountant_Data["AH"] = {Title = ACCLOC_AUC};
-	Accountant_Data["TRAIN"] = {Title = ACCLOC_TRAIN};
-	Accountant_Data["TAXI"] = {Title = ACCLOC_TAXI};
-	Accountant_Data["REPAIRS"] = {Title = ACCLOC_REPAIR};
-	Accountant_Data["OTHER"] = {Title = ACCLOC_OTHER};
+	Accountant_Data["TRAIN"] = 	{Title = ACCLOC_TRAIN};
+	Accountant_Data["TAXI"] = 	{Title = ACCLOC_TAXI};
+	Accountant_Data["TRADE"] = 	{Title = ACCLOC_TRADE};
+	Accountant_Data["AH"] = 	{Title = ACCLOC_AUC};
+	Accountant_Data["MERCH"] = 	{Title = ACCLOC_MERCH};
+	Accountant_Data["REPAIRS"] = 	{Title = ACCLOC_REPAIR};
+	Accountant_Data["MAIL"] = 	{Title = ACCLOC_MAIL};
+	Accountant_Data["QUEST"] = 	{Title = ACCLOC_QUEST};
+	Accountant_Data["LOOT"] = 	{Title = ACCLOC_LOOT};
+	Accountant_Data["OTHER"] = 	{Title = ACCLOC_OTHER};
 
 	for key,value in pairs(Accountant_Data) do
 		for modekey,mode in pairs(Accountant_LogModes) do
@@ -285,7 +289,7 @@ function Accountant_LoadData()
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] = cdate;
 	end
 
-	--Duplicate below from OnShow as the dat and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
+	--Duplicate below from OnShow as the day and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
 	-- Check to see if the day has rolled over
 	cdate = date();
 	cdate = string.sub(cdate,0,8);
@@ -543,9 +547,9 @@ function Accountant_OnShow()
 		local i=1;
 		for char,charvalue in pairs(Accountant_SaveData[Accountant_Server]) do
 			_G["AccountantFrameRow" ..i.."Title"]:SetText(char);
+			--_G["AccountantFrameRow" ..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
 			if Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"] ~= nil then
 				_G["AccountantFrameRow" ..i.."In"]:SetText(Accountant_NiceCash(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
-				--_G["AccountantFrameRow" ..i.."Delete"]:SetText("Delete");
 				alltotal = alltotal + Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"];
 				_G["AccountantFrameRow" ..i.."Out"]:SetText(Accountant_SaveData[Accountant_Server][char]["options"]["date"]);
 			else

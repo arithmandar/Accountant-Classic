@@ -1,6 +1,4 @@
-<!--
-$Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
--->
+<!-- $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $ -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Accountant.lua"/>
@@ -13,7 +11,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 			</OnClick>
 		</Scripts>
 	</Button>
-
+	<!-- Text rows -->
 	<Frame name="AccountantRowTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="482" y="19"/>
@@ -29,11 +27,11 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Button name="$parentDelete" inherits="UIPanelCloseButton">
+				<Button name="$parentDelete" inherits="UIPanelButtonTemplate">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTitle" relativePoint="TOPRIGHT">
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="4" y="-8"/>
+								<AbsDimension x="3" y="-4"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -110,17 +108,17 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="AccountantFramePortrait">
-                    <Size>
-                        <AbsDimension x="60" y="60"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-6"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTopLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-TopLeft">
@@ -215,7 +213,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="300" y="-39"/>
+								<AbsDimension x="350" y="-39"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -233,7 +231,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="300" y="-55"/>
+								<AbsDimension x="350" y="-55"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -251,7 +249,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="300" y="-71"/>
+								<AbsDimension x="350" y="-71"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -276,7 +274,6 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				</FontString>
 			</Layer>
 		</Layers>
-
 		<Frames>
 			<Frame name="$parentRow1" inherits="AccountantRowTemplate">
 				<Anchors>
@@ -413,7 +410,6 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					</Anchor>
 				</Anchors>
 			</Frame>
-
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
@@ -422,6 +418,23 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 						</Offset>
 					</Anchor>
 				</Anchors>
+			</Button>
+			<Button name="$parentOptionsButton" inherits="UIPanelButtonTemplate" text="ACCLOC_OPTBUT">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentCloseButton" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AccountantOptions_Toggle();
+					</OnClick>
+				</Scripts>
 			</Button>
 			<Button name="$parentExitButton" inherits="UIPanelButtonTemplate" text="ACCLOC_EXIT">
 				<Size>
@@ -440,7 +453,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentOptionsButton" inherits="UIPanelButtonTemplate" text="ACCLOC_OPTBUT">
+			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="ACCLOC_RESET">
 				<Size>
 					<AbsDimension x="80" y="22"/>
 				</Size>
@@ -453,46 +466,10 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						AccountantOptions_Toggle();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="ACCLOC_RESET">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentOptionsButton" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
 						Accountant_ResetData();
 					</OnClick>
 				</Scripts>
 			</Button>
-<!--
-			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="ACCLOC_RESET">
-				<Size>
-					<AbsDimension x="60" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="310" y="-70"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						Accountant_ResetData();
-					</OnClick>
-				</Scripts>
-			</Button>
--->
 			<Frame name="AccountantMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
@@ -506,7 +483,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="15" y="46"/>
+							<AbsDimension x="15" y="44"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -542,7 +519,7 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-40" y="46"/>
+							<AbsDimension x="0" y="44"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -550,13 +527,12 @@ $Id: Accountant.xml 17 2009-06-06 14:07:52Z arith $
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				
-				-- Make Frame Moveable.
+				<!-- Make Frame Moveable.-->
 				tinsert(UISpecialFrames, "AccountantFrame");
 				UIPanelWindows["AccountantFrame"] = { area = "left", pushable = 11 };
 				self:RegisterForDrag("LeftButton");
 
-				-- Setup
+				<!-- Setup -->
 				Accountant_RegisterEvents(self);
 			</OnLoad>
 			<OnShow>
