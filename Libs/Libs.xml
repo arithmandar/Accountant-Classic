@@ -5,7 +5,7 @@
 <Script file="LibStub\LibStub.lua"/>
 <Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 <Include file="LibAboutPanel\lib.xml"/>
-<!--@end-no-lib-strip@-->
 <Script file="LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
+<!--@end-no-lib-strip@-->
 
 </Ui>
