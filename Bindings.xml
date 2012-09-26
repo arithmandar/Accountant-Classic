@@ -1,5 +1,5 @@
 <!--
-$Id: Bindings.xml 17 2009-06-06 14:07:52Z arith $
+$Id$
 -->
 <Bindings>
 	<Binding name="ACCOUNTANTTOG" header="ACCOUNTANT">

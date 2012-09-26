@@ -1,5 +1,5 @@
 <!--
-$Id: AccountantOptions.xml 17 2009-06-06 14:07:52Z arith $
+$Id$
 -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	<Script file="AccountantOptions.lua"/>

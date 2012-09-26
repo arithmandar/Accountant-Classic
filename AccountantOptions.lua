@@ -1,5 +1,5 @@
 --[[
-$Id: AccountantOptions.lua 17 2009-06-06 14:07:52Z arith $
+$Id$
 ]]
 ACCOUNTANT_OPTIONS_TITLE = ACCLOC_OPTS;
 

@@ -4,6 +4,9 @@
 
 Revision History:
 =================
+* v2.5.15 (Sep. 26, 2012)
+  - TOC update to support WoW 5.0
+
 * v2.5.14 (Dec. 01, 2011)
   - Packaging method update
   - Fix no-lib packing issue, to hard-embed libdatabroker

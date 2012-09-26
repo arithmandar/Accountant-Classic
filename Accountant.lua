@@ -1,5 +1,5 @@
 ﻿--[[
-$Id: Accountant.lua 25 2010-05-30 15:35:45Z arith $
+$Id$
 ]]
 --[[
  Accountant
