@@ -3,12 +3,13 @@
 ## Title-zhTW: |cFF00FF00[資訊]|rAccountant Classic 個人會計
 ## Title-zhCN: |cFF00FF00[信息]|rAccountant Classic 个人会计
 ## Title-koKR: |cFF00FF00[가계부]|rAccountant Classic 애드온
+## Title-RU: Переключить Accountant
 ## Notes: A basic tool to track your monetary incomings and outgoings within WoW.
 ## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
 ## Notes-zhCN: |cff00CC33追踪每个角色的所有收入与支出状况，并可显示当日小计、当周小计、以及自有记录起的总计。并可显示所有角色的总金额。|r
 ## Notes-koKR: |cff00CC33나만의 수입 지출을 쉽게 볼수있는 와우 가계부입니다.|r
 ## Author: Arith Hsu
-## Version: 2.5.15
+## Version: 2.5.16
 ## X-eMail: arithmandarjp @ yahoo.co.jp
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-License: GPLv2
