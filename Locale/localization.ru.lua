@@ -1,4 +1,5 @@
-﻿-- Header
+﻿if ( GetLocale() == "ruRU" ) then
+-- Header
 ACCLOC_TITLE		= "Accountant Classic";
 ACCLOC_TIP		= "Left-Click для открытия Accountant Classic.\nRight-Click для настрйоки Accountant Classic.";
 ACCLOC_TOT_IN		= "Всего Доходов";
@@ -66,3 +67,4 @@ ACCLOC_ABOUT		= "About";
 -- Key Bindings headers
 BINDING_HEADER_ACCOUNTANT	= "Accountant";
 BINDING_NAME_ACCOUNTANTTOG	= "Переключить Accountant";
+end

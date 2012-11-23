@@ -4,6 +4,9 @@
 
 Revision History:
 =================
+* v2.5.17 (Nov. 24, 2012)
+  - Fixed the Russian become the default language issue
+  
 * v2.5.16 (Nov. 20, 2012)
   - Added Russian translation (Константин Гудович)
 
