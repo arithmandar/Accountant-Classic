@@ -4,6 +4,12 @@
 
 Revision History:
 =================
+* v2.5.19 (Nov. 01, 2013)
+  - TOC update to support WoW 5.4.1
+  - Fix the unsupport GetCVar("realmName")  issue 
+    Thanks for W4Andy 
+  - Fix minimap button right click won't open the Option frame
+
 * v2.5.18 (Dec. 13, 2012)
   - TOC update to support WoW 5.1
 
