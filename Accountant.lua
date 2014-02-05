@@ -454,6 +454,7 @@ function Accountant_NiceCash(amount)
 	local outstr = "";
 	local gold = 0;
 	local silver = 0;
+	local cent = 0;
 
 	if amount >= agold then
 		gold = math.floor(amount / agold);
@@ -462,11 +463,18 @@ function Accountant_NiceCash(amount)
 	amount = amount - (gold * agold);
 	if amount >= asilver then
 		silver = math.floor(amount / asilver);
+		if silver < 10 then
+			silver = " "..silver;
+		end
 		outstr = outstr .. "|cFFCCCCCC" .. silver .. ACCLOC_SILVER;
 	end
 	amount = amount - (silver * asilver);
 	if amount > 0 then
-		outstr = outstr .. "|cFFFF6600" .. amount .. ACCLOC_CENT;
+		cent = amount;
+		if cent < 10 then
+			cent = " "..cent;
+		end
+		outstr = outstr .. "|cFFFF6600" .. cent .. ACCLOC_CENT;
 	end
 	return outstr;
 end
