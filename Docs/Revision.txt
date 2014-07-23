@@ -4,7 +4,7 @@
 
 Revision History:
 =================
-* v2.5.20 (Feb. xx, 2014)
+* v2.5.20 (Jul. 20, 2014)
   - Minor formating enhancement 
 
 * v2.5.19 (Nov. 01, 2013)
