@@ -4,6 +4,15 @@
 
 Revision History:
 =================
+* v 2.5.22 (Oct. 30, 2014)
+  - Track on the following new spending / earning (codes by Tntdruid)
+    - Gold earned from Auction House (when received money via mail)
+    - Barber Shop.
+    – Garrison - track gold used on building, upgrading and gold from followers missions.
+    – Gold earned from LFD, LFR and Scenarios.
+    - Gold used on Transmogrify.
+    - Gold used in Void Storage.
+
 * v2.5.21 (Oct. 18, 2014)
   - TOC update to support WoW 6.0
 

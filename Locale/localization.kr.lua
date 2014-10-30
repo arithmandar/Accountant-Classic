@@ -27,6 +27,7 @@ ACCLOC_TAXI		= "비행 요금";
 ACCLOC_OTHER		= "알수없음";
 ACCLOC_REPAIR		= "수리 비용";
 ACCLOC_AUC		= "경매장";
+ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
 ACCLOC_RESET		= "재설정";

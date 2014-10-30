@@ -31,6 +31,7 @@ ACCLOC_TAXI		= "Reisekosten";
 ACCLOC_OTHER		= "Unbekannt";
 ACCLOC_REPAIR		= "Reparaturkosten";
 ACCLOC_AUC		= "Auktionshaus";
+ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
 ACCLOC_RESET		= "Reset";

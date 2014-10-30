@@ -555,5 +555,5 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
-	<GameTooltip name="AccountantTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="true"/>
+	<GameTooltip name="AccountantTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="false"/>
 </Ui>

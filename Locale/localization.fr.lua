@@ -30,6 +30,7 @@ ACCLOC_TAXI		= "Prix du Taxi";
 ACCLOC_OTHER		= "Inconnu";
 ACCLOC_REPAIR		= "Coût Réparation";
 ACCLOC_AUC		= "Hotel des Ventes";
+ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
 ACCLOC_RESET		= "Reset";

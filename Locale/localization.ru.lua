@@ -27,6 +27,7 @@ ACCLOC_TAXI		= "Такси";
 ACCLOC_OTHER		= "Неизвестный";
 ACCLOC_REPAIR		= "Затраты на ремонт";
 ACCLOC_AUC		= "Аукцион";
+ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
 ACCLOC_RESET		= "Сбросить";
