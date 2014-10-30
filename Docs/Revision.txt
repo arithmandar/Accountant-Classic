@@ -4,7 +4,7 @@
 
 Revision History:
 =================
-* v 2.5.22 (Oct. 30, 2014)
+* v2.5.22 (Oct. 30, 2014)
   - Track on the following new spending / earning (codes by Tntdruid)
     - Gold earned from Auction House (when received money via mail)
     - Barber Shop.
