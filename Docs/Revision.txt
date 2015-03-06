@@ -4,6 +4,9 @@
 
 Revision History:
 =================
+* v2.5.23 (Mar. 06, 2015)
+  - TOC update to support WoW 6.1
+
 * v2.5.22 (Oct. 30, 2014)
   - Track on the following new spending / earning (codes by Tntdruid)
     - Gold earned from Auction House (when received money via mail)
