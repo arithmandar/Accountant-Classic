@@ -599,6 +599,15 @@ function Accountant_NiceCash(amount)
 	return outstr;
 end
 
+-- code adopted from SellTrash
+function Accountant_GetFormattedValue(amount)
+	local gold = math.floor(amount / 10000);
+	local silver = math.floor((amount % 10000) / 100);
+	local copper = (amount % 10000) % 100;
+	
+	return format(GOLD_AMOUNT_TEXTURE.." "..SILVER_AMOUNT_TEXTURE.." "..COPPER_AMOUNT_TEXTURE, gold, 0, 0, silver, 0, 0, copper, 0, 0);
+end
+
 function Accountant_WeekStart()
 	oneday = 86400;
 	ct = time();
@@ -827,7 +836,8 @@ function Accountant_CursorHasItem()
 end
 
 function Accountant_MoneyFrameUpdate()
-	AccountantMoneyInfoText:SetText(Accountant_NiceCash(GetMoney()));
+	--AccountantMoneyInfoText:SetText(Accountant_NiceCash(GetMoney()));
+	AccountantMoneyInfoText:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(GetMoney()));
 end
 
 function Accountant_HandleMouseDown(self, buttonName)    
