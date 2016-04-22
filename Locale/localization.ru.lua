@@ -17,7 +17,6 @@ ACCLOC_MONEY		= "Деньги";
 ACCLOC_UPDATED		= "Последнее обновление";
 
 -- Section Labels
-ACCLOC_LOOT		= "Добыча";
 ACCLOC_QUEST		= "Награда за Квесты";
 ACCLOC_MERCH		= "Торговцы";
 ACCLOC_TRADE		= "Обмен";
@@ -26,7 +25,6 @@ ACCLOC_TRAIN		= "Расходы на обучение";
 ACCLOC_TAXI		= "Такси";
 ACCLOC_OTHER		= "Неизвестный";
 ACCLOC_REPAIR		= "Затраты на ремонт";
-ACCLOC_AUC		= "Аукцион";
 ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
@@ -38,21 +36,16 @@ ACCLOC_EXIT		= "Закрыть";
 ACCLOC_SESS		= "Сессия";
 ACCLOC_DAY		= "День";
 ACCLOC_WEEK		= "Неделя";
+--ACCLOC_MONTH		= "Month";
 ACCLOC_TOTAL		= "Все";
 ACCLOC_CHARS		= "Все Персанажи";
 
 -- Options
 ACCLOC_OPTS		= "Настрйоки акаунта";
 ACCLOC_MINIBUT		= "Показывать на миникарте";
+--ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
 ACCLOC_BUTPOS		= "Позиция на миникарте";
 ACCLOC_STARTWEEK	= "Начало недели";
-ACCLOC_WD_SUN		= "Воскресенье";
-ACCLOC_WD_MON		= "Понедельник";
-ACCLOC_WD_TUE		= "Вторник";
-ACCLOC_WD_WED		= "Среда";
-ACCLOC_WD_THU		= "Четверг";
-ACCLOC_WD_FRI		= "Пятница";
-ACCLOC_WD_SAT		= "Суббота";
 ACCLOC_DONE		= "Готово";
 
 -- Misc

@@ -21,7 +21,6 @@ ACCLOC_MONEY		= "Geld";
 ACCLOC_UPDATED		= "Aktualisiert";
 
 -- Section Labels
-ACCLOC_LOOT		= "Beute";
 ACCLOC_QUEST		= "Quest Belohnung";
 ACCLOC_MERCH		= "Händler";
 ACCLOC_TRADE		= "Handelsfenster";
@@ -30,7 +29,6 @@ ACCLOC_TRAIN		= "Ausbildungskosten";
 ACCLOC_TAXI		= "Reisekosten";
 ACCLOC_OTHER		= "Unbekannt";
 ACCLOC_REPAIR		= "Reparaturkosten";
-ACCLOC_AUC		= "Auktionshaus";
 ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
@@ -42,21 +40,16 @@ ACCLOC_EXIT		= "Exit";
 ACCLOC_SESS		= "Sitzung";
 ACCLOC_DAY		= "Tag";
 ACCLOC_WEEK		= "Woche";
+--ACCLOC_MONTH		= "Month";
 ACCLOC_TOTAL		= "Gesamt";
 ACCLOC_CHARS		= "Alle Chars";
 
 -- Options
 ACCLOC_OPTS		= "Accountant Optionen";
 ACCLOC_MINIBUT		= "Zeige Minimap Button";
-ACCLOC_BUTPOS		= "Minimap Button Position";
+--ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
+--ACCLOC_BUTPOS		= "Minimap Button Position";
 ACCLOC_STARTWEEK	= "Beginn der Woche";
-ACCLOC_WD_SUN		= "Sonntag";
-ACCLOC_WD_MON		= "Montag";
-ACCLOC_WD_TUE		= "Dienstag";
-ACCLOC_WD_WED		= "Mittwoch";
-ACCLOC_WD_THU		= "Donnerstag";
-ACCLOC_WD_FRI		= "Freitag";
-ACCLOC_WD_SAT		= "Samstag";
 ACCLOC_DONE		= "Fertig";
 
 -- Misc

@@ -17,7 +17,6 @@ ACCLOC_MONEY		= "골드";
 ACCLOC_UPDATED		= "업데이트";
 
 -- Section Labels
-ACCLOC_LOOT		= "전리품";
 ACCLOC_QUEST		= "퀘스트 보상";
 ACCLOC_MERCH		= "상점";
 ACCLOC_TRADE		= "거래";
@@ -26,8 +25,7 @@ ACCLOC_TRAIN		= "기술 습득";
 ACCLOC_TAXI		= "비행 요금";
 ACCLOC_OTHER		= "알수없음";
 ACCLOC_REPAIR		= "수리 비용";
-ACCLOC_AUC		= "경매장";
-ACCLOC_LFG 		= "LFD, LFR and Scen."
+--ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
 ACCLOC_RESET		= "재설정";
@@ -38,21 +36,16 @@ ACCLOC_EXIT		= "끝";
 ACCLOC_SESS		= "현재";
 ACCLOC_DAY		= "일";
 ACCLOC_WEEK		= "주";
+--ACCLOC_MONTH		= "Month";
 ACCLOC_TOTAL		= "합계";
 ACCLOC_CHARS		= "모든 합계";
 
 -- Options
 ACCLOC_OPTS		= "Accountant 옵션";
 ACCLOC_MINIBUT		= "미니맵버튼";
+--ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
 ACCLOC_BUTPOS		= "미니맵 버튼 위치";
 ACCLOC_STARTWEEK	= "시작";
-ACCLOC_WD_SUN		= "일요일";
-ACCLOC_WD_MON		= "월요일";
-ACCLOC_WD_TUE		= "화요일";
-ACCLOC_WD_WED		= "수요일";
-ACCLOC_WD_THU		= "목요일";
-ACCLOC_WD_FRI		= "금요일";
-ACCLOC_WD_SAT		= "토요일";
 ACCLOC_DONE		= "완료";
 
 -- Misc

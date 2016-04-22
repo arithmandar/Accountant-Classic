@@ -20,7 +20,6 @@ ACCLOC_MONEY		= "Argent";
 ACCLOC_UPDATED		= "Mis jour";
 
 -- Section Labels
-ACCLOC_LOOT		= "Ramassé";
 ACCLOC_QUEST		= "Récompense Quêtes";
 ACCLOC_MERCH		= "Marchands";
 ACCLOC_TRADE		= "Fenêtre d'Echange";
@@ -29,7 +28,6 @@ ACCLOC_TRAIN		= "Coût Entraînement";
 ACCLOC_TAXI		= "Prix du Taxi";
 ACCLOC_OTHER		= "Inconnu";
 ACCLOC_REPAIR		= "Coût Réparation";
-ACCLOC_AUC		= "Hotel des Ventes";
 ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
@@ -41,21 +39,16 @@ ACCLOC_EXIT		= "Exit";
 ACCLOC_SESS		= "Session";
 ACCLOC_DAY		= "Jour";
 ACCLOC_WEEK		= "Semaine";
+--ACCLOC_MONTH		= "Month";
 ACCLOC_TOTAL		= "Total";
 ACCLOC_CHARS		= "Persos";
 
 -- Options
 ACCLOC_OPTS		= "Accountant Options";
 ACCLOC_MINIBUT		= "Afficher le Bouton de la Minimap";
+--ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
 ACCLOC_BUTPOS		= "Position du bouton de la Minimap";
 ACCLOC_STARTWEEK	= "Début de Semaine";
-ACCLOC_WD_SUN		= "Dimanche";
-ACCLOC_WD_MON		= "Lundi";
-ACCLOC_WD_TUE		= "Mardi";
-ACCLOC_WD_WED		= "Mercredi";
-ACCLOC_WD_THU		= "Jeudi";
-ACCLOC_WD_FRI		= "Vendredi";
-ACCLOC_WD_SAT		= "Samedi";
 ACCLOC_DONE		= "Done";
 
 -- Misc

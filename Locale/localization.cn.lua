@@ -17,7 +17,6 @@ ACCLOC_MONEY		= "金钱";
 ACCLOC_UPDATED		= "更新";
 
 -- Section Labels
-ACCLOC_LOOT		= "拾取";
 ACCLOC_QUEST		= "任务奖励";
 ACCLOC_MERCH		= "商人";
 ACCLOC_TRADE		= "交易";
@@ -26,8 +25,7 @@ ACCLOC_TRAIN		= "训练费用";
 ACCLOC_TAXI		= "飞行花费";
 ACCLOC_OTHER		= "未知";
 ACCLOC_REPAIR		= "修理装备";
-ACCLOC_AUC		= "拍卖场";
-ACCLOC_LFG 		= "LFD, LFR and Scen."
+ACCLOC_LFG 		= "随机地城、团队与事件"
 
 -- Buttons
 ACCLOC_RESET		= "归零";
@@ -38,21 +36,16 @@ ACCLOC_EXIT		= "离开";
 ACCLOC_SESS		= "本次";
 ACCLOC_DAY		= "今天";
 ACCLOC_WEEK		= "本周";
+ACCLOC_MONTH		= "本月";
 ACCLOC_TOTAL		= "总计";
 ACCLOC_CHARS		= "所有角色";
 
 -- Options
 ACCLOC_OPTS		= "Accountant 选项";
 ACCLOC_MINIBUT		= "显示小地图按键";
+ACCLOC_ONSCRMONEY	= "在游戏画面显示目前现金";
 ACCLOC_BUTPOS		= "小地图按键位置";
 ACCLOC_STARTWEEK	= "一周的开始日";
-ACCLOC_WD_SUN		= "星期日";
-ACCLOC_WD_MON		= "星期一";
-ACCLOC_WD_TUE		= "星期二";
-ACCLOC_WD_WED		= "星期三";
-ACCLOC_WD_THU		= "星期四";
-ACCLOC_WD_FRI		= "星期五";
-ACCLOC_WD_SAT		= "星期六";
 ACCLOC_DONE		= "完成";
 
 -- Misc
