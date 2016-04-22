@@ -33,7 +33,7 @@ Accountant_LastMoney = 0;
 Accountant_Verbose = nil;
 Accountant_GotName = false;
 Accountant_CurrentTab = 1;
-Accountant_LogModes = {"Session","Day","Week","Total"};
+Accountant_LogModes = {"Session", "Day", "Week", "Month", "Total"};
 Accountant_Player = "";
 Accountant_Server = "";
 local Accountant_RepairAllItems_old;
@@ -41,11 +41,12 @@ local Accountant_CursorHasItem_old;
 
 function Accountant_RegisterEvents(self)
 	
-	self:RegisterEvent("GARRISON_MISSION_COMPLETED");
+	self:RegisterEvent("GARRISON_MISSION_FINISHED");
 	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
 	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_CLOSED");
+	self:RegisterEvent("GARRISON_UPDATE");
 	
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 	self:RegisterEvent("BARBER_SHOP_OPEN");
@@ -98,7 +99,7 @@ end
 
 function Accountant_SetLabels(self)
 	-- if current tab is All Chars tab
-	if Accountant_CurrentTab == 5 then
+	if Accountant_CurrentTab == 6 then
 		AccountantFrameSource:SetText(ACCLOC_CHAR);
 		AccountantFrameIn:SetText(ACCLOC_MONEY);
 		AccountantFrameOut:SetText(ACCLOC_UPDATED);
@@ -108,7 +109,7 @@ function Accountant_SetLabels(self)
 		AccountantFrameTotalInValue:SetText("");
 		AccountantFrameTotalOutValue:SetText("");
 		AccountantFrameTotalFlowValue:SetText("");
-		for i = 1, 15, 1 do
+		for i = 1, 18, 1 do
 			_G["AccountantFrameRow"..i.."Title"]:SetText("");
 			_G["AccountantFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 3, -2);
 			_G["AccountantFrameRow"..i.."In"]:SetText("");
@@ -196,11 +197,13 @@ function Accountant_OnLoad(self)
 	PanelTemplates_TabResize(AccountantFrameTab2, 10);
 	AccountantFrameTab3:SetText(ACCLOC_WEEK);
 	PanelTemplates_TabResize(AccountantFrameTab3, 10);
-	AccountantFrameTab4:SetText(ACCLOC_TOTAL);
+	AccountantFrameTab4:SetText(ACCLOC_MONTH);
 	PanelTemplates_TabResize(AccountantFrameTab4, 10);
-	AccountantFrameTab5:SetText(ACCLOC_CHARS);
+	AccountantFrameTab5:SetText(ACCLOC_TOTAL);
 	PanelTemplates_TabResize(AccountantFrameTab5, 10);
-	PanelTemplates_SetNumTabs(AccountantFrame, 5);
+	AccountantFrameTab6:SetText(ACCLOC_CHARS);
+	PanelTemplates_TabResize(AccountantFrameTab6, 10);
+	PanelTemplates_SetNumTabs(AccountantFrame, 6);
 	PanelTemplates_SetTab(AccountantFrame, AccountantFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantFrame);
 
@@ -235,12 +238,12 @@ function Accountant_LoadData()
 	Accountant_Data["TRAIN"] = 	{Title = ACCLOC_TRAIN};
 	Accountant_Data["TAXI"] = 	{Title = ACCLOC_TAXI};
 	Accountant_Data["TRADE"] = 	{Title = ACCLOC_TRADE};
-	Accountant_Data["AH"] = 	{Title = ACCLOC_AUC};
+	Accountant_Data["AH"] = 	{Title = AUCTIONS};
 	Accountant_Data["MERCH"] = 	{Title = ACCLOC_MERCH};
 	Accountant_Data["REPAIRS"] = 	{Title = ACCLOC_REPAIR};
 	Accountant_Data["MAIL"] = 	{Title = ACCLOC_MAIL};
 	Accountant_Data["QUEST"] = 	{Title = ACCLOC_QUEST};
-	Accountant_Data["LOOT"] = 	{Title = ACCLOC_LOOT};
+	Accountant_Data["LOOT"] = 	{Title = LOOT};
 	Accountant_Data["OTHER"] = 	{Title = ACCLOC_OTHER};
 	Accountant_Data["VOID"] =  	{Title = VOID_STORAGE};
 	Accountant_Data["TRANSMO"] =	{Title = TRANSMOGRIFY};
@@ -263,12 +266,24 @@ function Accountant_LoadData()
 	if (Accountant_SaveData[Accountant_Server][Accountant_Player] == nil ) then
 		--cdate = date();
 		--tnt
-		cdate = date ("%d/%m/%y")
-
-		
+		cdate = date ("%d/%m/%y");
 		cdate = string.sub(cdate,0,8);
 		cweek = "";
-		Accountant_SaveData[Accountant_Server][Accountant_Player] = {options={showbutton=true,buttonpos=0,version=Accountant_Version,date=cdate,weekdate=cweek,weekstart=1,totalcash=0},data={}};
+		cmonth = date("%m");
+		Accountant_SaveData[Accountant_Server][Accountant_Player] = {
+			options = {
+				showbutton = true, 
+				showmoneyinfo = true, 
+				buttonpos = 0, 
+				version = Accountant_Version, 
+				date = cdate, 
+				weekdate = cweek, 
+				month = cmonth,
+				weekstart = 1, 
+				totalcash = 0
+			},
+			data={}
+		};
 		ACC_Print(ACCLOC_NEWPROFILE.." "..Accountant_Player);
 	else
 		ACC_Print(ACCLOC_LOADPROFILE.." "..Accountant_Player);
@@ -317,14 +332,16 @@ function Accountant_LoadData()
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] = Accountant_WeekStart();
 	end
 	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] == nil then
-		
-
 		--tnt
 		--cdate = date();
 		cdate = date ("%d/%m/%y")
 		cdate = string.sub(cdate,0,8);
 		
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] = cdate;
+	end
+	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] == nil then
+		cmonth = date ("%m")
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] = cmonth;
 	end
 
 	--Duplicate below from OnShow as the day and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
@@ -343,6 +360,7 @@ function Accountant_LoadData()
 		end
 	end
 	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] = cdate;
+
 	-- Check to see if the week has rolled over
 	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] ~= Accountant_WeekStart() then
 		-- Its a new week! clear out the week tab
@@ -354,7 +372,20 @@ function Accountant_LoadData()
 		end
 	end
 	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] = Accountant_WeekStart();
-	
+
+	-- Check to see if the month has rolled over
+	cmonth = date ("%m")
+	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] ~= cmonth then
+		-- Its a new month! clear out the month tab
+		for mode,value in pairs(Accountant_Data) do
+			Accountant_Data[mode]["Month"].In = 0;
+			Accountant_SaveData[Accountant_Server][Accountant_Player]["data"][mode]["Month"].In = 0;
+			Accountant_Data[mode]["Month"].Out = 0;
+			Accountant_SaveData[Accountant_Server][Accountant_Player]["data"][mode]["Month"].Out = 0;
+		end
+	end
+	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] = cmonth;
+
 end
 
 function Accountant_Slash(msg)
@@ -395,17 +426,28 @@ function Accountant_OnEvent(self, event, ...)
 			--AccountantOptions_OnLoad();
 			AccountantButton_Init();
 			AccountantButton_UpdatePosition();
+			Accountant_MoneyFrame_Init();
 		end
 		return;
 	end
 
 	
-	if event == "GARRISON_MISSION_COMPLETED" then
+	if event == "GARRISON_MISSION_FINISHED" then
 		Accountant_Mode = "GARRISON";
-	elseif event == "LFG_COMPLETION_REWARD" then
-		Accountant_Mode = "LFG";
+	elseif event == "GARRISON_UPDATE" then
+		Accountant_Mode = "GARRISON";
+	elseif event == "GARRISON_ARCHITECT_OPENED" then
+		Accountant_Mode = "GARRISON";
+	elseif event == "GARRISON_ARCHITECT_CLOSED" then
+		Accountant_Mode = "";
+	elseif event == " GARRISON_MISSION_NPC_OPENED" then
+		Accountant_Mode = "GARRISON";
+	elseif event == " GARRISON_MISSION_NPC_CLOSED" then
+		Accountant_Mode = "";
 	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
 		Accountant_Mode = "";
+	elseif event == "LFG_COMPLETION_REWARD" then
+		Accountant_Mode = "LFG";
 	elseif Accountant_Mode == "BARBER_SHOP_OPEN" then
 		Accountant_Mode = "";
 	elseif Accountant_Mode == "BARBER_SHOP_SUCCESS" then
@@ -415,14 +457,6 @@ function Accountant_OnEvent(self, event, ...)
 	elseif event == "TRANSMOGRIFY_OPEN" then
 		Accountant_Mode = "TRANSMO";
 	elseif event == "TRANSMOGRIFY_CLOSE" then
-		Accountant_Mode = "";
-	elseif event == "GARRISON_ARCHITECT_OPENED" then
-		Accountant_Mode = "GARRISON";
-	elseif event == "GARRISON_ARCHITECT_CLOSED" then
-		Accountant_Mode = "";
-	elseif event == " GARRISON_MISSION_NPC_OPENED" then
-		Accountant_Mode = "GARRISON";
-	elseif event == " GARRISON_MISSION_NPC_CLOSED" then
 		Accountant_Mode = "";
 	elseif event == "VOID_STORAGE_OPEN" then
 		Accountant_Mode = "VOID";
@@ -552,7 +586,7 @@ function Accountant_NiceCash(amount)
 		if silver < 10 then
 			silver = " "..silver;
 		end
-		outstr = outstr .. "|cFFCCCCCC" .. silver .. ACCLOC_SILVER;
+		outstr = outstr .. "|cFFDDDDDD" .. silver .. ACCLOC_SILVER;
 	end
 	amount = amount - (silver * asilver);
 	if amount > 0 then
@@ -608,8 +642,21 @@ function Accountant_OnShow()
 	end
 	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] = Accountant_WeekStart();
 
+	-- Check to see if the month has rolled over
+	cmonth = date ("%m")
+	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] ~= cmonth then
+		-- Its a new month! clear out the month tab
+		for mode,value in pairs(Accountant_Data) do
+			Accountant_Data[mode]["Month"].In = 0;
+			Accountant_SaveData[Accountant_Server][Accountant_Player]["data"][mode]["Month"].In = 0;
+			Accountant_Data[mode]["Month"].Out = 0;
+			Accountant_SaveData[Accountant_Server][Accountant_Player]["data"][mode]["Month"].Out = 0;
+		end
+	end
+	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] = cmonth;
+
 	Accountant_SetLabels();
-	if Accountant_CurrentTab ~= 5 then
+	if Accountant_CurrentTab ~= 6 then
 		TotalIn = 0;
 		TotalOut = 0;
 		mode = Accountant_LogModes[Accountant_CurrentTab];
@@ -695,6 +742,8 @@ function Accountant_ResetData()
 		type = ACCLOC_DAY;
 	elseif type == "Week" then
 		type = ACCLOC_WEEK;
+	elseif type == "Month" then
+		type = ACCLOC_MONTH;
 	else
 
 	end
@@ -775,4 +824,34 @@ function Accountant_CursorHasItem()
 	end
 	local toret = Accountant_CursorHasItem_old();
 	return toret;
+end
+
+function Accountant_MoneyFrameUpdate()
+	AccountantMoneyInfoText:SetText(Accountant_NiceCash(GetMoney()));
+end
+
+function Accountant_HandleMouseDown(self, buttonName)    
+	-- Prevent activation when in combat
+	if (InCombatLockdown() == 1) then
+		return;
+	end
+	-- Handle left button clicks
+	if (buttonName == "LeftButton") then
+		AccountantMoneyInfoFrame:StartMoving();
+	end
+end
+
+function Accountant_HandleMouseUp(self, button)
+	AccountantMoneyInfoFrame:StopMovingOrSizing();
+end
+
+function Accountant_MoneyFrame_Init()
+	if(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo == nil) then
+		Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo = true;
+	end
+	if(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo == true) then
+		AccountantMoneyInfoFrame:Show();
+	else
+		AccountantMoneyInfoFrame:Hide();
+	end
 end

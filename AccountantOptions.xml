@@ -89,7 +89,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT">
 						<Offset>
-							<AbsDimension x="87" y="-110"/>
+							<AbsDimension x="68" y="-110"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -112,6 +112,20 @@ $Id$
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<CheckButton name="AccountantOptionsFrameToggleMoneyDisplay" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-145"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AccountantMoneyInfoFrame_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<Button name="AccountantOptionsFrameDone" inherits="OptionsButtonTemplate" text="ACCLOC_DONE">
 				<Anchors>
 					<Anchor point="BOTTOM">

@@ -11,6 +11,59 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+	<!-- Floating current money info -->
+	<Frame name="AccountantMoneyInfoFrame" movable="true" enableMouse="true" parent="UIParent"> 
+		<Size>
+			<AbsDimension x="160" y="28" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent">
+				<Offset>
+					<AbsDimension x="90" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>	
+			<Frame name="AccountantMoneyInfoTextFrame">
+				<Size>
+					<AbsDimension x="160" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="3" y="-3" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="AccountantMoneyInfoText" inherits="GameFontNormal" Text="Current Money">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+<!--							<FontHeight>
+								<AbsValue val="11" />
+							</FontHeight>-->
+<!--							<Color r="1" g="1" b="1" a="1" />-->
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				Accountant_HandleMouseDown(self, button);
+			</OnMouseDown>
+			<OnMouseUp>Accountant_HandleMouseUp(self, button)</OnMouseUp>
+			<OnUpdate>
+				Accountant_MoneyFrameUpdate(self);						
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+		
+
+
 	<!-- Text rows -->
 	<Frame name="AccountantRowTemplate" virtual="true">
 		<Size>
@@ -410,6 +463,33 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<Frame name="$parentRow16" inherits="AccountantRowTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRow15" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRow17" inherits="AccountantRowTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRow16" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRow18" inherits="AccountantRowTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRow17" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
@@ -443,7 +523,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRight" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-10" y="81"/>
+							<AbsDimension x="-10" y="21"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -474,7 +554,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="266" y="98"/>
+							<AbsDimension x="266" y="38"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -483,7 +563,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="15" y="44"/>
+							<AbsDimension x="15" y="-16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -506,7 +586,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab4" inherits="AccountantTabTemplate" id="4" text="Total">
+			<Button name="$parentTab4" inherits="AccountantTabTemplate" id="4" text="Month">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
 						<Offset>
@@ -515,11 +595,20 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab5" inherits="AccountantTabTemplate" id="5" text="All Chars">
+			<Button name="$parentTab5" inherits="AccountantTabTemplate" id="5" text="Total">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab6" inherits="AccountantTabTemplate" id="6" text="All Chars">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="44"/>
+							<AbsDimension x="0" y="-16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
