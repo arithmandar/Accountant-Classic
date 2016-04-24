@@ -426,7 +426,7 @@ function Accountant_OnEvent(self, event, ...)
 			--AccountantOptions_OnLoad();
 			AccountantButton_Init();
 			AccountantButton_UpdatePosition();
-			Accountant_MoneyFrame_Init();
+			AccountantMoneyInfoFrame_Init();
 		end
 		return;
 	end
@@ -599,13 +599,23 @@ function Accountant_NiceCash(amount)
 	return outstr;
 end
 
--- code adopted from SellTrash
+-- code adopted from SellTrash and MoneyFrame.lua
 function Accountant_GetFormattedValue(amount)
-	local gold = math.floor(amount / 10000);
-	local silver = math.floor((amount % 10000) / 100);
-	local copper = (amount % 10000) % 100;
+	local gold = floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
+	local goldDisplay = BreakUpLargeNumbers(gold);
+	local silver = floor((amount - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
+	local copper = mod(amount, COPPER_PER_SILVER);
 	
-	return format(GOLD_AMOUNT_TEXTURE.." "..SILVER_AMOUNT_TEXTURE.." "..COPPER_AMOUNT_TEXTURE, gold, 0, 0, silver, 0, 0, copper, 0, 0);
+	local TMP_GOLD_AMOUNT_TEXTURE = "%s\124TInterface\\MoneyFrame\\UI-GoldIcon:%d:%d:2:0\124t";
+	if (gold >0) then
+		return format(TMP_GOLD_AMOUNT_TEXTURE.." "..SILVER_AMOUNT_TEXTURE.." "..COPPER_AMOUNT_TEXTURE, goldDisplay, 0, 0, silver, 0, 0, copper, 0, 0);
+	elseif (silver >0) then 
+		return format(SILVER_AMOUNT_TEXTURE.." "..COPPER_AMOUNT_TEXTURE, silver, 0, 0, copper, 0, 0);
+	elseif (copper >0) then
+		return format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
+	else
+		return "";
+	end
 end
 
 function Accountant_WeekStart()
@@ -666,31 +676,40 @@ function Accountant_OnShow()
 
 	Accountant_SetLabels();
 	if Accountant_CurrentTab ~= 6 then
+		-- for all the tabs except for character tab
 		TotalIn = 0;
 		TotalOut = 0;
 		mode = Accountant_LogModes[Accountant_CurrentTab];
 		for key,value in pairs(Accountant_Data) do
 			row = _G["AccountantFrameRow"..Accountant_Data[key].InPos.."In"];
-			row:SetText(Accountant_NiceCash(Accountant_Data[key][mode].In));
+			local mIn = Accountant_Data[key][mode].In;
+			--row:SetText(Accountant_NiceCash(mIn));
+			row:SetText(Accountant_GetFormattedValue(mIn));
 			TotalIn = TotalIn + Accountant_Data[key][mode].In;
 			row = _G["AccountantFrameRow"..Accountant_Data[key].InPos.."Out"];
-			TotalOut = TotalOut + Accountant_Data[key][mode].Out;
-			row:SetText(Accountant_NiceCash(Accountant_Data[key][mode].Out));
+			local mOut = Accountant_Data[key][mode].Out;
+			TotalOut = TotalOut + mOut;
+			--row:SetText(Accountant_NiceCash(mOut));
+			row:SetText(Accountant_GetFormattedValue(mOut));
 		end
 
-		AccountantFrameTotalInValue:SetText(Accountant_NiceCash(TotalIn));
-		AccountantFrameTotalOutValue:SetText(Accountant_NiceCash(TotalOut));
+		--AccountantFrameTotalInValue:SetText(Accountant_NiceCash(TotalIn));
+		--AccountantFrameTotalOutValue:SetText(Accountant_NiceCash(TotalOut));
+		AccountantFrameTotalInValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(TotalIn));
+		AccountantFrameTotalOutValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(TotalOut));
 		if TotalOut > TotalIn then
 			diff = TotalOut-TotalIn;
 			AccountantFrameTotalFlow:SetText("|cFFFF3333"..ACCLOC_NETLOSS..":");
-			AccountantFrameTotalFlowValue:SetText(Accountant_NiceCash(diff));
+			--AccountantFrameTotalFlowValue:SetText(Accountant_NiceCash(diff));
+			AccountantFrameTotalFlowValue:SetText("|cFFFF3333"..Accountant_GetFormattedValue(diff));
 		else
 			if TotalOut ~= TotalIn then
 				diff = TotalIn-TotalOut;
 				AccountantFrameTotalFlow:SetText("|cFF00FF00"..ACCLOC_NETPROF..":");
-				AccountantFrameTotalFlowValue:SetText(Accountant_NiceCash(diff));
+				--AccountantFrameTotalFlowValue:SetText(Accountant_NiceCash(diff));
+				AccountantFrameTotalFlowValue:SetText("|cFF00FF00"..Accountant_GetFormattedValue(diff));
 			else
-				AccountantFrameTotalFlow:SetText(ACCLOC_NET);
+				AccountantFrameTotalFlow:SetText(ACCLOC_NET..":");
 				AccountantFrameTotalFlowValue:SetText("");
 			end
 		end
@@ -699,18 +718,20 @@ function Accountant_OnShow()
 		local alltotal = 0;
 		local i=1;
 		for char,charvalue in pairs(Accountant_SaveData[Accountant_Server]) do
-			_G["AccountantFrameRow" ..i.."Title"]:SetText(char);
-			--_G["AccountantFrameRow" ..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
+			_G["AccountantFrameRow"..i.."Title"]:SetText(char);
+--			_G["AccountantFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
 			if Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"] ~= nil then
-				_G["AccountantFrameRow" ..i.."In"]:SetText(Accountant_NiceCash(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
+				--_G["AccountantFrameRow"..i.."In"]:SetText(Accountant_NiceCash(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
+				_G["AccountantFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
 				alltotal = alltotal + Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"];
-				_G["AccountantFrameRow" ..i.."Out"]:SetText(Accountant_SaveData[Accountant_Server][char]["options"]["date"]);
+				_G["AccountantFrameRow"..i.."Out"]:SetText(Accountant_SaveData[Accountant_Server][char]["options"]["date"]);
 			else
-				_G["AccountantFrameRow" ..i.."In"]:SetText("Unknown");
+				_G["AccountantFrameRow"..i.."In"]:SetText("Unknown");
 			end
 			i=i+1;
 		end
-		AccountantFrameTotalInValue:SetText(Accountant_NiceCash(alltotal));
+		--AccountantFrameTotalInValue:SetText(Accountant_NiceCash(alltotal));
+		AccountantFrameTotalInValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(alltotal));
 
 	end
 	SetPortraitTexture(AccountantFramePortrait, "player");
@@ -835,12 +856,12 @@ function Accountant_CursorHasItem()
 	return toret;
 end
 
-function Accountant_MoneyFrameUpdate()
+function AccountantMoneyInfoFrame_Update()
 	--AccountantMoneyInfoText:SetText(Accountant_NiceCash(GetMoney()));
 	AccountantMoneyInfoText:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(GetMoney()));
 end
 
-function Accountant_HandleMouseDown(self, buttonName)    
+function AccountantMoneyInfoFrame_HandleMouseDown(self, buttonName)    
 	-- Prevent activation when in combat
 	if (InCombatLockdown() == 1) then
 		return;
@@ -851,11 +872,11 @@ function Accountant_HandleMouseDown(self, buttonName)
 	end
 end
 
-function Accountant_HandleMouseUp(self, button)
+function AccountantMoneyInfoFrame_HandleMouseUp(self, button)
 	AccountantMoneyInfoFrame:StopMovingOrSizing();
 end
 
-function Accountant_MoneyFrame_Init()
+function AccountantMoneyInfoFrame_Init()
 	if(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo == nil) then
 		Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo = true;
 	end

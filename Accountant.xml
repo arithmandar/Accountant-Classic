@@ -53,16 +53,14 @@
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
-				Accountant_HandleMouseDown(self, button);
+				AccountantMoneyInfoFrame_HandleMouseDown(self, button);
 			</OnMouseDown>
-			<OnMouseUp>Accountant_HandleMouseUp(self, button)</OnMouseUp>
+			<OnMouseUp>AccountantMoneyInfoFrame_HandleMouseUp(self, button)</OnMouseUp>
 			<OnUpdate>
-				Accountant_MoneyFrameUpdate(self);						
+				AccountantMoneyInfoFrame_Update(self);						
 			</OnUpdate>
 		</Scripts>
 	</Frame>
-		
-
 
 	<!-- Text rows -->
 	<Frame name="AccountantRowTemplate" virtual="true">
