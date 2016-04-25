@@ -685,7 +685,7 @@ function Accountant_OnShow()
 			local mIn = Accountant_Data[key][mode].In;
 			--row:SetText(Accountant_NiceCash(mIn));
 			row:SetText(Accountant_GetFormattedValue(mIn));
-			TotalIn = TotalIn + Accountant_Data[key][mode].In;
+			TotalIn = TotalIn + mIn;
 			row = _G["AccountantFrameRow"..Accountant_Data[key].InPos.."Out"];
 			local mOut = Accountant_Data[key][mode].Out;
 			TotalOut = TotalOut + mOut;
@@ -747,6 +747,7 @@ function Accountant_OnShow()
 	PanelTemplates_SetTab(AccountantFrame, Accountant_CurrentTab);
 
 end
+
 
 function Accountant_OnHide()
 	if MYADDONS_ACTIVE_OPTIONSFRAME == self then
@@ -885,4 +886,44 @@ function AccountantMoneyInfoFrame_Init()
 	else
 		AccountantMoneyInfoFrame:Hide();
 	end
+end
+
+function AccountantMoneyInfoFrame_OnEnter(self)
+	if (not GameTooltip:IsShown()) then
+		local amoney_str = "";
+
+		local TotalIn = 0;
+		local TotalOut = 0;
+		for key,value in pairs(Accountant_Data) do
+			TotalIn = TotalIn + Accountant_Data[key]["Session"].In;
+			TotalOut = TotalOut + Accountant_Data[key]["Session"].Out;
+		end
+		amoney_str = "|cFFFFFFFF"..ACCLOC_TOT_IN..": "..Accountant_GetFormattedValue(TotalIn).."\n";
+		amoney_str = amoney_str.."|cFFFFFFFF"..ACCLOC_TOT_OUT..": "..Accountant_GetFormattedValue(TotalOut).."\n";
+		if TotalOut > TotalIn then
+			diff = TotalOut-TotalIn;
+			amoney_str = amoney_str.."|cFFFF3333"..ACCLOC_NETLOSS..": ";
+			amoney_str = amoney_str..Accountant_GetFormattedValue(diff);
+		else
+			if TotalOut ~= TotalIn then
+				diff = TotalIn-TotalOut;
+				amoney_str = amoney_str.."|cFF00FF00"..ACCLOC_NETPROF..": ";
+				amoney_str = amoney_str..Accountant_GetFormattedValue(diff);
+			else
+
+			end
+		end
+
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -10, 0);
+		GameTooltip:SetBackdropColor(0, 0, 0, 0.5);
+		GameTooltip:SetText("|cFFFFFFFF"..ACCLOC_TITLE.." - "..ACCLOC_SESS, 1, 1, 1, nil, 1);
+		GameTooltip:AddLine(amoney_str, 1, 1, 1, 1);
+		GameTooltip:Show();
+	else
+		GameTooltip:Hide();
+	end
+end
+
+function AccountantMoneyInfoFrame_OnLeave(self)
+	GameTooltip_Hide();
 end

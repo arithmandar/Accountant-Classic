@@ -55,10 +55,18 @@
 			<OnMouseDown>
 				AccountantMoneyInfoFrame_HandleMouseDown(self, button);
 			</OnMouseDown>
-			<OnMouseUp>AccountantMoneyInfoFrame_HandleMouseUp(self, button)</OnMouseUp>
+			<OnMouseUp>
+				AccountantMoneyInfoFrame_HandleMouseUp(self, button)
+			</OnMouseUp>
 			<OnUpdate>
 				AccountantMoneyInfoFrame_Update(self);						
 			</OnUpdate>
+			<OnEnter>
+				AccountantMoneyInfoFrame_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				AccountantMoneyInfoFrame_OnLeave(self);
+			</OnLeave>
 		</Scripts>
 	</Frame>
 

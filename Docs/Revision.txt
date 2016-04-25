@@ -5,6 +5,9 @@
 Revision History:
 =================
 
+* v2.6.01 (Apr. 24, 2016)
+  - Added session income / outgoing and net profit/lost info as tooltip to floating money frame
+
 * v2.6.00 (Apr. 24, 2016)
   - Enlarge frame to add 3 more rows
   - Updated Garrison event name to fix the bug that garrison's income did not get categorized correctly
