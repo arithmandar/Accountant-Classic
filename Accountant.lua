@@ -870,6 +870,9 @@ function AccountantMoneyInfoFrame_HandleMouseDown(self, buttonName)
 	-- Handle left button clicks
 	if (buttonName == "LeftButton") then
 		AccountantMoneyInfoFrame:StartMoving();
+	elseif (buttonName == "RightButton") then
+		AccountantButton_OnClick();
+		GameTooltip_Hide();
 	end
 end
 
@@ -918,6 +921,7 @@ function AccountantMoneyInfoFrame_OnEnter(self)
 		GameTooltip:SetBackdropColor(0, 0, 0, 0.5);
 		GameTooltip:SetText("|cFFFFFFFF"..ACCLOC_TITLE.." - "..ACCLOC_SESS, 1, 1, 1, nil, 1);
 		GameTooltip:AddLine(amoney_str, 1, 1, 1, 1);
+		GameTooltip:AddLine("("..ACCLOC_TIP2..")", 0.8, 0.8, 0.8, 1);
 		GameTooltip:Show();
 	else
 		GameTooltip:Hide();

@@ -1,6 +1,7 @@
 ﻿-- Header
 ACCLOC_TITLE		= "Accountant Classic";
 ACCLOC_TIP		= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.";
+ACCLOC_TIP2		= "Right-Click to open Accountant Classic.";
 ACCLOC_TOT_IN		= "Total Incomings";
 ACCLOC_TOT_OUT		= "Total Outgoings";
 ACCLOC_NET		= "Net Profit / Loss";

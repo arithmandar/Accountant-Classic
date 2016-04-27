@@ -5,6 +5,7 @@ if (GetLocale() == "frFR") then
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
 ACCLOC_TIP		= "Clic-Gauche pour ouvrir Accountant Classic.\nClic-Droit pour les options d'Accountant Classic.";
+ACCLOC_TIP2		= "Clic-Droit pour ouvrir Accountant Classic.";
 ACCLOC_TOT_IN		= "Rentrées Totales";
 ACCLOC_TOT_OUT		= "Dépenses Totales";
 ACCLOC_NET		= "Bénéfices/Pertes Nettes";

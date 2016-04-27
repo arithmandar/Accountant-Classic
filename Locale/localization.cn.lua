@@ -2,6 +2,7 @@
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
 ACCLOC_TIP		= "单击打开 Accountant Classic\n右键点击打开设置";
+ACCLOC_TIP2		= "右键点击 Accountant Classic";
 ACCLOC_TOT_IN		= "总收入";
 ACCLOC_TOT_OUT		= "总支出";
 ACCLOC_NET		= "净收益/亏损";

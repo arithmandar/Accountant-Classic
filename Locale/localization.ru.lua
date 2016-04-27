@@ -2,6 +2,7 @@
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
 ACCLOC_TIP		= "Left-Click для открытия Accountant Classic.\nRight-Click для настрйоки Accountant Classic.";
+ACCLOC_TIP2		= "Right-Click для открытия Accountant Classic.";
 ACCLOC_TOT_IN		= "Всего Доходов";
 ACCLOC_TOT_OUT		= "Всего Расходов";
 ACCLOC_NET		= "Чистая прибыль / Убыток";
@@ -25,7 +26,7 @@ ACCLOC_TRAIN		= "Расходы на обучение";
 ACCLOC_TAXI		= "Такси";
 ACCLOC_OTHER		= "Неизвестный";
 ACCLOC_REPAIR		= "Затраты на ремонт";
-ACCLOC_LFG 		= "LFD, LFR and Scen."
+--ACCLOC_LFG 		= "LFD, LFR and Scen."
 
 -- Buttons
 ACCLOC_RESET		= "Сбросить";

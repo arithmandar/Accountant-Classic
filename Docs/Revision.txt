@@ -5,7 +5,7 @@
 Revision History:
 =================
 
-* v2.6.01 (Apr. 24, 2016)
+* v2.6.01 (Apr. 27, 2016)
   - Added session income / outgoing and net profit/lost info as tooltip to floating money frame
 
 * v2.6.00 (Apr. 24, 2016)
