@@ -5,6 +5,9 @@
 Revision History:
 =================
 
+* v2.6.02 (May 2, 2016)
+  - Updated total characters tab to show all characters' total incoming / outgoing and net profit.
+
 * v2.6.01 (Apr. 27, 2016)
   - Added session income / outgoing and net profit/lost info as tooltip to floating money frame
 

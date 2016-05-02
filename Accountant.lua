@@ -103,9 +103,9 @@ function Accountant_SetLabels(self)
 		AccountantFrameSource:SetText(ACCLOC_CHAR);
 		AccountantFrameIn:SetText(ACCLOC_MONEY);
 		AccountantFrameOut:SetText(ACCLOC_UPDATED);
-		AccountantFrameTotalIn:SetText(ACCLOC_SUM..":");
-		AccountantFrameTotalOut:SetText("");
-		AccountantFrameTotalFlow:SetText("");
+		AccountantFrameTotalIn:SetText(ACCLOC_TOT_IN..":");
+		AccountantFrameTotalOut:SetText(ACCLOC_TOT_OUT..":");
+		AccountantFrameTotalFlow:SetText(ACCLOC_SUM..":");
 		AccountantFrameTotalInValue:SetText("");
 		AccountantFrameTotalOutValue:SetText("");
 		AccountantFrameTotalFlowValue:SetText("");
@@ -693,45 +693,66 @@ function Accountant_OnShow()
 			row:SetText(Accountant_GetFormattedValue(mOut));
 		end
 
-		--AccountantFrameTotalInValue:SetText(Accountant_NiceCash(TotalIn));
-		--AccountantFrameTotalOutValue:SetText(Accountant_NiceCash(TotalOut));
 		AccountantFrameTotalInValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(TotalIn));
 		AccountantFrameTotalOutValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(TotalOut));
 		if TotalOut > TotalIn then
-			diff = TotalOut-TotalIn;
+			diff = TotalOut - TotalIn;
 			AccountantFrameTotalFlow:SetText("|cFFFF3333"..ACCLOC_NETLOSS..":");
-			--AccountantFrameTotalFlowValue:SetText(Accountant_NiceCash(diff));
 			AccountantFrameTotalFlowValue:SetText("|cFFFF3333"..Accountant_GetFormattedValue(diff));
 		else
 			if TotalOut ~= TotalIn then
-				diff = TotalIn-TotalOut;
+				diff = TotalIn - TotalOut;
 				AccountantFrameTotalFlow:SetText("|cFF00FF00"..ACCLOC_NETPROF..":");
-				--AccountantFrameTotalFlowValue:SetText(Accountant_NiceCash(diff));
 				AccountantFrameTotalFlowValue:SetText("|cFF00FF00"..Accountant_GetFormattedValue(diff));
 			else
 				AccountantFrameTotalFlow:SetText(ACCLOC_NET..":");
 				AccountantFrameTotalFlowValue:SetText("");
 			end
 		end
+		_G["AccountantFrameRow18Title"]:SetText("");
+		_G["AccountantFrameRow18In"]:SetText("");
+
 	else
-		-- character totals
+		-- all characters' tab
 		local alltotal = 0;
-		local i=1;
-		for char,charvalue in pairs(Accountant_SaveData[Accountant_Server]) do
+		local allin = 0;
+		local allout = 0;
+		local i = 1;
+		for char, charvalue in pairs(Accountant_SaveData[Accountant_Server]) do
 			_G["AccountantFrameRow"..i.."Title"]:SetText(char);
 --			_G["AccountantFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
 			if Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"] ~= nil then
-				--_G["AccountantFrameRow"..i.."In"]:SetText(Accountant_NiceCash(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
 				_G["AccountantFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"]));
 				alltotal = alltotal + Accountant_SaveData[Accountant_Server][char]["options"]["totalcash"];
 				_G["AccountantFrameRow"..i.."Out"]:SetText(Accountant_SaveData[Accountant_Server][char]["options"]["date"]);
 			else
 				_G["AccountantFrameRow"..i.."In"]:SetText("Unknown");
 			end
+			for key, value in pairs(Accountant_SaveData[Accountant_Server][char]["data"]) do
+				allin = allin + Accountant_SaveData[Accountant_Server][char]["data"][key]["Total"]["In"];
+				allout = allout + Accountant_SaveData[Accountant_Server][char]["data"][key]["Total"]["Out"];
+			end
 			i=i+1;
 		end
-		--AccountantFrameTotalInValue:SetText(Accountant_NiceCash(alltotal));
-		AccountantFrameTotalInValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(alltotal));
+		--AccountantFrameTotalInValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(alltotal));
+		AccountantFrameTotalInValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(allin));
+		AccountantFrameTotalOutValue:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(allout));
+		if allout > allin then
+			diff = allout - allin;
+			AccountantFrameTotalFlow:SetText("|cFFFF3333"..ACCLOC_NETLOSS..":");
+			AccountantFrameTotalFlowValue:SetText("|cFFFF3333"..Accountant_GetFormattedValue(diff));
+		else
+			if allout ~= allin then
+				diff = allin - allout;
+				AccountantFrameTotalFlow:SetText("|cFF00FF00"..ACCLOC_NETPROF..":");
+				AccountantFrameTotalFlowValue:SetText("|cFF00FF00"..Accountant_GetFormattedValue(diff));
+			else
+				AccountantFrameTotalFlow:SetText(ACCLOC_NET..":");
+				AccountantFrameTotalFlowValue:SetText("");
+			end
+		end
+		_G["AccountantFrameRow18Title"]:SetText(ACCLOC_SUM);
+		_G["AccountantFrameRow18In"]:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(alltotal));
 
 	end
 	SetPortraitTexture(AccountantFramePortrait, "player");
