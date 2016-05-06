@@ -166,7 +166,7 @@ function Accountant_OnLoad(self)
 
 	-- Add myAddOns support
 	if myAddOnsList then
-		myAddOnsList.Accountant = {name = "Accountant", description = "Tracks your incomings / outgoings", version = Accountant_Version, frame = "AccountantFrame", optionsframe = "AccountantFrame"};
+		myAddOnsList.Accountant = {name = "Accountant Classic", description = "Tracks your incomings / outgoings", version = Accountant_Version, frame = "AccountantFrame", optionsframe = "AccountantFrame"};
 	end
 
 	-- Confirm box
@@ -208,29 +208,7 @@ function Accountant_OnLoad(self)
 	PanelTemplates_UpdateTabs(AccountantFrame);
 
 	ACC_Print(ACCLOC_TITLE.." "..ACCLOC_LOADED);
-
-	--Make an LDB object
-	LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("Accountant_Classic", {
-		type = "launcher",
-		text = ACCLOC_TITLE,
-		OnClick = function(_, msg)
-			if msg == "LeftButton" then
-				AccountantButton_OnClick();
-			elseif msg == "RightButton" then
-				AccountantOptions_Toggle();
-			end
-		end,
-		icon = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantButton-Up",
-		OnTooltipShow = function(tooltip)
-			if not tooltip or not tooltip.AddLine then return end
-			tooltip:AddLine("|cffffffff"..ACCLOC_TITLE)
-			tooltip:AddLine(ACCLOC_TIP)
-		end,
-	});
-
-	if ( TitanPanelButton_UpdateButton ) then
-		TitanPanelButton_UpdateButton("Accountant_Classic");
-	end
+	
 end
 
 function Accountant_LoadData()
@@ -425,7 +403,7 @@ function Accountant_OnEvent(self, event, ...)
 			Accountant_OnLoad();
 			--AccountantOptions_OnLoad();
 			AccountantButton_Init();
-			AccountantButton_UpdatePosition();
+			--AccountantButton_UpdatePosition();
 			AccountantMoneyInfoFrame_Init();
 		end
 		return;

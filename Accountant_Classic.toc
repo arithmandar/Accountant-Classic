@@ -9,17 +9,17 @@
 ## Notes-zhCN: |cff00CC33追踪每个角色的所有收入与支出状况，并可显示当日小计、当周小计、以及自有记录起的总计。并可显示所有角色的总金额。|r
 ## Notes-koKR: |cff00CC33나만의 수입 지출을 쉽게 볼수있는 와우 가계부입니다.|r
 ## Author: Arith Hsu
-## Version: 2.6.02
+## Version: 2.6.03
 ## X-eMail: arithmandarjp @ yahoo.co.jp
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-License: GPLv2
 ## X-Website: http://wow.curseforge.com/addons/accountant-classic/
 ## X-Category: Information
 ## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR
-## X-Donate: https://www.paypal.com/cgi-bin/webscr?return=http%3A%2F%2Fwow.curseforge.com%2Faddons%2Faccountant-classic%2F&cn=Add+special+instructions+to+the+addon+author%28s%29&business=arithmandar%40gmail.com&bn=PP-DonationsBF%3Abtn_donateCC_LG.gif%3ANonHosted&cancel_return=http%3A%2F%2Fwow.curseforge.com%2Faddons%2Faccountant-classic%2F&lc=US&item_name=Accountant+Classic+%28from+CurseForge.com%29&cmd=_donations&rm=1&no_shipping=1&currency_code=USD
+## X-Donate: https://goo.gl/VJowdG
 ## Description: Logs your WoW incomings / outgoings
-## OptionalDeps: LibAboutPanel, CallbackHandler-1.0
-## SavedVariables: Accountant_SaveData, Accountant_Options
+## OptionalDeps: LibAboutPanel, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0
+## SavedVariables: Accountant_SaveData, Accountant_Options, Accountant_ClassicDB
 
 Libs\Libs.xml
 Locale\Locales.xml

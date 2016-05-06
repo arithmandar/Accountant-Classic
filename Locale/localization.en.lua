@@ -1,7 +1,7 @@
 ﻿-- Header
 ACCLOC_TITLE		= "Accountant Classic";
-ACCLOC_TIP		= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.";
-ACCLOC_TIP2		= "Right-Click to open Accountant Classic.";
+ACCLOC_TIP		= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button.";
+ACCLOC_TIP2		= "Left-click and drag to move this button.\nRight-Click to open Accountant Classic.";
 ACCLOC_TOT_IN		= "Total Incomings";
 ACCLOC_TOT_OUT		= "Total Outgoings";
 ACCLOC_NET		= "Net Profit / Loss";
@@ -41,7 +41,7 @@ ACCLOC_TOTAL		= "Total";
 ACCLOC_CHARS		= "All Chars";
 
 -- Options
-ACCLOC_OPTS		= "Accountant Options";
+ACCLOC_OPTS		= "Accountant Classic Options";
 ACCLOC_MINIBUT		= "Show Minimap Button";
 ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
 ACCLOC_BUTPOS		= "Minimap Button Position";

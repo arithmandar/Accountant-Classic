@@ -1,8 +1,8 @@
 ﻿if ( GetLocale() == "zhTW" ) then
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
-ACCLOC_TIP		= "左鍵開啟 Accountant Classic.\n右鍵開啟 Accountant Classic 選項.";
-ACCLOC_TIP2		= "右鍵開啟 Accountant Classic.";
+ACCLOC_TIP		= "左鍵開啟 Accountant Classic.\n右鍵開啟 Accountant Classic 選項.\n右鍵並拖曳以移動圖示按鈕位置.";
+ACCLOC_TIP2		= "右鍵並拖曳以移動圖示按鈕位置.\n右鍵開啟 Accountant Classic.";
 ACCLOC_TOT_IN		= "總收入";
 ACCLOC_TOT_OUT		= "總支出";
 ACCLOC_NET		= "淨收益/虧損";

@@ -33,14 +33,14 @@ end
 
 
 function AccountantOptions_OnShow()
-	AccountantOptionsFrameToggleButtonText:SetText(ACCLOC_MINIBUT);
-	AccountantOptionsFrameToggleMoneyDisplayText:SetText(ACCLOC_ONSCRMONEY);
-	AccountantSliderButtonPosText:SetText(ACCLOC_BUTPOS);
-	AccountantOptionsFrameWeekLabel:SetText(ACCLOC_STARTWEEK);
+	--AccountantOptionsFrameToggleButtonText:SetText(ACCLOC_MINIBUT);
+	--AccountantOptionsFrameToggleMoneyDisplayText:SetText(ACCLOC_ONSCRMONEY);
+	--AccountantSliderButtonPosText:SetText(ACCLOC_BUTPOS);
+	--AccountantOptionsFrameWeekLabel:SetText(ACCLOC_STARTWEEK);
 
 	AccountantOptionsFrameToggleButton:SetChecked(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showbutton);
 	AccountantOptionsFrameToggleMoneyDisplay:SetChecked(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo);
-	AccountantSliderButtonPos:SetValue(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].buttonpos);
+	--AccountantSliderButtonPos:SetValue(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].buttonpos);
 	UIDropDownMenu_Initialize(AccountantOptionsFrameWeek, AccountantOptionsFrameWeek_Init);
 	UIDropDownMenu_SetSelectedID(AccountantOptionsFrameWeek, Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].weekstart);
 end

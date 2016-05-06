@@ -5,6 +5,11 @@
 Revision History:
 =================
 
+* v2.6.03 (May 6, 2016)
+  - Introducing ACE libs and LibDBIcon to manage minimap button
+  - Minimap button now can be drag directly by mouse clicking and draging
+  - Supports MBB (Minimap Button Bag)
+
 * v2.6.02 (May 2, 2016)
   - Updated total characters tab to show all characters' total incoming / outgoing and net profit.
 
