@@ -17,6 +17,8 @@ externals:
 
 ignore:
     - Libs/LibAboutPanel
+    - Libs/LibDataBroker-1.1
+    - Libs/LibDialog-1.0
     - Images/AccountantFrame-BotLeft.psd
     - Images/AccountantFrame-BotRight.psd
     - Images/AccountantFrame-TopLeft.psd
