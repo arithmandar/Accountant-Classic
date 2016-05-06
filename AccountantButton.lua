@@ -17,8 +17,9 @@ local Accountant_ClassicMiniMapLDB = LibStub("LibDataBroker-1.1"):NewDataObject(
 	end,
 	OnTooltipShow = function(tooltip)
 		if not tooltip or not tooltip.AddLine then return end
-		tooltip:AddLine("|cffffffff"..ACCLOC_TITLE)
-		tooltip:AddLine(ACCLOC_TIP)
+		tooltip:AddLine("|cffffffff"..ACCLOC_TITLE.." - "..Accountant_GetFormattedValue(GetMoney()));
+		tooltip:AddLine(ACCLOC_TIP);
+		tooltip:AddLine(Accountant_ShowSessionToolTip());
 	end,
 })
 if ( TitanPanelButton_UpdateButton ) then

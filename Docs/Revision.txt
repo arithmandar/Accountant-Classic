@@ -1,9 +1,14 @@
-﻿Known Issue(s):
+﻿$Id$
+Known Issue(s):
 ===============
 - Some incomes were categorized into Unknown instead of corresponding group.
 
 Revision History:
 =================
+
+* v2.6.04 (May 6, 2016)
+  - Added session session income / outgoing and net profit/lost info as tooltip to Minimap button
+  - Fixed package problem, now linked proper libs in the new version
 
 * v2.6.03 (May 6, 2016)
   - Introducing ACE libs and LibDBIcon to manage minimap button

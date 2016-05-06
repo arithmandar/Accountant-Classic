@@ -890,31 +890,38 @@ function AccountantMoneyInfoFrame_Init()
 	end
 end
 
-function AccountantMoneyInfoFrame_OnEnter(self)
-	if (not GameTooltip:IsShown()) then
-		local amoney_str = "";
+function Accountant_ShowSessionToolTip()
+	local amoney_str = "";
 
-		local TotalIn = 0;
-		local TotalOut = 0;
-		for key,value in pairs(Accountant_Data) do
-			TotalIn = TotalIn + Accountant_Data[key]["Session"].In;
-			TotalOut = TotalOut + Accountant_Data[key]["Session"].Out;
-		end
-		amoney_str = "|cFFFFFFFF"..ACCLOC_TOT_IN..": "..Accountant_GetFormattedValue(TotalIn).."\n";
-		amoney_str = amoney_str.."|cFFFFFFFF"..ACCLOC_TOT_OUT..": "..Accountant_GetFormattedValue(TotalOut).."\n";
-		if TotalOut > TotalIn then
-			diff = TotalOut-TotalIn;
-			amoney_str = amoney_str.."|cFFFF3333"..ACCLOC_NETLOSS..": ";
+	local TotalIn = 0;
+	local TotalOut = 0;
+	for key,value in pairs(Accountant_Data) do
+		TotalIn = TotalIn + Accountant_Data[key]["Session"].In;
+		TotalOut = TotalOut + Accountant_Data[key]["Session"].Out;
+	end
+	amoney_str = "|cFFFFFFFF"..ACCLOC_TOT_IN..": "..Accountant_GetFormattedValue(TotalIn).."\n";
+	amoney_str = amoney_str.."|cFFFFFFFF"..ACCLOC_TOT_OUT..": "..Accountant_GetFormattedValue(TotalOut).."\n";
+	if TotalOut > TotalIn then
+		diff = TotalOut-TotalIn;
+		amoney_str = amoney_str.."|cFFFF3333"..ACCLOC_NETLOSS..": ";
+		amoney_str = amoney_str..Accountant_GetFormattedValue(diff);
+	else
+		if TotalOut ~= TotalIn then
+			diff = TotalIn-TotalOut;
+			amoney_str = amoney_str.."|cFF00FF00"..ACCLOC_NETPROF..": ";
 			amoney_str = amoney_str..Accountant_GetFormattedValue(diff);
 		else
-			if TotalOut ~= TotalIn then
-				diff = TotalIn-TotalOut;
-				amoney_str = amoney_str.."|cFF00FF00"..ACCLOC_NETPROF..": ";
-				amoney_str = amoney_str..Accountant_GetFormattedValue(diff);
-			else
-
 			end
-		end
+	end
+	
+	if (amoney_str) then
+		return amoney_str;
+	end
+end
+
+function AccountantMoneyInfoFrame_OnEnter(self)
+	if (not GameTooltip:IsShown()) then
+		local amoney_str = Accountant_ShowSessionToolTip();
 
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -10, 0);
 		GameTooltip:SetBackdropColor(0, 0, 0, 0.5);
