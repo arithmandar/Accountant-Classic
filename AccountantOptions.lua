@@ -15,32 +15,30 @@ function AccountantOptions_Toggle()
 		InterfaceOptionsFrame:Hide();
 	else
 		InterfaceOptionsFrame_OpenToCategory("Accountant Classic");
+		-- Yes we have to call this twice
 		InterfaceOptionsFrame_OpenToCategory("Accountant Classic");
 	end
 end
 
-function AccountantOptions_OnLoad(panel)
+function AccountantOptions_OnLoad(self)
 	UIPanelWindows['AccountantOptionsFrame'] = {area = 'center', pushable = 0};
 	
---	panel = _G["AccountantOptionsFrame"];
-	panel.name = ACCLOC_TITLE;
-	InterfaceOptions_AddCategory(panel);
+--	self = _G["AccountantOptionsFrame"];
+	self.name = ACCLOC_TITLE;
+	InterfaceOptions_AddCategory(self);
 	if (LibStub:GetLibrary("LibAboutPanel", true)) then
 		-- lib.new(parent, addonname);
 		LibStub("LibAboutPanel").new(ACCLOC_TITLE, "Accountant_Classic");
 	end
 end
 
-
 function AccountantOptions_OnShow()
-	--AccountantOptionsFrameToggleButtonText:SetText(ACCLOC_MINIBUT);
-	--AccountantOptionsFrameToggleMoneyDisplayText:SetText(ACCLOC_ONSCRMONEY);
-	--AccountantSliderButtonPosText:SetText(ACCLOC_BUTPOS);
-	--AccountantOptionsFrameWeekLabel:SetText(ACCLOC_STARTWEEK);
-
-	AccountantOptionsFrameToggleButton:SetChecked(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showbutton);
-	AccountantOptionsFrameToggleMoneyDisplay:SetChecked(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo);
-	--AccountantSliderButtonPos:SetValue(Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].buttonpos);
+	AccountantOptionsFrameToggleButton:SetChecked(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showbutton);
+	AccountantOptionsFrameToggleMoneyDisplay:SetChecked(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyinfo);
+	AccountantOptionsFrameToggleDisplayInstroTips:SetChecked(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showintrotip);
+	AccountantOptionsFrameToggleMoneyOnMiniMap:SetChecked(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyonbutton);
+	AccountantOptionsFrameToggleSessionOnMiniMap:SetChecked(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showsessiononbutton);
+	--AccountantSliderButtonPos:SetValue(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].buttonpos);
 	UIDropDownMenu_Initialize(AccountantOptionsFrameWeek, AccountantOptionsFrameWeek_Init);
 	UIDropDownMenu_SetSelectedID(AccountantOptionsFrameWeek, Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].weekstart);
 end
@@ -70,9 +68,34 @@ end
 function AccountantMoneyInfoFrame_Toggle()
 	if(AccountantMoneyInfoFrame:IsVisible()) then
 		AccountantMoneyInfoFrame:Hide();
-		Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo = false;
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyinfo = false;
 	else
 		AccountantMoneyInfoFrame:Show();
-		Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].showmoneyinfo = true;
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyinfo = true;
 	end
 end
+
+function AccountantOptionsIntroTip_Toggle()
+	if (Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showintrotip == true) then
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showintrotip = false;
+	else
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showintrotip = true;
+	end
+end
+
+function AccountantOptionsMoneyOnMinimap_Toggle()
+	if (Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyonbutton == true) then
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyonbutton = false;
+	else
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyonbutton = true;
+	end
+end
+
+function AccountantOptionsSessionOnMinimap_Toggle()
+	if (Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showsessiononbutton == true) then
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showsessiononbutton = false;
+	else
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showsessiononbutton = true;
+	end
+end
+

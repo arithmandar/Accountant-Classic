@@ -23,7 +23,7 @@ $Id$
      Updated by: Arith, Tntdruid
 ]]
 
-Accountant_Version = GetAddOnMetadata("Accountant", "Version");
+Accountant_Version = GetAddOnMetadata("Accountant_Classic", "Version");
 Accountant_Data = nil;
 Accountant_SaveData = nil;
 Accountant_Disabled = false;
@@ -39,62 +39,74 @@ Accountant_Server = "";
 local Accountant_RepairAllItems_old;
 local Accountant_CursorHasItem_old;
 
+local Accountant_Events = {
+	-- Garrison
+	"GARRISON_MISSION_FINISHED",
+	"GARRISON_ARCHITECT_OPENED",
+	"GARRISON_ARCHITECT_CLOSED",
+	"GARRISON_MISSION_NPC_OPENED",
+	"GARRISON_MISSION_NPC_CLOSED",
+	"GARRISON_SHIPYARD_NPS_OPENED",
+	"GARRISON_SHIPYARD_NPC_CLOSED",
+	"GARRISON_UPDATE",
+	-- Barber shop
+	"BARBER_SHOP_APPEARANCE_APPLIED",
+	"BARBER_SHOP_OPEN",
+	"BARBER_SHOP_SUCCESS",
+	"BARBER_SHOP_CLOSE",
+	-- Talent
+	"CONFIRM_TALENT_WIPE",
+	-- LFG
+	"LFG_COMPLETION_REWARD",
+	-- VOID
+	"VOID_STORAGE_OPEN",
+	"VOID_STORAGE_CLOSE",
+	-- Transform
+	"TRANSMOGRIFY_OPEN",
+	"TRANSMOGRIFY_CLOSE",
+	-- Merchant
+	"MERCHANT_SHOW",
+	"MERCHANT_CLOSED",
+	"MERCHANT_UPDATE",
+	-- Quest
+	"QUEST_COMPLETE",
+	"QUEST_FINISHED",
+	"QUEST_TURNED_IN",
+	-- Loot
+	"LOOT_OPENED",
+	"LOOT_CLOSED",
+	-- Taxi
+	"TAXIMAP_OPENED",
+	"TAXIMAP_CLOSED",
+	-- Trade
+	"TRADE_SHOW",
+	"TRADE_CLOSE",
+	-- Mail
+	"MAIL_INBOX_UPDATE",
+	"MAIL_SHOW",
+	"MAIL_CLOSED",
+	-- Trainer
+	"TRAINER_SHOW",
+	"TRAINER_CLOSED",
+	-- AH
+	"AUCTION_HOUSE_SHOW",
+	"AUCTION_HOUSE_CLOSED",
+	-- Guild
+	"GUILDBANKFRAME_OPENED",
+	"GUILDBANKFRAME_CLOSED",
+	"GUILDBANK_UPDATE_MONEY",
+	"GUILDBANK_UPDATE_WITHDRAWMONEY",
+	-- Others
+	"CHAT_MSG_MONEY",
+	"PLAYER_MONEY",
+	"UNIT_NAME_UPDATE",
+	"PLAYER_ENTERING_WORLD",
+};	
+
 function Accountant_RegisterEvents(self)
-	
-	self:RegisterEvent("GARRISON_MISSION_FINISHED");
-	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
-	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
-	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
-	self:RegisterEvent("GARRISON_MISSION_NPC_CLOSED");
-	self:RegisterEvent("GARRISON_UPDATE");
-	
-	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
-	self:RegisterEvent("BARBER_SHOP_OPEN");
-	self:RegisterEvent("BARBER_SHOP_SUCCESS");
-	self:RegisterEvent("BARBER_SHOP_CLOSE");
-	
-	self:RegisterEvent("CONFIRM_TALENT_WIPE");
-	
-	self:RegisterEvent("LFG_COMPLETION_REWARD");
-	
-	self:RegisterEvent("VOID_STORAGE_OPEN");
-	self:RegisterEvent("VOID_STORAGE_CLOSE");
-	
-	self:RegisterEvent("TRANSMOGRIFY_OPEN");
-	self:RegisterEvent("TRANSMOGRIFY_CLOSE");
-	
-	self:RegisterEvent("MERCHANT_SHOW");
-	self:RegisterEvent("MERCHANT_CLOSED");
-	self:RegisterEvent("MERCHANT_UPDATE");
-
-	self:RegisterEvent("QUEST_COMPLETE");
-	self:RegisterEvent("QUEST_FINISHED");
-	self:RegisterEvent("QUEST_TURNED_IN");
-	self:RegisterEvent("LOOT_OPENED");
-	self:RegisterEvent("LOOT_CLOSED");
-
-	self:RegisterEvent("TAXIMAP_OPENED");
-	self:RegisterEvent("TAXIMAP_CLOSED");
-
-	self:RegisterEvent("TRADE_SHOW");
-	self:RegisterEvent("TRADE_CLOSE");
-
-	self:RegisterEvent("MAIL_INBOX_UPDATE");
-	self:RegisterEvent("MAIL_SHOW");
-	self:RegisterEvent("MAIL_CLOSED");
-
-	self:RegisterEvent("TRAINER_SHOW");
-	self:RegisterEvent("TRAINER_CLOSED");
-
-	self:RegisterEvent("AUCTION_HOUSE_SHOW");
-	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
-
-	self:RegisterEvent("CHAT_MSG_MONEY");
-
-	self:RegisterEvent("PLAYER_MONEY");
-
-	self:RegisterEvent("UNIT_NAME_UPDATE");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+        for key, value in pairs( Accountant_Events ) do
+            self:RegisterEvent( value );
+        end
 end
 
 function Accountant_SetLabels(self)
@@ -228,6 +240,7 @@ function Accountant_LoadData()
 	Accountant_Data["GARRISON"] =	{Title = GARRISON_LOCATION_TOOLTIP};
 	Accountant_Data["LFG"] =	{Title = ACCLOC_LFG};
 	Accountant_Data["BARBER"] =	{Title = BARBERSHOP};
+	Accountant_Data["GUILD"] =	{Title = GUILD};
 
 	for key,value in pairs(Accountant_Data) do
 		for modekey,mode in pairs(Accountant_LogModes) do
@@ -252,13 +265,16 @@ function Accountant_LoadData()
 			options = {
 				showbutton = true, 
 				showmoneyinfo = true, 
-				buttonpos = 0, 
+				showintrotip = true,
+				showmoneyonbutton = true,
+				showsessiononbutton = true,
+				buttonpos = 150, 
 				version = Accountant_Version, 
 				date = cdate, 
 				weekdate = cweek, 
 				month = cmonth,
 				weekstart = 1, 
-				totalcash = 0
+				totalcash = 0,
 			},
 			data={}
 		};
@@ -303,8 +319,21 @@ function Accountant_LoadData()
 	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].version = Accountant_Version;
 	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].totalcash = GetMoney();
 
+	if(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyinfo == nil) then
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyinfo = true;
+	end
+	if(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showintrotip == nil) then
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showintrotip = false;
+	end
+	if(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyonbutton == nil) then
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyonbutton = true;
+	end
+	if(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showsessiononbutton == nil) then
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showsessiononbutton = true;
+	end
+	
 	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["weekstart"] == nil then
-		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["weekstart"] = 3;
+		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["weekstart"] = 1;
 	end
 	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] == nil then
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] = Accountant_WeekStart();
@@ -410,40 +439,40 @@ function Accountant_OnEvent(self, event, ...)
 	end
 
 	
-	if event == "GARRISON_MISSION_FINISHED" then
+	if ( event == "GARRISON_MISSION_FINISHED" or 
+	event == "GARRISON_UPDATE" or
+	event == "GARRISON_ARCHITECT_OPENED" or
+	event == "GARRISON_MISSION_NPC_OPENED" or
+	event == "GARRISON_SHIPYARD_NPS_OPENED"
+	) then
 		Accountant_Mode = "GARRISON";
-	elseif event == "GARRISON_UPDATE" then
-		Accountant_Mode = "GARRISON";
-	elseif event == "GARRISON_ARCHITECT_OPENED" then
-		Accountant_Mode = "GARRISON";
-	elseif event == "GARRISON_ARCHITECT_CLOSED" then
+	elseif ( event == "GARRISON_ARCHITECT_CLOSED" or
+	event == "GARRISON_MISSION_NPC_CLOSED" or
+	event == "GARRISON_SHIPYARD_NPC_CLOSED" or
+	event == "BARBER_SHOP_APPEARANCE_APPLIED" or
+	event == "BARBER_SHOP_CLOSE" or
+	event == "TRANSMOGRIFY_CLOSE" or
+	event == "VOID_STORAGE_CLOSE" or
+	event == "MERCHANT_CLOSED" or
+	event == "TRADE_CLOSE" or
+	event == "TRAINER_CLOSED" or
+	event == "AUCTION_HOUSE_CLOSED"
+	) then
 		Accountant_Mode = "";
-	elseif event == " GARRISON_MISSION_NPC_OPENED" then
-		Accountant_Mode = "GARRISON";
-	elseif event == " GARRISON_MISSION_NPC_CLOSED" then
-		Accountant_Mode = "";
-	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
+	elseif (event == "GUILDBANKFRAME_OPENED" or event == "GUILDBANK_UPDATE_MONEY" or event == GUILDBANK_UPDATE_WITHDRAWMONEY) then
+		Accountant_Mode = "GUILD";
+	elseif event == "GUILDBANKFRAME_CLOSED" then
 		Accountant_Mode = "";
 	elseif event == "LFG_COMPLETION_REWARD" then
 		Accountant_Mode = "LFG";
-	elseif Accountant_Mode == "BARBER_SHOP_OPEN" then
-		Accountant_Mode = "";
-	elseif Accountant_Mode == "BARBER_SHOP_SUCCESS" then
+	elseif (event == "BARBER_SHOP_OPEN" or event == "BARBER_SHOP_SUCCESS") then
 		Accountant_Mode = "BARBER";
-	elseif Accountant_Mode == "BARBER_SHOP_CLOSE" then
-		Accountant_Mode = "";
 	elseif event == "TRANSMOGRIFY_OPEN" then
 		Accountant_Mode = "TRANSMO";
-	elseif event == "TRANSMOGRIFY_CLOSE" then
-		Accountant_Mode = "";
 	elseif event == "VOID_STORAGE_OPEN" then
 		Accountant_Mode = "VOID";
-	elseif event == "VOID_STORAGE_CLOSE" then
-		Accountant_Mode = "";
 	elseif event == "MERCHANT_SHOW" then
 		Accountant_Mode = "MERCH";
-	elseif event == "MERCHANT_CLOSED" then
-		Accountant_Mode = "";
 	elseif event == "MERCHANT_UPDATE" then
 		if (InRepairMode() == true) then
 			Accountant_Mode = "REPAIRS";
@@ -460,8 +489,6 @@ function Accountant_OnEvent(self, event, ...)
 		-- Accountant_Mode = "";
 	elseif event == "TRADE_SHOW" then
 		Accountant_Mode = "TRADE";
-	elseif event == "TRADE_CLOSE" then
-		Accountant_Mode = "";
 	elseif event == "QUEST_COMPLETE" then
 		Accountant_Mode = "QUEST";
 	elseif event == "QUEST_TURNED_IN" then
@@ -479,12 +506,8 @@ function Accountant_OnEvent(self, event, ...)
 		Accountant_Mode = "TRAIN";
 	elseif event == "TRAINER_SHOW" then
 		Accountant_Mode = "TRAIN";
-	elseif event == "TRAINER_CLOSED" then
-		Accountant_Mode = "";
 	elseif event == "AUCTION_HOUSE_SHOW" then
 		Accountant_Mode = "AH";
-	elseif event == "AUCTION_HOUSE_CLOSED" then
-		Accountant_Mode = "";
 	elseif event == "PLAYER_MONEY" then
 		Accountant_UpdateLog();
 -- This event is supposed to be fired before PLAYER_MONEY.
@@ -577,6 +600,7 @@ function Accountant_NiceCash(amount)
 	return outstr;
 end
 
+
 -- code adopted from SellTrash and MoneyFrame.lua
 function Accountant_GetFormattedValue(amount)
 	local gold = floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
@@ -595,6 +619,19 @@ function Accountant_GetFormattedValue(amount)
 		return "";
 	end
 end
+
+
+function Accountant_GetFormattedCurrency(currencyID)
+	local name, amount, icon = GetCurrencyInfo(currencyID);
+	
+	if (amount >0) then
+		local CURRENCY_TEXTURE = "%s\124T"..icon..":%d:%d:2:0\124t";
+		return format(CURRENCY_TEXTURE.." ", BreakUpLargeNumbers(amount), 0, 0);
+	else
+		return "";
+	end
+end
+
 
 function Accountant_WeekStart()
 	oneday = 86400;
@@ -856,9 +893,22 @@ function Accountant_CursorHasItem()
 	return toret;
 end
 
+function Accountant_BackpackTokenFrame_Update()
+	local name, count, icon, currencyID;
+	local tokenstr = "";
+	for i=1, MAX_WATCHED_TOKENS do
+		name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
+		-- Update watched tokens
+		if ( name ) then
+			tokenstr = tokenstr..Accountant_GetFormattedCurrency(currencyID).." ";
+		end
+	end
+	return tokenstr;
+end
+
 function AccountantMoneyInfoFrame_Update()
-	--AccountantMoneyInfoText:SetText(Accountant_NiceCash(GetMoney()));
-	AccountantMoneyInfoText:SetText("|cFFFFFFFF"..Accountant_GetFormattedValue(GetMoney()));
+	local frametxt = "|cFFFFFFFF"..Accountant_GetFormattedValue(GetMoney());
+	AccountantMoneyInfoText:SetText(frametxt);
 end
 
 function AccountantMoneyInfoFrame_HandleMouseDown(self, buttonName)    
@@ -927,7 +977,13 @@ function AccountantMoneyInfoFrame_OnEnter(self)
 		GameTooltip:SetBackdropColor(0, 0, 0, 0.5);
 		GameTooltip:SetText("|cFFFFFFFF"..ACCLOC_TITLE.." - "..ACCLOC_SESS, 1, 1, 1, nil, 1);
 		GameTooltip:AddLine(amoney_str, 1, 1, 1, 1);
-		GameTooltip:AddLine("("..ACCLOC_TIP2..")", 0.8, 0.8, 0.8, 1);
+		local tokenstr = Accountant_BackpackTokenFrame_Update();
+		if (tokenstr) then
+			GameTooltip:AddLine(tokenstr, 1, 1, 1, 1);
+		end
+		if (Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showintrotip == true) then
+			GameTooltip:AddLine("("..ACCLOC_TIP2..")", 0.8, 0.8, 0.8, 1);
+		end
 		GameTooltip:Show();
 	else
 		GameTooltip:Hide();

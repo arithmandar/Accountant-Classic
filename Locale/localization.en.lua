@@ -1,4 +1,6 @@
-﻿-- Header
+﻿-- $Id$ 
+
+-- Header
 ACCLOC_TITLE		= "Accountant Classic";
 ACCLOC_TIP		= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button.";
 ACCLOC_TIP2		= "Left-click and drag to move this button.\nRight-Click to open Accountant Classic.";
@@ -25,7 +27,7 @@ ACCLOC_TRAIN		= "Training Costs";
 ACCLOC_TAXI		= "Taxi Fares";
 ACCLOC_OTHER		= "Unknown";
 ACCLOC_REPAIR		= "Repair Costs";
-ACCLOC_LFG 		= "LFD, LFR and Scen."
+ACCLOC_LFG 		= "LFD, LFR and Scen.";
 
 -- Buttons
 ACCLOC_RESET		= "Reset";
@@ -42,16 +44,20 @@ ACCLOC_CHARS		= "All Chars";
 
 -- Options
 ACCLOC_OPTS		= "Accountant Classic Options";
-ACCLOC_MINIBUT		= "Show Minimap Button";
-ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
+ACCLOC_MINIBUT		= "Show minimap button";
+ACCLOC_MINIBUTMONEY	= "Show money on minimap button's tooltip";
+ACCLOC_MINIBUTSESSINF	= "Show session info on minimap button's tooltip";
+ACCLOC_ONSCRMONEY	= "Show money on ccreen";
 ACCLOC_BUTPOS		= "Minimap Button Position";
 ACCLOC_STARTWEEK	= "Start of Week";
 ACCLOC_DONE		= "Done";
+ACCLOC_INTROTIPS	= "Display Instruction Tips";
+ACCLOC_INTROTIPS_TIP	= "Toggle whether to display minimap button or floating money frame's operation tips.";
 
 -- Misc
 ACCLOC_RESET_CONF	= "Are you sure you want to reset the";
-ACCLOC_NEWPROFILE	= "New Accountant profile created for";
-ACCLOC_LOADPROFILE	= "Loaded Accountant Profile for";
+ACCLOC_NEWPROFILE	= "New Accountant Classic profile created for";
+ACCLOC_LOADPROFILE	= "Loaded Accountant Classic Profile for";
 ACCLOC_LOADED		= "Loaded";
 ACCLOC_GOLD		= "g ";
 ACCLOC_SILVER		= "s ";
@@ -59,5 +65,5 @@ ACCLOC_CENT		= "c";
 ACCLOC_ABOUT		= "About";
 
 -- Key Bindings headers
-BINDING_HEADER_ACCOUNTANT	= "Accountant";
-BINDING_NAME_ACCOUNTANTTOG	= "Toggle Accountant";
+BINDING_HEADER_ACCOUNTANT	= "Accountant Classic";
+BINDING_NAME_ACCOUNTANTTOG	= "Toggle Accountant Classic";

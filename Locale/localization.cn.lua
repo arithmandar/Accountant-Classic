@@ -1,4 +1,6 @@
-﻿if ( GetLocale() == "zhCN" ) then
+﻿-- $Id$ 
+
+if ( GetLocale() == "zhCN" ) then
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
 ACCLOC_TIP		= "单击打开 Accountant Classic\n右键点击打开设置";
@@ -42,17 +44,21 @@ ACCLOC_TOTAL		= "总计";
 ACCLOC_CHARS		= "所有角色";
 
 -- Options
-ACCLOC_OPTS		= "Accountant 选项";
+ACCLOC_OPTS		= "Accountant Classic 选项";
 ACCLOC_MINIBUT		= "显示小地图按键";
+ACCLOC_MINIBUTMONEY 	= "在小地图按钮的图示显示目前现金";
+ACCLOC_MINIBUTSESSINF 	= "在小地图按钮的提示显示本次收入/支出";
 ACCLOC_ONSCRMONEY	= "在游戏画面显示目前现金";
 ACCLOC_BUTPOS		= "小地图按键位置";
 ACCLOC_STARTWEEK	= "一周的开始日";
 ACCLOC_DONE		= "完成";
+ACCLOC_INTROTIPS 	= "显示指引提示";
+ACCLOC_INTROTIPS_TIP 	= "选择是否在小地图按钮或浮动视窗显示额外的操作提示";
 
 -- Misc
 ACCLOC_RESET_CONF	= "你确定你要重置";
-ACCLOC_NEWPROFILE	= "新的 Accountant 数据已建立给";
-ACCLOC_LOADPROFILE	= "读取 Accountant 数据给";
+ACCLOC_NEWPROFILE	= "新的 Accountant Classic 数据已建立给";
+ACCLOC_LOADPROFILE	= "读取 Accountant Classic 数据给";
 ACCLOC_LOADED		= "已读取";
 ACCLOC_GOLD		= "金";
 ACCLOC_SILVER		= "银";
@@ -60,7 +66,7 @@ ACCLOC_CENT		= "铜";
 ACCLOC_ABOUT		= "关于";
 
 -- Key Bindings headers
-BINDING_HEADER_ACCOUNTANT	= "Accountant";
-BINDING_NAME_ACCOUNTANTTOG	= "呼叫 Accountant";
+BINDING_HEADER_ACCOUNTANT	= "Accountant Classic";
+BINDING_NAME_ACCOUNTANTTOG	= "呼叫 Accountant Classic";
 
 end

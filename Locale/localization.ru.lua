@@ -1,8 +1,10 @@
-﻿if ( GetLocale() == "ruRU" ) then
+﻿-- $Id$ 
+
+if ( GetLocale() == "ruRU" ) then
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
-ACCLOC_TIP		= "Left-Click для открытия Accountant Classic.\nRight-Click для настрйоки Accountant Classic.";
-ACCLOC_TIP2		= "Right-Click для открытия Accountant Classic.";
+--ACCLOC_TIP		= "Left-Click для открытия Accountant Classic.\nRight-Click для настрйоки Accountant Classic.";
+--ACCLOC_TIP2		= "Right-Click для открытия Accountant Classic.";
 ACCLOC_TOT_IN		= "Всего Доходов";
 ACCLOC_TOT_OUT		= "Всего Расходов";
 ACCLOC_NET		= "Чистая прибыль / Убыток";
@@ -60,6 +62,6 @@ ACCLOC_CENT		= " м. ";
 ACCLOC_ABOUT		= "About";
 
 -- Key Bindings headers
-BINDING_HEADER_ACCOUNTANT	= "Accountant";
-BINDING_NAME_ACCOUNTANTTOG	= "Переключить Accountant";
+BINDING_HEADER_ACCOUNTANT	= "Accountant Classic";
+BINDING_NAME_ACCOUNTANTTOG	= "Переключить Accountant Classic";
 end

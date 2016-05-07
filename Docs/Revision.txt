@@ -6,6 +6,14 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.6.05 (May 7, 2016)
+  - Added to support guildbank's incoming / outgoing (tested, report bugs if any)
+  - Fixed Barber shop's tracking error
+  - Convert events to table and call with for loop
+  - Added watched token on floating money frame's tooltip
+    (token's watchable setting is done via character frame -> currency tab)
+  - Added several toggle options
+
 * v2.6.04 (May 6, 2016)
   - Added session session income / outgoing and net profit/lost info as tooltip to Minimap button
   - Fixed package problem, now linked proper libs in the new version

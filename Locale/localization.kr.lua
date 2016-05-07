@@ -1,4 +1,6 @@
-﻿if ( GetLocale() == "koKR" ) then
+﻿-- $Id$ 
+
+if ( GetLocale() == "koKR" ) then
 -- Header
 ACCLOC_TITLE		= "가계부";
 --ACCLOC_TIP		= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.";
@@ -42,7 +44,7 @@ ACCLOC_TOTAL		= "합계";
 ACCLOC_CHARS		= "모든 합계";
 
 -- Options
-ACCLOC_OPTS		= "Accountant 옵션";
+ACCLOC_OPTS		= "Accountant Classic옵션";
 ACCLOC_MINIBUT		= "미니맵버튼";
 --ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
 ACCLOC_BUTPOS		= "미니맵 버튼 위치";
@@ -51,8 +53,8 @@ ACCLOC_DONE		= "완료";
 
 -- Misc
 ACCLOC_RESET_CONF	= "데이터를 삭제합니까?";
-ACCLOC_NEWPROFILE	= "새 Accountant 프로필";
-ACCLOC_LOADPROFILE	= "로드된 Accountant 프로필";
+ACCLOC_NEWPROFILE	= "새 Accountant Classic 프로필";
+ACCLOC_LOADPROFILE	= "로드된 Accountant Classic 프로필";
 ACCLOC_LOADED		= "로드됨";
 ACCLOC_GOLD		= "골 ";
 ACCLOC_SILVER		= "실 ";
@@ -60,7 +62,7 @@ ACCLOC_CENT		= "코";
 ACCLOC_ABOUT		= "대하여";
 
 -- Key Bindings headers
-BINDING_HEADER_ACCOUNTANT	= "Accountant";
-BINDING_NAME_ACCOUNTANTTOG	= "Toggle Accountant";
+BINDING_HEADER_ACCOUNTANT	= "Accountant Classic";
+--BINDING_NAME_ACCOUNTANTTOG	= "Toggle Accountant Classic";
 
 end

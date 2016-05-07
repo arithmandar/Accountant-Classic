@@ -17,16 +17,24 @@ local Accountant_ClassicMiniMapLDB = LibStub("LibDataBroker-1.1"):NewDataObject(
 	end,
 	OnTooltipShow = function(tooltip)
 		if not tooltip or not tooltip.AddLine then return end
-		tooltip:AddLine("|cffffffff"..ACCLOC_TITLE.." - "..Accountant_GetFormattedValue(GetMoney()));
-		tooltip:AddLine(ACCLOC_TIP);
-		tooltip:AddLine(Accountant_ShowSessionToolTip());
+		local title = "|cffffffff"..ACCLOC_TITLE;
+		if (Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showmoneyonbutton) then
+			title = title.." - "..Accountant_GetFormattedValue(GetMoney());
+		end
+		tooltip:AddLine(title);
+		if (Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showsessiononbutton == true) then
+			tooltip:AddLine(Accountant_ShowSessionToolTip());
+		end
+		if (Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showintrotip == true) then
+			tooltip:AddLine(ACCLOC_TIP);
+		end
 	end,
 })
 if ( TitanPanelButton_UpdateButton ) then
 	TitanPanelButton_UpdateButton("Accountant_Classic");
 end
 
-local icon = LibStub("LibDBIcon-1.0")
+local button = LibStub("LibDBIcon-1.0")
 
 function addon:OnInitialize()
 	-- Obviously you'll need a ##SavedVariables: BunniesDB line in your TOC, duh!
@@ -38,7 +46,7 @@ function addon:OnInitialize()
 			},
 		},
 	})
-	icon:Register("Accountant_Classic", Accountant_ClassicMiniMapLDB, self.db.profile.minimap);
+	button:Register("Accountant_Classic", Accountant_ClassicMiniMapLDB, self.db.profile.minimap);
 	self:RegisterChatCommand("accountantbutton", AccountantButton_Toggle)
 	self:RegisterChatCommand("accountant", Accountant_Slash)
 end
@@ -46,10 +54,10 @@ end
 function addon:Toggle()
 	self.db.profile.minimap.hide = not self.db.profile.minimap.hide
 	if self.db.profile.minimap.hide then
-		icon:Hide("Accountant_Classic")
+		button:Hide("Accountant_Classic")
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showbutton = false;
 	else
-		icon:Show("Accountant_Classic")
+		button:Show("Accountant_Classic")
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showbutton = true;
 	end
 	AccountantOptionsFrameToggleButton:SetChecked(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showbutton);
@@ -70,9 +78,9 @@ end
 
 function AccountantButton_Init()
 	if(Accountant_SaveData[Accountant_Server][Accountant_Player]["options"].showbutton) then
-		icon:Show("Accountant_Classic")
+		button:Show("Accountant_Classic")
 	else
-		icon:Hide("Accountant_Classic")
+		button:Hide("Accountant_Classic")
 	end
 end
 

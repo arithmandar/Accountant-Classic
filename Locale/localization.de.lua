@@ -1,4 +1,6 @@
-﻿-- DE Translation, thanks to snj & JokerGermany ;)
+﻿-- $Id$ 
+
+-- DE Translation, thanks to snj & JokerGermany ;)
 -- New one
 
 if (GetLocale() == "deDE") then
@@ -46,7 +48,7 @@ ACCLOC_TOTAL		= "Gesamt";
 ACCLOC_CHARS		= "Alle Chars";
 
 -- Options
-ACCLOC_OPTS		= "Accountant Optionen";
+ACCLOC_OPTS		= "Accountant Classic Optionen";
 ACCLOC_MINIBUT		= "Zeige Minimap Button";
 --ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
 --ACCLOC_BUTPOS		= "Minimap Button Position";
@@ -55,8 +57,8 @@ ACCLOC_DONE		= "Fertig";
 
 -- Misc
 ACCLOC_RESET_CONF	= "Die Einstellungen wirklich zuruecksetzen";
-ACCLOC_NEWPROFILE	= "Neues Accountant Profil erstellt fr";
-ACCLOC_LOADPROFILE	= "Accountant Profil geladen fr";
+ACCLOC_NEWPROFILE	= "Neues Accountant Classic Profil erstellt fr";
+ACCLOC_LOADPROFILE	= "Accountant Classic Profil geladen fr";
 ACCLOC_LOADED		= "Loaded";
 ACCLOC_GOLD		= "g ";
 ACCLOC_SILVER		= "s ";
@@ -64,7 +66,7 @@ ACCLOC_CENT		= "c";
 ACCLOC_ABOUT		= "Über";
 
 -- Key Bindings headers
-BINDING_HEADER_ACCOUNTANT	= "Accountant";
-BINDING_NAME_ACCOUNTANTTOG	= "Accountant anzeigen/ausblenden";
+BINDING_HEADER_ACCOUNTANT	= "Accountant Classic";
+BINDING_NAME_ACCOUNTANTTOG	= "Accountant Classic anzeigen/ausblenden";
 
 end

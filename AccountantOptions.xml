@@ -18,52 +18,11 @@ $Id$
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="AccountantOptionsFrameToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="40" y="-45"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText(ACCLOC_MINIBUT);
-					</OnLoad>
-					<OnClick>
-						AccountantButton_Toggle();
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-<!--			<Slider name="AccountantSliderButtonPos" inherits="OptionsSliderTemplate">
-				<Size>
-					<AbsDimension x="220" y="16"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="0" y="-75" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."High"]:SetText();
-						_G[self:GetName().."Low"]:SetText();
-						AccountantSliderButtonPos:SetMinMaxValues(0,360);
-						AccountantSliderButtonPos:SetValueStep(1);
-					</OnLoad>
-					<OnValueChanged>
-						Accountant_SaveData[GetRealmName()][UnitName("player")]["options"].buttonpos = AccountantSliderButtonPos:GetValue();
-						AccountantButton_UpdatePosition();
-					</OnValueChanged>
-				</Scripts>
-			</Slider>-->
 			<Frame name="$parentWeek" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
 						<Offset>
-							<AbsDimension x="310" y="-65"/>
+							<AbsDimension x="340" y="-65"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -86,11 +45,28 @@ $Id$
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<CheckButton name="AccountantOptionsFrameToggleMoneyDisplay" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="AccountantOptionsFrameToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="40" y="-75"/>
+							<AbsDimension x="40" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_MINIBUT);
+					</OnLoad>
+					<OnClick>
+						AccountantButton_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AccountantOptionsFrameToggleMoneyDisplay" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleButton">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -100,6 +76,61 @@ $Id$
 					</OnLoad>
 					<OnClick>
 						AccountantMoneyInfoFrame_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AccountantOptionsFrameToggleMoneyOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyDisplay">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_MINIBUTMONEY);
+					</OnLoad>
+					<OnClick>
+						AccountantOptionsMoneyOnMinimap_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AccountantOptionsFrameToggleSessionOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyOnMiniMap">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_MINIBUTSESSINF);
+					</OnLoad>
+					<OnClick>
+						AccountantOptionsSessionOnMinimap_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AccountantOptionsFrameToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleSessionOnMiniMap">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_INTROTIPS);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_INTROTIPS_TIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnClick>
+						AccountantOptionsIntroTip_Toggle();
 					</OnClick>
 				</Scripts>
 			</CheckButton>
