@@ -49,7 +49,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="40" y="-45"/>
+							<AbsDimension x="20" y="-45"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -62,28 +62,11 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="AccountantOptionsFrameToggleMoneyDisplay" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="AccountantOptionsFrameToggleMoneyOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleButton">
 						<Offset>
-							<AbsDimension x="0" y="-25"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText(ACCLOC_ONSCRMONEY);
-					</OnLoad>
-					<OnClick>
-						AccountantMoneyInfoFrame_Toggle();
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="AccountantOptionsFrameToggleMoneyOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyDisplay">
-						<Offset>
-							<AbsDimension x="0" y="-25"/>
+							<AbsDimension x="10" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -113,9 +96,26 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="AccountantOptionsFrameToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="AccountantOptionsFrameToggleMoneyDisplay" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleSessionOnMiniMap">
+						<Offset>
+							<AbsDimension x="-10" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_ONSCRMONEY);
+					</OnLoad>
+					<OnClick>
+						AccountantMoneyInfoFrame_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AccountantOptionsFrameToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyDisplay">
 						<Offset>
 							<AbsDimension x="0" y="-25"/>
 						</Offset>

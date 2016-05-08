@@ -909,6 +909,7 @@ end
 function AccountantMoneyInfoFrame_Update()
 	local frametxt = "|cFFFFFFFF"..Accountant_GetFormattedValue(GetMoney());
 	AccountantMoneyInfoText:SetText(frametxt);
+	--AccountantMoneyInfoText:SetText(Accountant_BackpackTokenFrame_Update());
 end
 
 function AccountantMoneyInfoFrame_HandleMouseDown(self, buttonName)    

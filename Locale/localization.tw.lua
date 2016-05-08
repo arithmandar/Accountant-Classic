@@ -44,7 +44,7 @@ ACCLOC_TOTAL		= "總計";
 ACCLOC_CHARS		= "所有角色";
 
 -- Options
-ACCLOC_OPTS		= "Accountant Classic選項";
+ACCLOC_OPTS		= "Accountant Classic 選項";
 ACCLOC_MINIBUT		= "顯示小地圖按鍵";
 ACCLOC_MINIBUTMONEY	= "在小地圖按鈕的提示顯示目前現金";
 ACCLOC_MINIBUTSESSINF	= "在小地圖按鈕的提示顯示本次收入/支出";
