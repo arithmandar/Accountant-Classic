@@ -7,13 +7,14 @@ if (GetLocale() == "deDE") then
 
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
+--ACCLOC_DESC		= "A basic tool to track your monetary incomings and outgoings within WoW.";
 ACCLOC_TIP		= "Linke Maustaste drücken, um Accountant Classic zu öffnen.\nRechte Maustaste drücken, um die Accountant Classic Optionen anzuzeigen.";
-ACCLOC_TIP2		= "Rechte Maustaste drücken, um Accountant Classic zu öffnen";
+ACCLOC_TIP2		= "Rechtsklick, um Accountant Classic zu öffnen.";
 ACCLOC_TOT_IN		= "Einnahmen";
 ACCLOC_TOT_OUT		= "Ausgaben";
-ACCLOC_NET		= "Netto Ertrag / Verlust";
-ACCLOC_NETLOSS		= "Netto Verlust";
-ACCLOC_NETPROF		= "Netto Ertrag";
+ACCLOC_NET		= "Nettoertrag / Verlust";
+ACCLOC_NETLOSS		= "Nettoverlust";
+ACCLOC_NETPROF		= "Nettoertrag";
 ACCLOC_SOURCE		= "Quelle";
 ACCLOC_IN		= "Einnahmen";
 ACCLOC_OUT		= "Ausgaben";
@@ -24,7 +25,7 @@ ACCLOC_MONEY		= "Geld";
 ACCLOC_UPDATED		= "Aktualisiert";
 
 -- Section Labels
-ACCLOC_QUEST		= "Quest Belohnung";
+ACCLOC_QUEST		= "Questbelohnung";
 ACCLOC_MERCH		= "Händler";
 ACCLOC_TRADE		= "Handelsfenster";
 ACCLOC_MAIL		= "Post";
@@ -43,15 +44,15 @@ ACCLOC_EXIT		= "Exit";
 ACCLOC_SESS		= "Sitzung";
 ACCLOC_DAY		= "Tag";
 ACCLOC_WEEK		= "Woche";
---ACCLOC_MONTH		= "Month";
+ACCLOC_MONTH		= "Monat";
 ACCLOC_TOTAL		= "Gesamt";
 ACCLOC_CHARS		= "Alle Chars";
 
 -- Options
 ACCLOC_OPTS		= "Accountant Classic Optionen";
-ACCLOC_MINIBUT		= "Zeige Minimap Button";
+ACCLOC_MINIBUT		= "Minikartenbutton zeigen";
 --ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
---ACCLOC_BUTPOS		= "Minimap Button Position";
+ACCLOC_BUTPOS		= "Minikartenbuttonposition";
 ACCLOC_STARTWEEK	= "Beginn der Woche";
 ACCLOC_DONE		= "Fertig";
 

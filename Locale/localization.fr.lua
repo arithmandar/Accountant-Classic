@@ -6,6 +6,7 @@ if (GetLocale() == "frFR") then
 
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
+--ACCLOC_DESC		= "A basic tool to track your monetary incomings and outgoings within WoW.";
 ACCLOC_TIP		= "Clic-Gauche pour ouvrir Accountant Classic.\nClic-Droit pour les options d'Accountant Classic.";
 ACCLOC_TIP2		= "Clic-Droit pour ouvrir Accountant Classic.";
 ACCLOC_TOT_IN		= "Rentrées Totales";

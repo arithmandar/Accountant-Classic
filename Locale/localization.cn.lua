@@ -3,6 +3,7 @@
 if ( GetLocale() == "zhCN" ) then
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
+ACCLOC_DESC		= "追踪每个角色的所有收入与支出状况，并可显示当日小计、当周小计、以及自有记录起的总计。并可显示所有角色的总金额。";
 ACCLOC_TIP		= "单击打开 Accountant Classic\n右键点击打开设置";
 ACCLOC_TIP2		= "右键点击 Accountant Classic";
 ACCLOC_TOT_IN		= "总收入";

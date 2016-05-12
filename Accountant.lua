@@ -23,6 +23,8 @@ $Id$
      Updated by: Arith, Tntdruid
 ]]
 
+local LibDialog = LibStub("LibDialog-1.0");
+
 Accountant_Version = GetAddOnMetadata("Accountant_Classic", "Version");
 Accountant_Data = nil;
 Accountant_SaveData = nil;
@@ -178,24 +180,9 @@ function Accountant_OnLoad(self)
 
 	-- Add myAddOns support
 	if myAddOnsList then
-		myAddOnsList.Accountant = {name = "Accountant Classic", description = "Tracks your incomings / outgoings", version = Accountant_Version, frame = "AccountantFrame", optionsframe = "AccountantFrame"};
+		myAddOnsList.Accountant = {name = "Accountant Classic", description = ACCLOC_DESC, version = Accountant_Version, frame = "AccountantFrame", optionsframe = "AccountantOptionsFrame"};
 	end
-
-	-- Confirm box
-	StaticPopupDialogs["ACCOUNTANT_RESET"] = {
-		text = TEXT("meh"),
-		button1 = TEXT(OKAY),
-		button2 = TEXT(CANCEL),
-		OnAccept = function()
-			Accountant_ResetConfirmed();
-		end,
-		showAlert = 1,
-		timeout = 0,
-		exclusive = 1,
-		whileDead = 1,
-		interruptCinematic = 1
-	};
-
+	
 	-- hooks
 	Accountant_RepairAllItems_old = RepairAllItems;
 	RepairAllItems = Accountant_RepairAllItems;
@@ -224,29 +211,35 @@ function Accountant_OnLoad(self)
 end
 
 function Accountant_LoadData()
-	Accountant_Data = {};
-	Accountant_Data["TRAIN"] = 	{Title = ACCLOC_TRAIN};
-	Accountant_Data["TAXI"] = 	{Title = ACCLOC_TAXI};
-	Accountant_Data["TRADE"] = 	{Title = ACCLOC_TRADE};
-	Accountant_Data["AH"] = 	{Title = AUCTIONS};
-	Accountant_Data["MERCH"] = 	{Title = ACCLOC_MERCH};
-	Accountant_Data["REPAIRS"] = 	{Title = ACCLOC_REPAIR};
-	Accountant_Data["MAIL"] = 	{Title = ACCLOC_MAIL};
-	Accountant_Data["QUEST"] = 	{Title = ACCLOC_QUEST};
-	Accountant_Data["LOOT"] = 	{Title = LOOT};
-	Accountant_Data["OTHER"] = 	{Title = ACCLOC_OTHER};
-	Accountant_Data["VOID"] =  	{Title = VOID_STORAGE};
-	Accountant_Data["TRANSMO"] =	{Title = TRANSMOGRIFY};
-	Accountant_Data["GARRISON"] =	{Title = GARRISON_LOCATION_TOOLTIP};
-	Accountant_Data["LFG"] =	{Title = ACCLOC_LFG};
-	Accountant_Data["BARBER"] =	{Title = BARBERSHOP};
-	Accountant_Data["GUILD"] =	{Title = GUILD};
+	Accountant_Data = {
+		["TRAIN"] = 	{Title = ACCLOC_TRAIN};
+		["TAXI"] = 	{Title = ACCLOC_TAXI};
+		["TRADE"] = 	{Title = ACCLOC_TRADE};
+		["AH"] = 	{Title = AUCTIONS};
+		["MERCH"] = 	{Title = ACCLOC_MERCH};
+		["REPAIRS"] = 	{Title = ACCLOC_REPAIR};
+		["MAIL"] = 	{Title = ACCLOC_MAIL};
+		["QUEST"] = 	{Title = ACCLOC_QUEST};
+		["LOOT"] = 	{Title = LOOT};
+		["OTHER"] = 	{Title = ACCLOC_OTHER};
+		["VOID"] =  	{Title = VOID_STORAGE};
+		["TRANSMO"] =	{Title = TRANSMOGRIFY};
+		["GARRISON"] =	{Title = GARRISON_LOCATION_TOOLTIP};
+		["LFG"] =	{Title = ACCLOC_LFG};
+		["BARBER"] =	{Title = BARBERSHOP};
+		["GUILD"] =	{Title = GUILD};
+	};
 
 	for key,value in pairs(Accountant_Data) do
 		for modekey,mode in pairs(Accountant_LogModes) do
 			Accountant_Data[key][mode] = {In=0,Out=0};
 		end
 	end
+
+	local cdate = date("%d/%m/%y");
+	local cdate = string.sub(cdate,0,8);
+	local cweek = "";
+	local cmonth = date("%m");
 
 	if(Accountant_SaveData == nil) then
 		Accountant_SaveData = {};
@@ -255,12 +248,6 @@ function Accountant_LoadData()
 		Accountant_SaveData[Accountant_Server] = {};
 	end
 	if (Accountant_SaveData[Accountant_Server][Accountant_Player] == nil ) then
-		--cdate = date();
-		--tnt
-		cdate = date ("%d/%m/%y");
-		cdate = string.sub(cdate,0,8);
-		cweek = "";
-		cmonth = date("%m");
 		Accountant_SaveData[Accountant_Server][Accountant_Player] = {
 			options = {
 				showbutton = true, 
@@ -339,24 +326,14 @@ function Accountant_LoadData()
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] = Accountant_WeekStart();
 	end
 	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] == nil then
-		--tnt
-		--cdate = date();
-		cdate = date ("%d/%m/%y")
-		cdate = string.sub(cdate,0,8);
-		
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] = cdate;
 	end
 	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] == nil then
-		cmonth = date ("%m")
 		Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] = cmonth;
 	end
 
 	--Duplicate below from OnShow as the day and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
 	-- Check to see if the day has rolled over
-	--tnt
-	--cdate = date();
-	cdate = date ("%d/%m/%y")
-	cdate = string.sub(cdate,0,8);
 	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["date"] ~= cdate then
 		-- Its a new day! clear out the day tab
 		for mode,value in pairs(Accountant_Data) do
@@ -381,7 +358,6 @@ function Accountant_LoadData()
 	Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["dateweek"] = Accountant_WeekStart();
 
 	-- Check to see if the month has rolled over
-	cmonth = date ("%m")
 	if Accountant_SaveData[Accountant_Server][Accountant_Player]["options"]["month"] ~= cmonth then
 		-- Its a new month! clear out the month tab
 		for mode,value in pairs(Accountant_Data) do
@@ -432,7 +408,6 @@ function Accountant_OnEvent(self, event, ...)
 			Accountant_OnLoad();
 			--AccountantOptions_OnLoad();
 			AccountantButton_Init();
-			--AccountantButton_UpdatePosition();
 			AccountantMoneyInfoFrame_Init();
 		end
 		return;
@@ -815,8 +790,45 @@ function Accountant_ResetData()
 
 	end
 
+	-- Confirm box
+--[[
+	StaticPopupDialogs["ACCOUNTANT_RESET"] = {
+		text = TEXT("meh"),
+		button1 = TEXT(OKAY),
+		button2 = TEXT(CANCEL),
+		OnAccept = function()
+			Accountant_ResetConfirmed();
+		end,
+		showAlert = 1,
+		timeout = 0,
+		exclusive = 1,
+		whileDead = 1,
+		interruptCinematic = 1
+	};
 	StaticPopupDialogs["ACCOUNTANT_RESET"].text = ACCLOC_RESET_CONF.."\""..type.."\"?";
 	local dialog = StaticPopup_Show("ACCOUNTANT_RESET","weeee");
+]]
+	LibDialog:Register("ACCOUNTANT_RESET", {
+		text = ACCLOC_RESET_CONF.."\""..type.."\"",
+		buttons = {
+			{
+				text = OKAY,
+				on_click = function() Accountant_ResetConfirmed(); end,
+			},
+			{
+				text = CANCEL,
+				on_click = function(self, mouseButton, down) LibDialog:Dismiss("ACCOUNTANT_RESET"); end,
+			},
+		},
+		show_while_dead = true,
+		hide_on_escape = true,
+		is_exclusive = true,
+		hide_on_escape = true,
+		show_during_cinematic = false,
+		
+	});
+	LibDialog:Spawn("ACCOUNTANT_RESET");
+	
 end
 
 function Accountant_ResetConfirmed()

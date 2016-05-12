@@ -6,6 +6,14 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.6.06 (May 12, 2016)
+  - Added LibDiag-1.0
+  - Added Spanish translation (IsabelGarcia)
+  - Translation update
+    - zhTW: gaspy10
+    - deDE: pas06
+    - ruRU: unw1s3
+
 * v2.6.05 (May 9, 2016)
   - Added to support guildbank's incoming / outgoing (tested, report bugs if any)
   - Fixed Barber shop's tracking error

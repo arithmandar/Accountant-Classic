@@ -2,9 +2,10 @@
 
 if ( GetLocale() == "zhTW" ) then
 -- Header
-ACCLOC_TITLE		= "Accountant Classic";
-ACCLOC_TIP		= "左鍵開啟 Accountant Classic.\n右鍵開啟 Accountant Classic 選項.\n右鍵並拖曳以移動圖示按鈕位置.";
-ACCLOC_TIP2		= "右鍵並拖曳以移動圖示按鈕位置.\n右鍵開啟 Accountant Classic.";
+ACCLOC_TITLE		= "個人會計";
+ACCLOC_DESC		= "追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。";
+ACCLOC_TIP		= "左鍵開啟個人會計\n右鍵開啟個人會計選項\n右鍵並拖曳以移動圖示按鈕位置";
+ACCLOC_TIP2		= "右鍵並拖曳以移動圖示按鈕位置\n右鍵開啟個人會計";
 ACCLOC_TOT_IN		= "總收入";
 ACCLOC_TOT_OUT		= "總支出";
 ACCLOC_NET		= "淨收益/虧損";
@@ -44,29 +45,29 @@ ACCLOC_TOTAL		= "總計";
 ACCLOC_CHARS		= "所有角色";
 
 -- Options
-ACCLOC_OPTS		= "Accountant Classic 選項";
-ACCLOC_MINIBUT		= "顯示小地圖按鍵";
+ACCLOC_OPTS		= "個人會計選項";
+ACCLOC_MINIBUT		= "顯示小地圖按鈕";
 ACCLOC_MINIBUTMONEY	= "在小地圖按鈕的提示顯示目前現金";
 ACCLOC_MINIBUTSESSINF	= "在小地圖按鈕的提示顯示本次收入/支出";
 ACCLOC_ONSCRMONEY	= "在遊戲畫面顯示目前現金";
-ACCLOC_BUTPOS		= "小地圖按鍵位置";
+ACCLOC_BUTPOS		= "小地圖按鈕位置";
 ACCLOC_STARTWEEK	= "一週的開始日";
 ACCLOC_DONE		= "完成";
 ACCLOC_INTROTIPS	= "顯示指引提示";
 ACCLOC_INTROTIPS_TIP	= "選擇是否在小地圖按鈕或浮動視窗顯示額外的操作提示";
 
 -- Misc
-ACCLOC_RESET_CONF	= "你確定你要歸零?";
-ACCLOC_NEWPROFILE	= "新的 Accountant Classic 資料已建立給";
-ACCLOC_LOADPROFILE	= "讀取 Accountant Classic 資料給";
-ACCLOC_LOADED		= "已讀取";
+ACCLOC_RESET_CONF	= "是否確定要歸零?";
+ACCLOC_NEWPROFILE	= "新的個人會計資料已建立給";
+ACCLOC_LOADPROFILE	= "讀取個人會計資料給";
+ACCLOC_LOADED		= "資料已讀取";
 ACCLOC_GOLD		= "金";
 ACCLOC_SILVER		= "銀";
 ACCLOC_CENT		= "銅";
 ACCLOC_ABOUT		= "關於";
 
 -- Key Bindings headers
-BINDING_HEADER_ACCOUNTANT	= "Accountant Classic";
-BINDING_NAME_ACCOUNTANTTOG	= "呼叫 Accountant Classic";
+BINDING_HEADER_ACCOUNTANT	= "個人會計";
+BINDING_NAME_ACCOUNTANTTOG	= "呼叫個人會計";
 
 end

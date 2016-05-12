@@ -3,6 +3,7 @@
 if ( GetLocale() == "koKR" ) then
 -- Header
 ACCLOC_TITLE		= "가계부";
+ACCLOC_DESC		= "나만의 수입 지출을 쉽게 볼수있는 와우 가계부입니다.";
 --ACCLOC_TIP		= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.";
 --ACCLOC_TIP2		= "Right-Click to open Accountant Classic.";
 ACCLOC_TOT_IN		= "총수입";

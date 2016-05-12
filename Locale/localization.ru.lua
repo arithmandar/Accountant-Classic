@@ -3,8 +3,9 @@
 if ( GetLocale() == "ruRU" ) then
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
---ACCLOC_TIP		= "Left-Click для открытия Accountant Classic.\nRight-Click для настрйоки Accountant Classic.";
---ACCLOC_TIP2		= "Right-Click для открытия Accountant Classic.";
+--ACCLOC_DESC		= "A basic tool to track your monetary incomings and outgoings within WoW.";
+ACCLOC_TIP		= "Left-Click для открытия Accountant Classic.\nRight-Click для настрйоки Accountant Classic.";
+ACCLOC_TIP2		= "Right-Click для открытия Accountant Classic.";
 ACCLOC_TOT_IN		= "Всего Доходов";
 ACCLOC_TOT_OUT		= "Всего Расходов";
 ACCLOC_NET		= "Чистая прибыль / Убыток";
@@ -17,7 +18,7 @@ ACCLOC_WEEKSTART	= "Начало недели";
 ACCLOC_SUM		= "ИТОГО";
 ACCLOC_CHAR		= "Персонаж";
 ACCLOC_MONEY		= "Деньги";
-ACCLOC_UPDATED		= "Последнее обновление";
+ACCLOC_UPDATED		= "Обновлено";
 
 -- Section Labels
 ACCLOC_QUEST		= "Награда за Квесты";
@@ -41,10 +42,10 @@ ACCLOC_DAY		= "День";
 ACCLOC_WEEK		= "Неделя";
 --ACCLOC_MONTH		= "Month";
 ACCLOC_TOTAL		= "Все";
-ACCLOC_CHARS		= "Все Персанажи";
+ACCLOC_CHARS		= "Все Персонажи";
 
 -- Options
-ACCLOC_OPTS		= "Настрйоки акаунта";
+ACCLOC_OPTS		= "Настройки";
 ACCLOC_MINIBUT		= "Показывать на миникарте";
 --ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
 ACCLOC_BUTPOS		= "Позиция на миникарте";

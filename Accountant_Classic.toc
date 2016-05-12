@@ -1,6 +1,6 @@
 ﻿## Interface: 60200
 ## Title: Accountant Classic
-## Title-zhTW: |cFF00FF00[資訊]|rAccountant Classic 個人會計
+## Title-zhTW: |cFF00FF00[資訊]|r個人會計
 ## Title-zhCN: |cFF00FF00[信息]|rAccountant Classic 个人会计
 ## Title-koKR: |cFF00FF00[가계부]|rAccountant Classic 애드온
 ## Title-RU: Переключить Accountant
@@ -9,7 +9,7 @@
 ## Notes-zhCN: |cff00CC33追踪每个角色的所有收入与支出状况，并可显示当日小计、当周小计、以及自有记录起的总计。并可显示所有角色的总金额。|r
 ## Notes-koKR: |cff00CC33나만의 수입 지출을 쉽게 볼수있는 와우 가계부입니다.|r
 ## Author: Arith Hsu
-## Version: 2.6.05
+## Version: 2.6.06
 ## X-eMail: arithmandarjp @ yahoo.co.jp
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-License: GPLv2
@@ -18,7 +18,7 @@
 ## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR
 ## X-Donate: https://goo.gl/VJowdG
 ## Description: Logs your WoW incomings / outgoings
-## OptionalDeps: LibAboutPanel, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0
+## OptionalDeps: LibAboutPanel, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibDialog-1.0
 ## SavedVariables: Accountant_SaveData, Accountant_Options, Accountant_ClassicDB
 
 Libs\Libs.xml

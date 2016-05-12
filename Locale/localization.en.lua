@@ -2,6 +2,7 @@
 
 -- Header
 ACCLOC_TITLE		= "Accountant Classic";
+ACCLOC_DESC		= "A basic tool to track your monetary incomings and outgoings within WoW.";
 ACCLOC_TIP		= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button.";
 ACCLOC_TIP2		= "Left-click and drag to move this button.\nRight-Click to open Accountant Classic.";
 ACCLOC_TOT_IN		= "Total Incomings";
@@ -47,7 +48,7 @@ ACCLOC_OPTS		= "Accountant Classic Options";
 ACCLOC_MINIBUT		= "Show minimap button";
 ACCLOC_MINIBUTMONEY	= "Show money on minimap button's tooltip";
 ACCLOC_MINIBUTSESSINF	= "Show session info on minimap button's tooltip";
-ACCLOC_ONSCRMONEY	= "Show money on ccreen";
+ACCLOC_ONSCRMONEY	= "Show money on screen";
 ACCLOC_BUTPOS		= "Minimap Button Position";
 ACCLOC_STARTWEEK	= "Start of Week";
 ACCLOC_DONE		= "Done";
@@ -55,9 +56,9 @@ ACCLOC_INTROTIPS	= "Display Instruction Tips";
 ACCLOC_INTROTIPS_TIP	= "Toggle whether to display minimap button or floating money frame's operation tips.";
 
 -- Misc
-ACCLOC_RESET_CONF	= "Are you sure you want to reset the";
-ACCLOC_NEWPROFILE	= "New Accountant Classic profile created for";
-ACCLOC_LOADPROFILE	= "Loaded Accountant Classic Profile for";
+ACCLOC_RESET_CONF	= "Are you sure you want to reset the ";
+ACCLOC_NEWPROFILE	= "New Accountant Classic profile created for ";
+ACCLOC_LOADPROFILE	= "Loaded Accountant Classic Profile for ";
 ACCLOC_LOADED		= "Loaded";
 ACCLOC_GOLD		= "g ";
 ACCLOC_SILVER		= "s ";
