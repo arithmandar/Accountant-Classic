@@ -1,5 +1,5 @@
 ﻿-- $Id$ 
-if (GetLocale() == "frFR") then
+if (GetLocale() == "esES") then
 
 -- Header
 ACCLOC_TITLE = "Accountant Classic"

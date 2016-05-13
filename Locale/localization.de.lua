@@ -51,10 +51,14 @@ ACCLOC_CHARS		= "Alle Chars";
 -- Options
 ACCLOC_OPTS		= "Accountant Classic Optionen";
 ACCLOC_MINIBUT		= "Minikartenbutton zeigen";
+ACCLOC_MINIBUTMONEY	= "Gold im Tooltip des Minikartenbuttons anzeigen";
+ACCLOC_MINIBUTSESSINF	= "Sitzungsinformationen im Tooltip des Minikartenbuttons anzeigen";
 --ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
 ACCLOC_BUTPOS		= "Minikartenbuttonposition";
 ACCLOC_STARTWEEK	= "Beginn der Woche";
 ACCLOC_DONE		= "Fertig";
+--ACCLOC_INTROTIPS	= "Display Instruction Tips";
+--ACCLOC_INTROTIPS_TIP	= "Toggle whether to display minimap button or floating money frame's operation tips.";
 
 -- Misc
 ACCLOC_RESET_CONF	= "Die Einstellungen wirklich zuruecksetzen";

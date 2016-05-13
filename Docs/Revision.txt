@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.6.06 (May 13, 2016)
+  - Corrected the language code defined in Spanish file
+  - Translation update:
+    - deDE: pas06
+
 * v2.6.06 (May 12, 2016)
   - Added LibDiag-1.0
   - Added Spanish translation (IsabelGarcia)
