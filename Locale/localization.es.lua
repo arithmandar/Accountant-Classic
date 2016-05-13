@@ -5,7 +5,7 @@ if (GetLocale() == "esES") then
 ACCLOC_TITLE = "Accountant Classic"
 -- ACCLOC_DESC = "A basic tool to track your monetary incomings and outgoings within WoW."
 ACCLOC_AUC = "Casa de subastas"
-ACCLOC_TIP = Clic izquierdo para abrir Accountant Classic.\nClic derecho para opciones de Accountant Classic.
+ACCLOC_TIP = "Clic izquierdo para abrir Accountant Classic.\nClic derecho para opciones de Accountant Classic."
 ACCLOC_TIP2 = "Clic derecho para abrir Accountant Classic."
 ACCLOC_TOT_IN = "Ingresos totales"
 ACCLOC_TOT_OUT = "Gastos totales"
