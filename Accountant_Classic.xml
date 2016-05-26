@@ -1,13 +1,13 @@
 <!-- $Id$ -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="Accountant.lua"/>
+	<Script file="Accountant_Classic.lua"/>
 
 	<!-- Item Row Template -->
 	<Button name="AccountantTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				AccountantTab_OnClick(self);
+				AccountantClassicTab_OnClick(self);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -53,19 +53,19 @@
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
-				AccountantMoneyInfoFrame_HandleMouseDown(self, button);
+				AccountantClassicMoneyInfoFrame_HandleMouseDown(self, button);
 			</OnMouseDown>
 			<OnMouseUp>
-				AccountantMoneyInfoFrame_HandleMouseUp(self, button)
+				AccountantClassicMoneyInfoFrame_HandleMouseUp(self, button)
 			</OnMouseUp>
 			<OnUpdate>
-				AccountantMoneyInfoFrame_Update(self);						
+				AccountantClassicMoneyInfoFrame_Update(self);						
 			</OnUpdate>
 			<OnEnter>
-				AccountantMoneyInfoFrame_OnEnter(self);
+				AccountantClassicMoneyInfoFrame_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				AccountantMoneyInfoFrame_OnLeave(self);
+				AccountantClassicMoneyInfoFrame_OnLeave(self);
 			</OnLeave>
 		</Scripts>
 	</Frame>
@@ -153,14 +153,14 @@
 	</Frame>
 
 	<!-- Main Window -->
-	<Frame name="AccountantFrame" toplevel="true" enableMouse="true" frameStrata="HIGH" movable="true" parent="UIParent" hidden="true">
+	<Frame name="AccountantFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="512" y="512"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
-					<AbsDimension x="400" y="-104"/>
+					<AbsDimension x="0" y="-104"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -272,7 +272,7 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="350" y="-39"/>
+								<AbsDimension x="330" y="-39"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -290,7 +290,7 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="350" y="-55"/>
+								<AbsDimension x="330" y="-55"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -308,25 +308,25 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="350" y="-71"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentExtra" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="TOP" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="450" y="-39"/>
+								<AbsDimension x="330" y="-71"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentExtraValue" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentExtra" relativePoint="BOTTOM">
+						<Anchor point="TOP" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="0" y="0"/>
+								<AbsDimension x="475" y="-39"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentExtra" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentExtraValue" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-2" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -334,6 +334,30 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentCharacterDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="358" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+				</Scripts>
+			</Frame>
 			<Frame name="$parentRow1" inherits="AccountantRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
@@ -518,7 +542,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						AccountantOptions_Toggle();
+						AccountantClassicOptions_Toggle();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -552,7 +576,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						Accountant_ResetData();
+						AccountantClassic_ResetData();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -628,16 +652,16 @@
 				self:RegisterForDrag("LeftButton");
 
 				<!-- Setup -->
-				Accountant_RegisterEvents(self);
+				AccountantClassic_RegisterEvents(self);
 			</OnLoad>
 			<OnShow>
-				Accountant_OnShow(self);
+				AccountantClassic_OnShow(self);
 			</OnShow>
 			<OnHide>
-				Accountant_OnHide(self);
+				AccountantClassic_OnHide(self);
 			</OnHide>
 			<OnEvent>
-				Accountant_OnEvent(self, event, ...);
+				AccountantClassic_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnDragStart>
 				self:StartMoving();
@@ -645,6 +669,9 @@
 			<OnDragStop>
 				self:StopMovingOrSizing();
 			</OnDragStop>
+<!--			<OnMouseDown>
+				AccountantClassic_HandleMouseDown(self, button);
+			</OnMouseDown>-->
 			<OnMouseUp>
 				self:StopMovingOrSizing();
 			</OnMouseUp>

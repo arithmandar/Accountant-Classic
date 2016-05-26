@@ -1,68 +1,7 @@
 ﻿-- $Id$ 
+-- Thanks to Narumar and unw1s3
+local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "ruRU", false)
 
-if ( GetLocale() == "ruRU" ) then
--- Header
-ACCLOC_TITLE		= "Accountant Classic";
---ACCLOC_DESC		= "A basic tool to track your monetary incomings and outgoings within WoW.";
-ACCLOC_TIP		= "Left-Click для открытия Accountant Classic.\nRight-Click для настрйоки Accountant Classic.";
-ACCLOC_TIP2		= "Right-Click для открытия Accountant Classic.";
-ACCLOC_TOT_IN		= "Всего Доходов";
-ACCLOC_TOT_OUT		= "Всего Расходов";
-ACCLOC_NET		= "Чистая прибыль / Убыток";
-ACCLOC_NETLOSS		= "Чистый Убыток";
-ACCLOC_NETPROF		= "Чистый Доход";
-ACCLOC_SOURCE		= "Источник";
-ACCLOC_IN		= "Доходы";
-ACCLOC_OUT		= "Расходы";
-ACCLOC_WEEKSTART	= "Начало недели";
-ACCLOC_SUM		= "ИТОГО";
-ACCLOC_CHAR		= "Персонаж";
-ACCLOC_MONEY		= "Деньги";
-ACCLOC_UPDATED		= "Обновлено";
+if not L then return end
 
--- Section Labels
-ACCLOC_QUEST		= "Награда за Квесты";
-ACCLOC_MERCH		= "Торговцы";
-ACCLOC_TRADE		= "Обмен";
-ACCLOC_MAIL		= "Почта";
-ACCLOC_TRAIN		= "Расходы на обучение";
-ACCLOC_TAXI		= "Такси";
-ACCLOC_OTHER		= "Неизвестный";
-ACCLOC_REPAIR		= "Затраты на ремонт";
---ACCLOC_LFG 		= "LFD, LFR and Scen."
-
--- Buttons
-ACCLOC_RESET		= "Сбросить";
-ACCLOC_OPTBUT		= "Опции";
-ACCLOC_EXIT		= "Закрыть";
-
--- Tabs
-ACCLOC_SESS		= "Сессия";
-ACCLOC_DAY		= "День";
-ACCLOC_WEEK		= "Неделя";
---ACCLOC_MONTH		= "Month";
-ACCLOC_TOTAL		= "Все";
-ACCLOC_CHARS		= "Все Персонажи";
-
--- Options
-ACCLOC_OPTS		= "Настройки";
-ACCLOC_MINIBUT		= "Показывать на миникарте";
---ACCLOC_ONSCRMONEY	= "Show Money Info on Screen";
-ACCLOC_BUTPOS		= "Позиция на миникарте";
-ACCLOC_STARTWEEK	= "Начало недели";
-ACCLOC_DONE		= "Готово";
-
--- Misc
-ACCLOC_RESET_CONF	= "Вы уверены, что хотите сбросить";
-ACCLOC_NEWPROFILE	= "Создать новый профиль для";
-ACCLOC_LOADPROFILE	= "Загрузить профиль для";
-ACCLOC_LOADED		= "Загрузка";
-ACCLOC_GOLD		= " зол. ";
-ACCLOC_SILVER		= " сер. ";
-ACCLOC_CENT		= " м. ";
-ACCLOC_ABOUT		= "About";
-
--- Key Bindings headers
-BINDING_HEADER_ACCOUNTANT	= "Accountant Classic";
-BINDING_NAME_ACCOUNTANTTOG	= "Переключить Accountant Classic";
-end
+--@localization(locale="ruRU", format="lua_additive_table")@

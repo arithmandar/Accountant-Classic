@@ -6,7 +6,14 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.6.06 (May 13, 2016)
+* v2.06.08 (May 25, 2016)
+  - Fixed the problem that option frame not open when minimap button has been right-clicked
+  - Enhanced to prevent the money frame to be draged when in combat
+  - Hide tooltip while draging or in combat
+  - Migrate locale to use AceLocale; also added other non-translated languages, the translation will get loaded once anyone provide translation via CurseForge
+  - Revised function names to use "AccountantClassic" as prefix; code files' name also revised to "Accountant_Classic" as prefix
+
+* v2.6.07 (May 13, 2016)
   - Corrected the language code defined in Spanish file
   - Translation update:
     - deDE: pas06

@@ -3,6 +3,6 @@ $Id$
 -->
 <Bindings>
 	<Binding name="ACCOUNTANTTOG" header="ACCOUNTANT">
-		AccountantButton_OnClick();
+		AccountantClassic_ButtonOnClick();
 	</Binding>
 </Bindings>

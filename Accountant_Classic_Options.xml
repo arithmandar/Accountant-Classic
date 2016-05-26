@@ -2,7 +2,7 @@
 $Id$
 -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
-	<Script file="AccountantOptions.lua"/>
+	<Script file="Accountant_Classic_Options.lua"/>
 	<Frame name="AccountantOptionsFrame" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -41,7 +41,7 @@ $Id$
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						AccountantOptionsFrameWeek_Init();
+						AccountantClassicOptionsFrameWeek_Init();
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -58,7 +58,7 @@ $Id$
 						_G[self:GetName().."Text"]:SetText(ACCLOC_MINIBUT);
 					</OnLoad>
 					<OnClick>
-						AccountantButton_Toggle();
+						AccountantClassic_ButtonToggle();
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -75,7 +75,7 @@ $Id$
 						_G[self:GetName().."Text"]:SetText(ACCLOC_MINIBUTMONEY);
 					</OnLoad>
 					<OnClick>
-						AccountantOptionsMoneyOnMinimap_Toggle();
+						AccountantClassicOptionsMoneyOnMinimap_Toggle();
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -92,7 +92,7 @@ $Id$
 						_G[self:GetName().."Text"]:SetText(ACCLOC_MINIBUTSESSINF);
 					</OnLoad>
 					<OnClick>
-						AccountantOptionsSessionOnMinimap_Toggle();
+						AccountantClassicOptionsSessionOnMinimap_Toggle();
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -109,10 +109,34 @@ $Id$
 						_G[self:GetName().."Text"]:SetText(ACCLOC_ONSCRMONEY);
 					</OnLoad>
 					<OnClick>
-						AccountantMoneyInfoFrame_Toggle();
+						AccountantClassicMoneyInfoFrame_Toggle();
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<Button name="AccountantOptionsResetPosition" inherits="OptionsButtonTemplate" text="ACCLOC_RSTPOSITION">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyDisplay" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="310" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="160" y="21" />
+				</Size>
+				<Scripts>
+					<OnClick>
+						AccountantMoneyInfoFrame_ResetPosition();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_RSTMNYFRM_TIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
 			<CheckButton name="AccountantOptionsFrameToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyDisplay">
@@ -130,7 +154,7 @@ $Id$
 						GameTooltip:SetText(ACCLOC_INTROTIPS_TIP, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnClick>
-						AccountantOptionsIntroTip_Toggle();
+						AccountantClassicOptionsIntroTip_Toggle();
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -144,20 +168,20 @@ $Id$
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						AccountantOptions_Toggle();
+						AccountantClassicOptions_Toggle();
 					</OnClick>
 				</Scripts>
 			</Button>-->
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				AccountantOptions_OnLoad(self);
+				AccountantClassicOptions_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				AccountantOptions_OnShow(self);
+				AccountantClassicOptions_OnShow(self);
 			</OnShow>
 			<OnHide>
-				AccountantOptions_OnHide(self);
+				AccountantClassicOptions_OnHide(self);
 			</OnHide>
 		</Scripts>
 	</Frame>
