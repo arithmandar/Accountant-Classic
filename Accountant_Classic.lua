@@ -220,13 +220,13 @@ function addon:OnInitialize()
 end
 
 function addon:Toggle()
-	self.db.profile.minimap.show = not self.db.profile.minimap.show
-	if self.db.profile.minimap.show then
-		button:Show("Accountant_Classic")
-		AccountantClassic_Profile["options"].showbutton = true;
-	else
+	self.db.profile.minimap.hide = not self.db.profile.minimap.hide
+	if self.db.profile.minimap.hide then
 		button:Hide("Accountant_Classic")
 		AccountantClassic_Profile["options"].showbutton = false;
+	else
+		button:Show("Accountant_Classic")
+		AccountantClassic_Profile["options"].showbutton = true;
 	end
 	AccountantOptionsFrameToggleButton:SetChecked(AccountantClassic_Profile["options"].showbutton);
 end

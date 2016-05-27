@@ -6,6 +6,9 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.06.09 (May 27, 2016)
+  - Fixed Minimap button enable / disable issue
+
 * v2.06.08 (May 25, 2016)
   - Fixed the problem that option frame not open when minimap button has been right-clicked
   - Enhanced to prevent the money frame to be draged when in combat
