@@ -4,6 +4,7 @@ $Id$
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("Accountant_Classic");
 local L = LibStub("AceLocale-3.0"):GetLocale("Accountant_Classic");
+local LibDialog = LibStub("LibDialog-1.0");
 
 ACCOUNTANT_OPTIONS_TITLE = ACCLOC_OPTS;
 
@@ -36,6 +37,7 @@ function AccountantClassicOptions_OnShow()
 	--AccountantSliderButtonPos:SetValue(AccountantClassic_Profile["options"].buttonpos);
 	UIDropDownMenu_Initialize(AccountantOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
 	UIDropDownMenu_SetSelectedID(AccountantOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
+	UIDropDownMenu_Initialize(AccountantOptionsFrameCharacterDropDown, AccountantClassicOptionsCharacterDropDown_Init);
 end
 
 function AccountantClassicOptions_OnHide(self)
@@ -98,4 +100,47 @@ function AccountantMoneyInfoFrame_ResetPosition()
 	AccountantMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 90, 0);
 	AccountantClassic_Profile["options"].moneyinfoframe_x = 90;
 	AccountantClassic_Profile["options"].moneyinfoframe_y = 0;
+end
+
+function AccountantClassicOptionsCharacterDropDown_Init()
+	local info;
+	local server_key, server_value, char_key, char_value;
+	for server_key, server_value in pairs(Accountant_SaveData) do
+		for char_key, char_value in pairs(Accountant_SaveData[server_key]) do
+			info = { };
+			info.text = server_key.." - "..char_key;
+			info.value = char_key;
+			info.arg1 = server_key;
+			info.func = AccountantClassicOptionsCharacterDropDown_OnClick;
+			UIDropDownMenu_AddButton(info);
+		end
+	end
+end
+
+function AccountantClassicOptionsCharacterDropDown_OnClick(self, arg1)
+	local selected_char = self.value;
+	local selected_srv  = arg1;
+	UIDropDownMenu_SetSelectedID(AccountantFrameCharacterDropDown, self:GetID());
+	
+	-- Confirm box
+	LibDialog:Register("ACCLOC_CHARREMOVE", {
+		text = L["ACCLOC_CHARREMOVETEXT"].."\n|cFFFFFF00"..selected_srv.." - "..selected_char.."|r",
+		buttons = {
+			{
+				text = OKAY,
+				on_click = function() AccountantClassic_CharacterRemovalConfirmed(selected_srv, selected_char); end,
+			},
+			{
+				text = CANCEL,
+				on_click = function(self, mouseButton, down) LibDialog:Dismiss("ACCLOC_CHARREMOVE"); end,
+			},
+		},
+		show_while_dead = true,
+		hide_on_escape = true,
+		is_exclusive = true,
+		show_during_cinematic = false,
+		
+	});
+	LibDialog:Spawn("ACCLOC_CHARREMOVE");
+
 end

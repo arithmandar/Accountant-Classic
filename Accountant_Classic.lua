@@ -908,7 +908,7 @@ function AccountantFrameCharacterDropDown_Init()
 	for server_key, server_value in pairs(Accountant_SaveData) do
 		for char_key, char_value in pairs(Accountant_SaveData[server_key]) do
 			info = { };
-			info.text = char_key;
+			info.text = server_key.." - "..char_key;
 			info.value = char_key;
 			info.arg1 = server_key;
 			info.func = AccountantFrameCharacterDropDown_OnClick;
@@ -992,6 +992,20 @@ function AccountantClassic_ResetConfirmed()
 	end
 	if AccountantFrame:IsVisible() then
 		AccountantClassic_OnShow();
+	end
+end
+
+function AccountantClassic_CharacterRemovalConfirmed(server, character)
+	for ka, va in pairs(Accountant_SaveData) do
+		if (ka == server) then
+			for kb, vb in pairs(Accountant_SaveData[ka]) do
+				if (kb == character) then
+					Accountant_SaveData[ka][kb] = nil;
+					ACC_Print(server.." - "..character..L["ACCLOC_CHARREMOVEDONE"]);
+					return
+				end
+			end
+		end
 	end
 end
 

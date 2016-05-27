@@ -60,6 +60,9 @@ L["ACCLOC_STARTWEEK"]		= "一週的開始日";
 L["ACCLOC_DONE"]		= "完成";
 L["ACCLOC_INTROTIPS"]		= "顯示指引提示";
 L["ACCLOC_INTROTIPS_TIP"]	= "選擇是否在小地圖按鈕或浮動視窗顯示額外的操作提示";
+L["ACCLOC_REMOVECHAR"]		= "選擇要移除的腳色:";
+L["ACCLOC_CHARREMOVETEXT"]	= "選擇的腳色即將被移除。\n您確認要將以下的腳色從個人會計的資料庫裏移除嗎？";
+L["ACCLOC_CHARREMOVEDONE"]	= "腳色已被移除。";
 
 -- Misc
 L["ACCLOC_RESET_CONF"]		= "是否確定要歸零?";

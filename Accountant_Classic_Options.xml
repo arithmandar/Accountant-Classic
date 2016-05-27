@@ -45,7 +45,7 @@ $Id$
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<CheckButton name="AccountantOptionsFrameToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -62,9 +62,9 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="AccountantOptionsFrameToggleMoneyOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentToggleMoneyOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleButton">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleButton">
 						<Offset>
 							<AbsDimension x="10" y="-25"/>
 						</Offset>
@@ -79,9 +79,9 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="AccountantOptionsFrameToggleSessionOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentToggleSessionOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyOnMiniMap">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyOnMiniMap">
 						<Offset>
 							<AbsDimension x="0" y="-25"/>
 						</Offset>
@@ -96,9 +96,9 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="AccountantOptionsFrameToggleMoneyDisplay" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentToggleMoneyDisplay" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleSessionOnMiniMap">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleSessionOnMiniMap">
 						<Offset>
 							<AbsDimension x="-10" y="-25"/>
 						</Offset>
@@ -113,9 +113,9 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Button name="AccountantOptionsResetPosition" inherits="OptionsButtonTemplate" text="ACCLOC_RSTPOSITION">
+			<Button name="$parentResetPosition" inherits="OptionsButtonTemplate" text="ACCLOC_RSTPOSITION">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyDisplay" relativePoint="TOPRIGHT">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplay" relativePoint="TOPRIGHT">
 						<Offset>
 							<AbsDimension x="310" y="0"/>
 						</Offset>
@@ -137,9 +137,9 @@ $Id$
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<CheckButton name="AccountantOptionsFrameToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AccountantOptionsFrameToggleMoneyDisplay">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplay">
 						<Offset>
 							<AbsDimension x="0" y="-25"/>
 						</Offset>
@@ -158,6 +158,28 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<Frame name="$parentCharacterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleDisplayInstroTips" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-10" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="ACCLOC_REMOVECHAR">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 <!--			<Button name="AccountantOptionsFrameDone" inherits="OptionsButtonTemplate" text="ACCLOC_DONE">
 				<Anchors>
 					<Anchor point="BOTTOM">

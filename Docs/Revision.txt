@@ -6,6 +6,9 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.06.10 (May 28, 2016)
+  - Now supports to remove character in options frame
+
 * v2.06.09 (May 27, 2016)
   - Fixed Minimap button enable / disable issue
 

@@ -61,6 +61,9 @@ L["ACCLOC_STARTWEEK"]		= "Start of Week";
 L["ACCLOC_DONE"]		= "Done";
 L["ACCLOC_INTROTIPS"]		= "Display Instruction Tips";
 L["ACCLOC_INTROTIPS_TIP"]	= "Toggle whether to display minimap button or floating money frame's operation tips.";
+L["ACCLOC_REMOVECHAR"]		= "Select the character to be removed:";
+L["ACCLOC_CHARREMOVETEXT"]	= "The selected character is about to be removed.\nAre you sure you want to remove the following character from Accountant Classic?";
+L["ACCLOC_CHARREMOVEDONE"]	= " character has been removed.";
 
 -- Misc
 L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the ";
