@@ -1002,7 +1002,7 @@ function AccountantClassic_CharacterRemovalConfirmed(server, character)
 				if (kb == character) then
 					Accountant_SaveData[ka][kb] = nil;
 					ACC_Print(server.." - "..character..L["ACCLOC_CHARREMOVEDONE"]);
-					return
+					return;
 				end
 			end
 		end
