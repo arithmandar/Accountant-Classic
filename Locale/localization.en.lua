@@ -45,6 +45,7 @@ L["ACCLOC_SESS"]		= "Session";
 L["ACCLOC_DAY"]			= "Day";
 L["ACCLOC_WEEK"]		= "Week";
 L["ACCLOC_MONTH"]		= "Month";
+L["ACCLOC_PRVMON"]		= "Prv. Month";
 L["ACCLOC_TOTAL"]		= "Total";
 L["ACCLOC_CHARS"]		= "All Chars";
 

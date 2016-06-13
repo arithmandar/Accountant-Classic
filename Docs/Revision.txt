@@ -6,6 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.06.11 (Jun. 14, 2016)
+  - Enhanced the AccountFrame's showing / hiding method so that it will remember the position from last draging.
+  - Added faction icon on All Characters tab for each of the characters 
+   (you will need to login with each character to record the faction info)
+  - Formated currency strings to add leading 0
+  - Fixed the bug that new character's profile failed to be created
+
 * v2.06.10 (May 28, 2016)
   - Now supports to remove character in options frame
 

@@ -45,6 +45,7 @@ local AccountantClassic_Verbose = nil;
 local AccountantClassic_GotName = false;
 local AccountantClassic_CurrentTab = 1;
 local AccountantClassic_LogModes = {"Session", "Day", "Week", "Month", "Total"};
+local AccountantClassic_LogTypes = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"};
 local AccountantClassic_ShowPlayer;
 Accountant_SaveData = nil;
 AccountantClassic_Player = UnitName("player");
@@ -52,6 +53,9 @@ AccountantClassic_Server = GetRealmName();
 AccountantClassic_Faction = UnitFactionGroup("player");
 local AccountantClassic_ShowPlayer = AccountantClassic_Player;
 local isInLockdown = false;
+
+-- NewDB
+local AC_NewDB = fales;
 
 local AccountantClassic_Data = {
 		["TRAIN"] = 	{Title = L["ACCLOC_TRAIN"]};
@@ -70,8 +74,25 @@ local AccountantClassic_Data = {
 		["LFG"] =	{Title = L["ACCLOC_LFG"]};
 		["BARBER"] =	{Title = BARBERSHOP};
 		["GUILD"] =	{Title = GUILD};
-	};
+};
 
+local defaultoptions = {
+	showbutton = true, 
+	showmoneyinfo = true, 
+	showintrotip = true,
+	showmoneyonbutton = true,
+	showsessiononbutton = true,
+	buttonpos = 150, 
+	version = AccountantClassic_Version, 
+	date = cdate, 
+	weekdate = cweek, 
+	month = cmonth,
+	weekstart = 1, 
+	totalcash = 0,
+	moneyinfoframe_x = 90,
+	moneyinfoframe_y = 0,
+};
+	
 local AccountantClassic_Events = {
 	"PLAYER_LOGIN",
 	"ADDON_LOADED",
@@ -191,18 +212,7 @@ function addon:OnInitialize()
 				show = true,
 				minimapPos = 153,
 			},
-			options = {
-				showbutton = true, 
-				showmoneyinfo = true, 
-				showintrotip = true,
-				showmoneyonbutton = true,
-				showsessiononbutton = true,
-				version = AccountantClassic_Version, 
-				date = cdate, 
-				month = cmonth,
-				weekstart = 1, 
-				totalcash = 0,
-			},
+			options = defaultoptions,
 		},
 	};
 
@@ -215,7 +225,8 @@ function addon:OnInitialize()
 	button:Register("Accountant_Classic", Accountant_ClassicMiniMapLDB, self.db.profile.minimap);
 	self:RegisterChatCommand("accountantbutton", AccountantClassic_ButtonToggle);
 	self:RegisterChatCommand("accountant", Accountant_Slash);
-	AccountantClassic_Profile = Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player];
+	self:RegisterChatCommand("acc", Accountant_Slash);
+	--AccountantClassic_Profile = Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player];
 	AccountantFrame:SetClampedToScreen(true);
 end
 
@@ -237,9 +248,9 @@ end
 
 function AccountantClassic_ButtonOnClick()
 	if AccountantFrame:IsVisible() then
-		HideUIPanel(AccountantFrame);
+		AccountantFrame:Hide();
 	else
-		ShowUIPanel(AccountantFrame);
+		AccountantFrame:Show();
 	end
 end
 
@@ -252,7 +263,7 @@ end
 
 function AccountantClassic_SetLabels(self)
 	-- if current tab is All Chars tab
-	if AccountantClassic_CurrentTab == 6 then
+	if (AccountantClassic_CurrentTab == 6) then
 		AccountantFrameResetButton:Hide();
 
 		AccountantFrameSource:SetText(L["ACCLOC_CHAR"]);
@@ -301,11 +312,6 @@ function AccountantClassic_SetLabels(self)
 end
 
 function AccountantClassic_OnLoad(self)
---[[
-	AccountantClassic_Player = UnitName("player");
-	AccountantClassic_Server = GetRealmName();
-	AccountantClassic_Faction = UnitFactionGroup("player");
-]]
 	-- Setup
 	AccountantClassic_LoadData();
 	AccountantClassic_SetLabels();
@@ -315,18 +321,6 @@ function AccountantClassic_OnLoad(self)
 	AccountantClassic_CurrentMoney = GetMoney();
 	AccountantClassic_LastMoney = AccountantClassic_CurrentMoney;
 
---[[
-	-- Slash Commands
-	SlashCmdList["ACCOUNTANT"] = Accountant_Slash;
-	SLASH_ACCOUNTANT1 = "/accountant";
-	SLASH_ACCOUNTANT2 = "/acc";
-]]
---[[
-	-- Add myAddOns support
-	if myAddOnsList then
-		myAddOnsList.Accountant = {name = "Accountant Classic", description = ACCLOC_DESC, version = AccountantClassic_Version, frame = "AccountantFrame", optionsframe = "AccountantOptionsFrame"};
-	end
-]]	
 	-- hooks
 	AccountantClassic_RepairAllItems_old = RepairAllItems;
 	RepairAllItems = AccountantClassic_RepairAllItems;
@@ -336,16 +330,25 @@ function AccountantClassic_OnLoad(self)
 	-- tabs
 	AccountantFrameTab1:SetText(L["ACCLOC_SESS"]);
 	PanelTemplates_TabResize(AccountantFrameTab1, 10);
+	
 	AccountantFrameTab2:SetText(L["ACCLOC_DAY"]);
 	PanelTemplates_TabResize(AccountantFrameTab2, 10);
+	
 	AccountantFrameTab3:SetText(L["ACCLOC_WEEK"]);
 	PanelTemplates_TabResize(AccountantFrameTab3, 10);
+	
 	AccountantFrameTab4:SetText(L["ACCLOC_MONTH"]);
 	PanelTemplates_TabResize(AccountantFrameTab4, 10);
+	
 	AccountantFrameTab5:SetText(L["ACCLOC_TOTAL"]);
 	PanelTemplates_TabResize(AccountantFrameTab5, 10);
+
+--	AccountantFrameTab6:SetText(L["ACCLOC_PRVMON"]);
+--	PanelTemplates_TabResize(AccountantFrameTab6, 10);
+	
 	AccountantFrameTab6:SetText(L["ACCLOC_CHARS"]);
 	PanelTemplates_TabResize(AccountantFrameTab6, 10);
+	
 	PanelTemplates_SetNumTabs(AccountantFrame, 6);
 	PanelTemplates_SetTab(AccountantFrame, AccountantFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantFrame);
@@ -362,73 +365,77 @@ function AccountantClassic_LoadData()
 	end
 
 	local cdate = date("%d/%m/%y");
-	local cdate = string.sub(cdate,0,8);
+	cdate = string.sub(cdate,0,8);
 	local cweek = "";
 	local cmonth = date("%m");
 
-	if(Accountant_SaveData == nil) then
+	if (Accountant_SaveData == nil) then
 		Accountant_SaveData = {};
+	end
+	if (Accountant_Classic_NewDB == nil) then
+		Accountant_Classic_NewDB = {};
 	end
 	if (Accountant_SaveData[AccountantClassic_Server] == nil) then
 		Accountant_SaveData[AccountantClassic_Server] = {};
 	end
+	if (Accountant_Classic_NewDB[AccountantClassic_Server] == nil) then
+		Accountant_Classic_NewDB[AccountantClassic_Server] = {};
+	end
+	
 	if (Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
 		Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player] = {
-			options = {
-				showbutton = true, 
-				showmoneyinfo = true, 
-				showintrotip = true,
-				showmoneyonbutton = true,
-				showsessiononbutton = true,
-				buttonpos = 150, 
-				version = AccountantClassic_Version, 
-				date = cdate, 
-				weekdate = cweek, 
-				month = cmonth,
-				weekstart = 1, 
-				totalcash = 0,
-				moneyinfoframe_x = 90,
-				moneyinfoframe_y = 0,
-			},
-			data={}
+			options = defaultoptions,
+			data = { },
 		};
 		ACC_Print(L["ACCLOC_NEWPROFILE"].." "..AccountantClassic_Player);
 	else
 		ACC_Print(L["ACCLOC_LOADPROFILE"].." "..AccountantClassic_Player);
 	end
-
-	if (Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].moneyinfoframe_x == nil) then
-		Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].moneyinfoframe_x = 90;
-		Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].moneyinfoframe_y = 0;
+	if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
+		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] = {
+			data = { },
+		};
+	end
+	if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player][cdate] == nil ) then
+		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate] = { };
 	end
 
+	AccountantClassic_Profile = Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player];
+
 	order = 1;
-	for key,value in pairs(AccountantClassic_Data) do
-		if AccountantClassic_Profile["data"][key] == nil then
-			AccountantClassic_Profile["data"][key] = {}
+	for key, value in pairs(AccountantClassic_Data) do
+		if (AccountantClassic_Profile["data"][key] == nil) then
+			AccountantClassic_Profile["data"][key] = { };
+		end
+		if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][key] == nil) then
+			Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][key] = {
+				In = 0;
+				Out = 0;
+			};
 		end
 		for modekey,mode in pairs(AccountantClassic_LogModes) do
-			if AccountantClassic_Profile["data"][key][mode] == nil then
-				AccountantClassic_Profile["data"][key][mode] = {In=0,Out=0};
+			if (AccountantClassic_Profile["data"][key][mode] == nil) then
+				AccountantClassic_Profile["data"][key][mode] = {In=0, Out=0};
 			end
 			AccountantClassic_Data[key][mode].In  = AccountantClassic_Profile["data"][key][mode].In;
 			AccountantClassic_Data[key][mode].Out = AccountantClassic_Profile["data"][key][mode].Out;
 		end
+		-- Here we reset session data
 		AccountantClassic_Data[key]["Session"].In = 0;
 		AccountantClassic_Data[key]["Session"].Out = 0;
 
 		-- Old Version Conversion
-		if AccountantClassic_Profile["data"][key].TotalIn ~= nil then
+		if (AccountantClassic_Profile["data"][key].TotalIn ~= nil) then
 			AccountantClassic_Profile["data"][key]["Total"].In = AccountantClassic_Profile["data"][key].TotalIn;
 			AccountantClassic_Data[key]["Total"].In = AccountantClassic_Profile["data"][key].TotalIn;
 			AccountantClassic_Profile["data"][key].TotalIn = nil;
 		end
-		if AccountantClassic_Profile["data"][key].TotalOut ~= nil then
+		if (AccountantClassic_Profile["data"][key].TotalOut ~= nil) then
 			AccountantClassic_Profile["data"][key]["Total"].Out = AccountantClassic_Profile["data"][key].TotalOut;
 			AccountantClassic_Data[key]["Total"].Out = AccountantClassic_Profile["data"][key].TotalOut;
 			AccountantClassic_Profile["data"][key].TotalOut = nil;
 		end
-		if Accountant_SaveData[key] ~= nil then
+		if (Accountant_SaveData[key] ~= nil) then
 			Accountant_SaveData[key] = nil;
 		end
 		-- End OVC
@@ -438,36 +445,43 @@ function AccountantClassic_LoadData()
 	AccountantClassic_Profile["options"].version = AccountantClassic_Version;
 	AccountantClassic_Profile["options"].totalcash = GetMoney();
 
-	if(AccountantClassic_Profile["options"].showmoneyinfo == nil) then
+	if (AccountantClassic_Profile["options"].showmoneyinfo == nil) then
 		AccountantClassic_Profile["options"].showmoneyinfo = true;
 	end
-	if(AccountantClassic_Profile["options"].showintrotip == nil) then
+	if (AccountantClassic_Profile["options"].showintrotip == nil) then
 		AccountantClassic_Profile["options"].showintrotip = false;
 	end
-	if(AccountantClassic_Profile["options"].showmoneyonbutton == nil) then
+	if (AccountantClassic_Profile["options"].showmoneyonbutton == nil) then
 		AccountantClassic_Profile["options"].showmoneyonbutton = true;
 	end
-	if(AccountantClassic_Profile["options"].showsessiononbutton == nil) then
+	if (AccountantClassic_Profile["options"].showsessiononbutton == nil) then
 		AccountantClassic_Profile["options"].showsessiononbutton = true;
 	end
 	
-	if AccountantClassic_Profile["options"]["weekstart"] == nil then
+	if (AccountantClassic_Profile["options"]["weekstart"] == nil) then
 		AccountantClassic_Profile["options"]["weekstart"] = 1;
 	end
-	if AccountantClassic_Profile["options"]["dateweek"] == nil then
+	if (AccountantClassic_Profile["options"]["dateweek"] == nil) then
 		AccountantClassic_Profile["options"]["dateweek"] = AccountantClassic_WeekStart();
 	end
-	if AccountantClassic_Profile["options"]["date"] == nil then
+	if (AccountantClassic_Profile["options"]["date"] == nil) then
 		AccountantClassic_Profile["options"]["date"] = cdate;
 	end
-	if AccountantClassic_Profile["options"]["month"] == nil then
+	if (AccountantClassic_Profile["options"]["month"] == nil) then
 		AccountantClassic_Profile["options"]["month"] = cmonth;
+	end
+	if (AccountantClassic_Profile["options"].moneyinfoframe_x == nil) then
+		AccountantClassic_Profile["options"].moneyinfoframe_x = 90;
+		AccountantClassic_Profile["options"].moneyinfoframe_y = 0;
+	end
+	if (AccountantClassic_Profile["options"].faction == nil) then
+		AccountantClassic_Profile["options"].faction = AccountantClassic_Faction;
 	end
 
 	--Duplicate below from OnShow as the day and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
 	-- Check to see if the day has rolled over
-	if AccountantClassic_Profile["options"]["date"] ~= cdate then
-		-- Its a new day! clear out the day tab
+	if (AccountantClassic_Profile["options"]["date"] ~= cdate) then
+		-- It's a new day! clear out the day tab
 		for mode,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[mode]["Day"].In = 0;
 			AccountantClassic_Profile["data"][mode]["Day"].In = 0;
@@ -478,8 +492,8 @@ function AccountantClassic_LoadData()
 	AccountantClassic_Profile["options"]["date"] = cdate;
 
 	-- Check to see if the week has rolled over
-	if AccountantClassic_Profile["options"]["dateweek"] ~= AccountantClassic_WeekStart() then
-		-- Its a new week! clear out the week tab
+	if (AccountantClassic_Profile["options"]["dateweek"] ~= AccountantClassic_WeekStart()) then
+		-- It's a new week! clear out the week tab
 		for mode,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[mode]["Week"].In = 0;
 			AccountantClassic_Profile["data"][mode]["Week"].In = 0;
@@ -490,8 +504,9 @@ function AccountantClassic_LoadData()
 	AccountantClassic_Profile["options"]["dateweek"] = AccountantClassic_WeekStart();
 
 	-- Check to see if the month has rolled over
-	if AccountantClassic_Profile["options"]["month"] ~= cmonth then
-		-- Its a new month! clear out the month tab
+	if (AccountantClassic_Profile["options"]["month"] ~= cmonth) then
+		-- It's a new month! Copy the month data to "previous" month
+		-- It's a new month! clear out the month tab
 		for mode,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[mode]["Month"].In = 0;
 			AccountantClassic_Profile["data"][mode]["Month"].In = 0;
@@ -544,8 +559,9 @@ function AccountantClassic_OnEvent(self, event, ...)
 		return;
 	end
 
-	
-	if ( event == "GARRISON_MISSION_FINISHED" or 
+	if (event == "ADDON_LOADED" and arg1 == "Accountant_Classic") then
+		AccountantClassic_Profile = Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player];
+	elseif ( event == "GARRISON_MISSION_FINISHED" or 
 	event == "GARRISON_UPDATE" or
 	event == "GARRISON_ARCHITECT_OPENED" or
 	event == "GARRISON_MISSION_NPC_OPENED" or
@@ -635,7 +651,7 @@ function AccountantClassic_DetectAhMail()
     local numItems, totalItems = GetInboxNumItems()
     for x = 1, totalItems do    
         local invoiceType = GetInboxInvoiceInfo(x)
-        if invoiceType == "seller" then
+        if (invoiceType == "seller") then
             return true
         end
     end
@@ -723,10 +739,12 @@ function AccountantClassic_GetFormattedValue(amount)
 	local copper = mod(amount, COPPER_PER_SILVER);
 	
 	local TMP_GOLD_AMOUNT_TEXTURE = "%s\124TInterface\\MoneyFrame\\UI-GoldIcon:%d:%d:2:0\124t";
+	local TMP_SILVER_AMOUNT_TEXTURE = "%02d\124TInterface\\MoneyFrame\\UI-SilverIcon:%d:%d:2:0\124t";
+	local TMP_COPPER_AMOUNT_TEXTURE = "%02d\124TInterface\\MoneyFrame\\UI-CopperIcon:%d:%d:2:0\124t";
 	if (gold >0) then
-		return format(TMP_GOLD_AMOUNT_TEXTURE.." "..SILVER_AMOUNT_TEXTURE.." "..COPPER_AMOUNT_TEXTURE, goldDisplay, 0, 0, silver, 0, 0, copper, 0, 0);
+		return format(TMP_GOLD_AMOUNT_TEXTURE.." "..TMP_SILVER_AMOUNT_TEXTURE.." "..TMP_COPPER_AMOUNT_TEXTURE, goldDisplay, 0, 0, silver, 0, 0, copper, 0, 0);
 	elseif (silver >0) then 
-		return format(SILVER_AMOUNT_TEXTURE.." "..COPPER_AMOUNT_TEXTURE, silver, 0, 0, copper, 0, 0);
+		return format(SILVER_AMOUNT_TEXTURE.." "..TMP_COPPER_AMOUNT_TEXTURE, silver, 0, 0, copper, 0, 0);
 	elseif (copper >0) then
 		return format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
 	else
@@ -767,6 +785,7 @@ function AccountantClassic_OnShow(self)
 	--cdate = date();
 	local cdate = date ("%d/%m/%y");
 	cdate = string.sub(cdate,0,8);
+	local cmonth = date ("%m")
 	
 
 	if ( AccountantClassic_Profile["options"]["date"] ~= cdate ) then
@@ -779,6 +798,7 @@ function AccountantClassic_OnShow(self)
 		end
 	end
 	AccountantClassic_Profile["options"]["date"] = cdate;
+
 	-- Check to see if the week has rolled over
 	if ( AccountantClassic_Profile["options"]["dateweek"] ~= AccountantClassic_WeekStart() ) then
 		-- Its a new week! clear out the week tab
@@ -792,7 +812,6 @@ function AccountantClassic_OnShow(self)
 	AccountantClassic_Profile["options"]["dateweek"] = AccountantClassic_WeekStart();
 
 	-- Check to see if the month has rolled over
-	cmonth = date ("%m")
 	if ( AccountantClassic_Profile["options"]["month"] ~= cmonth ) then
 		-- Its a new month! clear out the month tab
 		for mode,value in pairs(AccountantClassic_Data) do
@@ -849,8 +868,14 @@ function AccountantClassic_OnShow(self)
 		local allout = 0;
 		local i = 1;
 		for char, charvalue in pairs(Accountant_SaveData[AccountantClassic_Server]) do
-			_G["AccountantFrameRow"..i.."Title"]:SetText(char);
---			_G["AccountantFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
+			if (Accountant_SaveData[AccountantClassic_Server][char]["options"].faction) then
+				local factionstr = Accountant_SaveData[AccountantClassic_Server][char]["options"].faction;
+				local icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s";
+				_G["AccountantFrameRow"..i.."Title"]:SetText(format(icon, char));
+				--_G["AccountantFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
+			else
+				_G["AccountantFrameRow"..i.."Title"]:SetText(char);
+			end
 			if Accountant_SaveData[AccountantClassic_Server][char]["options"]["totalcash"] ~= nil then
 				_G["AccountantFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_SaveData[AccountantClassic_Server][char]["options"]["totalcash"]));
 				alltotal = alltotal + Accountant_SaveData[AccountantClassic_Server][char]["options"]["totalcash"];
@@ -1010,6 +1035,7 @@ function AccountantClassic_CharacterRemovalConfirmed(server, character)
 end
 
 function AccountantClassic_UpdateLog()
+	local cdate = date("%d/%m/%y");
 	
 	AccountantClassic_CurrentMoney = GetMoney();
 	AccountantClassic_Profile["options"].totalcash = AccountantClassic_CurrentMoney;
@@ -1025,6 +1051,11 @@ function AccountantClassic_UpdateLog()
 		for key,logmode in pairs(AccountantClassic_LogModes) do
 			AccountantClassic_Data[mode][logmode].In = AccountantClassic_Data[mode][logmode].In + diff
 			AccountantClassic_Profile["data"][mode][logmode].In = AccountantClassic_Data[mode][logmode].In;
+			if (AC_NewDB) then
+				if (logmode == "Day") then
+					Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][mode].In = AccountantClassic_Data[mode][logmode].In;
+				end
+			end
 		end
 		if AccountantClassic_Verbose then ACC_Print("Gained "..AccountantClassic_NiceCash(diff).." from "..mode); end
 	elseif (diff < 0) then
@@ -1032,6 +1063,11 @@ function AccountantClassic_UpdateLog()
 		for key,logmode in pairs(AccountantClassic_LogModes) do
 			AccountantClassic_Data[mode][logmode].Out = AccountantClassic_Data[mode][logmode].Out + diff
 			AccountantClassic_Profile["data"][mode][logmode].Out = AccountantClassic_Data[mode][logmode].Out;
+			if (AC_NewDB) then
+				if (logmode == "Day") then
+					Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][mode].Out = AccountantClassic_Data[mode][logmode].Out;
+				end
+			end
 		end
 		if AccountantClassic_Verbose then ACC_Print("Lost "..AccountantClassic_NiceCash(diff).." from "..mode); end
 	end
