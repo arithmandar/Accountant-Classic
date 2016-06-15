@@ -19,7 +19,7 @@ function AccountantClassicOptions_Toggle()
 end
 
 function AccountantClassicOptions_OnLoad(self)
-	UIPanelWindows['AccountantOptionsFrame'] = {area = 'center', pushable = 0};
+	UIPanelWindows['AccountantClassicOptionsFrame'] = {area = 'center', pushable = 0};
 	
 	self.name = L["ACCLOC_TITLE"];
 	InterfaceOptions_AddCategory(self);
@@ -29,15 +29,15 @@ function AccountantClassicOptions_OnLoad(self)
 end
 
 function AccountantClassicOptions_OnShow()
-	AccountantOptionsFrameToggleButton:SetChecked(AccountantClassic_Profile["options"].showbutton);
-	AccountantOptionsFrameToggleMoneyDisplay:SetChecked(AccountantClassic_Profile["options"].showmoneyinfo);
-	AccountantOptionsFrameToggleDisplayInstroTips:SetChecked(AccountantClassic_Profile["options"].showintrotip);
-	AccountantOptionsFrameToggleMoneyOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showmoneyonbutton);
-	AccountantOptionsFrameToggleSessionOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showsessiononbutton);
+	AccountantClassicOptionsFrameToggleButton:SetChecked(AccountantClassic_Profile["options"].showbutton);
+	AccountantClassicOptionsFrameToggleMoneyDisplay:SetChecked(AccountantClassic_Profile["options"].showmoneyinfo);
+	AccountantClassicOptionsFrameToggleDisplayInstroTips:SetChecked(AccountantClassic_Profile["options"].showintrotip);
+	AccountantClassicOptionsFrameToggleMoneyOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showmoneyonbutton);
+	AccountantClassicOptionsFrameToggleSessionOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showsessiononbutton);
 	--AccountantSliderButtonPos:SetValue(AccountantClassic_Profile["options"].buttonpos);
-	UIDropDownMenu_Initialize(AccountantOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
-	UIDropDownMenu_SetSelectedID(AccountantOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
-	UIDropDownMenu_Initialize(AccountantOptionsFrameCharacterDropDown, AccountantClassicOptionsCharacterDropDown_Init);
+	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
+	UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
+	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameCharacterDropDown, AccountantClassicOptionsCharacterDropDown_Init);
 end
 
 function AccountantClassicOptions_OnHide(self)
@@ -58,16 +58,16 @@ function AccountantClassicOptionsFrameWeek_Init()
 end
 
 function AccountantClassicOptionsFrameWeek_OnClick(self)
-	UIDropDownMenu_SetSelectedID(AccountantOptionsFrameWeek, self:GetID());
+	UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, self:GetID());
 	AccountantClassic_Profile["options"].weekstart = self:GetID();
 end
 
 function AccountantClassicMoneyInfoFrame_Toggle()
-	if(AccountantMoneyInfoFrame:IsVisible()) then
-		AccountantMoneyInfoFrame:Hide();
+	if(AccountantClassicMoneyInfoFrame:IsVisible()) then
+		AccountantClassicMoneyInfoFrame:Hide();
 		AccountantClassic_Profile["options"].showmoneyinfo = false;
 	else
-		AccountantMoneyInfoFrame:Show();
+		AccountantClassicMoneyInfoFrame:Show();
 		AccountantClassic_Profile["options"].showmoneyinfo = true;
 	end
 end
@@ -96,8 +96,8 @@ function AccountantClassicOptionsSessionOnMinimap_Toggle()
 	end
 end
 
-function AccountantMoneyInfoFrame_ResetPosition()
-	AccountantMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 90, 0);
+function AccountantClassicMoneyInfoFrame_ResetPosition()
+	AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 90, 0);
 	AccountantClassic_Profile["options"].moneyinfoframe_x = 90;
 	AccountantClassic_Profile["options"].moneyinfoframe_y = 0;
 end
@@ -105,8 +105,8 @@ end
 function AccountantClassicOptionsCharacterDropDown_Init()
 	local info;
 	local server_key, server_value, char_key, char_value;
-	for server_key, server_value in pairs(Accountant_SaveData) do
-		for char_key, char_value in pairs(Accountant_SaveData[server_key]) do
+	for server_key, server_value in pairs(Accountant_ClassicSaveData) do
+		for char_key, char_value in pairs(Accountant_ClassicSaveData[server_key]) do
 			info = { };
 			info.text = server_key.." - "..char_key;
 			info.value = char_key;
@@ -120,7 +120,7 @@ end
 function AccountantClassicOptionsCharacterDropDown_OnClick(self, arg1)
 	local selected_char = self.value;
 	local selected_srv  = arg1;
-	UIDropDownMenu_SetSelectedID(AccountantFrameCharacterDropDown, self:GetID());
+	UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
 	
 	-- Confirm box
 	LibDialog:Register("ACCLOC_CHARREMOVE", {

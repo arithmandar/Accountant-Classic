@@ -47,7 +47,6 @@ local AccountantClassic_CurrentTab = 1;
 local AccountantClassic_LogModes = {"Session", "Day", "Week", "Month", "Total"};
 local AccountantClassic_LogTypes = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"};
 local AccountantClassic_ShowPlayer;
-Accountant_SaveData = nil;
 AccountantClassic_Player = UnitName("player");
 AccountantClassic_Server = GetRealmName();
 AccountantClassic_Faction = UnitFactionGroup("player");
@@ -163,8 +162,9 @@ local AccountantClassic_Events = {
 
 -- Minimap button with LibDBIcon-1.0
 local Accountant_ClassicMiniMapLDB = LibStub("LibDataBroker-1.1"):NewDataObject("Accountant_Classic", {
-	type = "launcher",
+	type = "data source",
 	text = L["ACCLOC_TITLE"],
+	label = L["ACCLOC_TITLE"],
 	icon = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantButton-Up",
 	OnClick = function(self, button)
 		if button == "LeftButton" then
@@ -176,14 +176,14 @@ local Accountant_ClassicMiniMapLDB = LibStub("LibDataBroker-1.1"):NewDataObject(
 	OnTooltipShow = function(tooltip)
 		if not tooltip or not tooltip.AddLine then return end
 		local title = "|cffffffff"..L["ACCLOC_TITLE"];
-		if (Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showmoneyonbutton) then
+		if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showmoneyonbutton) then
 			title = title.." - "..AccountantClassic_GetFormattedValue(GetMoney());
 		end
 		tooltip:AddLine(title);
-		if (Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showsessiononbutton == true) then
+		if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showsessiononbutton == true) then
 			tooltip:AddLine(AccountantClassic_ShowSessionToolTip());
 		end
-		if (Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showintrotip == true) then
+		if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showintrotip == true) then
 			tooltip:AddLine(L["ACCLOC_TIP"]);
 		end
 	end,
@@ -193,11 +193,19 @@ if ( TitanPanelButton_UpdateButton ) then
 end
 
 if myAddOnsList then
-	myAddOnsList.Accountant = {name = L["ACCLOC_TITLE"], description = L["ACCLOC_DESC"], version = AccountantClassic_Version, frame = "AccountantFrame", optionsframe = "AccountantOptionsFrame"};
+	myAddOnsList.Accountant = {name = L["ACCLOC_TITLE"], description = L["ACCLOC_DESC"], version = AccountantClassic_Version, frame = "AccountantClassicFrame", optionsframe = "AccountantClassicOptionsFrame"};
 end
 
+local function Accountant_Classic_GetButtonText()
+	local str = AccountantClassic_GetFormattedValue(GetMoney());
+	if (str) then
+		return str;
+	else
+		return L["ACCLOC_TITLE"];
+	end
+end
 
-local button = LibStub("LibDBIcon-1.0")
+local ACbutton = LibStub("LibDBIcon-1.0")
 
 function addon:OnInitialize()
 	local cdate = date("%d/%m/%y");
@@ -222,24 +230,24 @@ function addon:OnInitialize()
 		self:Print("Error: Database not loaded correctly.  Please exit out of WoW and delete the Accountant Classic database file Accountant_Classic.lua) found in: \\World of Warcraft\\WTF\\Account\\<Account Name>>\\SavedVariables\\")
 		return
 	end
-	button:Register("Accountant_Classic", Accountant_ClassicMiniMapLDB, self.db.profile.minimap);
+	ACbutton:Register("Accountant_Classic", Accountant_ClassicMiniMapLDB, self.db.profile.minimap);
 	self:RegisterChatCommand("accountantbutton", AccountantClassic_ButtonToggle);
 	self:RegisterChatCommand("accountant", Accountant_Slash);
 	self:RegisterChatCommand("acc", Accountant_Slash);
-	--AccountantClassic_Profile = Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player];
-	AccountantFrame:SetClampedToScreen(true);
+	--AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
+	AccountantClassicFrame:SetClampedToScreen(true);
 end
 
 function addon:Toggle()
 	self.db.profile.minimap.hide = not self.db.profile.minimap.hide
 	if self.db.profile.minimap.hide then
-		button:Hide("Accountant_Classic")
+		ACbutton:Hide("Accountant_Classic")
 		AccountantClassic_Profile["options"].showbutton = false;
 	else
-		button:Show("Accountant_Classic")
+		ACbutton:Show("Accountant_Classic")
 		AccountantClassic_Profile["options"].showbutton = true;
 	end
-	AccountantOptionsFrameToggleButton:SetChecked(AccountantClassic_Profile["options"].showbutton);
+	AccountantClassicOptionsFrameToggleButton:SetChecked(AccountantClassic_Profile["options"].showbutton);
 end
 
 function AccountantClassic_ButtonToggle()
@@ -247,10 +255,28 @@ function AccountantClassic_ButtonToggle()
 end
 
 function AccountantClassic_ButtonOnClick()
-	if AccountantFrame:IsVisible() then
-		AccountantFrame:Hide();
+	if AccountantClassicFrame:IsVisible() then
+		AccountantClassicFrame:Hide();
 	else
-		AccountantFrame:Show();
+		AccountantClassicFrame:Show();
+	end
+end
+
+function AccountantClassic_DetectConflict()
+	local loadable = select(4, GetAddOnInfo("Accountant"));
+	local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
+	if (enabled >= 0) and loadable then
+		DisableAddOn("Accountant");
+
+		LibDialog:Register("ACCOUNTANT_CONFLICT", {
+			text = "Detect the conflict addon - \"Accountant\" exit, it has been disabled for now. \n",
+			buttons = {
+				text = "OK",
+			},
+			show_while_dead = false,
+			hide_on_escape = true,
+		});
+		LibDialog:Spawn("ACCOUNTANT_CONFLICT");
 	end
 end
 
@@ -264,45 +290,45 @@ end
 function AccountantClassic_SetLabels(self)
 	-- if current tab is All Chars tab
 	if (AccountantClassic_CurrentTab == 6) then
-		AccountantFrameResetButton:Hide();
+		AccountantClassicFrameResetButton:Hide();
 
-		AccountantFrameSource:SetText(L["ACCLOC_CHAR"]);
-		AccountantFrameIn:SetText(L["ACCLOC_MONEY"]);
-		AccountantFrameOut:SetText(L["ACCLOC_UPDATED"]);
-		AccountantFrameTotalIn:SetText(L["ACCLOC_TOT_IN"]..":");
-		AccountantFrameTotalOut:SetText(L["ACCLOC_TOT_OUT"]..":");
-		AccountantFrameTotalFlow:SetText(L["ACCLOC_SUM"]..":");
-		AccountantFrameTotalInValue:SetText("");
-		AccountantFrameTotalOutValue:SetText("");
-		AccountantFrameTotalFlowValue:SetText("");
+		AccountantClassicFrameSource:SetText(L["ACCLOC_CHAR"]);
+		AccountantClassicFrameIn:SetText(L["ACCLOC_MONEY"]);
+		AccountantClassicFrameOut:SetText(L["ACCLOC_UPDATED"]);
+		AccountantClassicFrameTotalIn:SetText(L["ACCLOC_TOT_IN"]..":");
+		AccountantClassicFrameTotalOut:SetText(L["ACCLOC_TOT_OUT"]..":");
+		AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_SUM"]..":");
+		AccountantClassicFrameTotalInValue:SetText("");
+		AccountantClassicFrameTotalOutValue:SetText("");
+		AccountantClassicFrameTotalFlowValue:SetText("");
 		for i = 1, 18, 1 do
-			_G["AccountantFrameRow"..i.."Title"]:SetText("");
-			_G["AccountantFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 3, -2);
-			_G["AccountantFrameRow"..i.."In"]:SetText("");
-			_G["AccountantFrameRow"..i.."Out"]:SetText("");
+			_G["AccountantClassicFrameRow"..i.."Title"]:SetText("");
+			_G["AccountantClassicFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 3, -2);
+			_G["AccountantClassicFrameRow"..i.."In"]:SetText("");
+			_G["AccountantClassicFrameRow"..i.."Out"]:SetText("");
 		end
 		return;
 	else
-		AccountantFrameResetButton:Show();
+		AccountantClassicFrameResetButton:Show();
 
-		AccountantFrameSource:SetText(L["ACCLOC_SOURCE"]);
-		AccountantFrameIn:SetText(L["ACCLOC_IN"]);
-		AccountantFrameOut:SetText(L["ACCLOC_OUT"]);
-		AccountantFrameTotalIn:SetText(L["ACCLOC_TOT_IN"]..":");
-		AccountantFrameTotalOut:SetText(L["ACCLOC_TOT_OUT"]..":");
-		AccountantFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
+		AccountantClassicFrameSource:SetText(L["ACCLOC_SOURCE"]);
+		AccountantClassicFrameIn:SetText(L["ACCLOC_IN"]);
+		AccountantClassicFrameOut:SetText(L["ACCLOC_OUT"]);
+		AccountantClassicFrameTotalIn:SetText(L["ACCLOC_TOT_IN"]..":");
+		AccountantClassicFrameTotalOut:SetText(L["ACCLOC_TOT_OUT"]..":");
+		AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
 
 		-- Row Labels (auto generate)
 		InPos = 1
 		for key,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[key].InPos = InPos;
-			_G["AccountantFrameRow"..InPos.."Title"]:SetText(AccountantClassic_Data[key].Title);
-			_G["AccountantFrameRow"..InPos.."Title"]:SetPoint("TOPLEFT", 3, -2);
+			_G["AccountantClassicFrameRow"..InPos.."Title"]:SetText(AccountantClassic_Data[key].Title);
+			_G["AccountantClassicFrameRow"..InPos.."Title"]:SetPoint("TOPLEFT", 3, -2);
 			InPos = InPos + 1;
 		end
 
 		-- Set the header
-		local name = AccountantFrame:GetName();
+		local name = AccountantClassicFrame:GetName();
 		local header = _G[name.."TitleText"];
 		if ( header ) then
 			header:SetText(L["ACCLOC_TITLE"]);
@@ -315,7 +341,7 @@ function AccountantClassic_OnLoad(self)
 	-- Setup
 	AccountantClassic_LoadData();
 	AccountantClassic_SetLabels();
-	--AccountantFrameCharacterDropDown_OnShow();
+	--AccountantClassicFrameCharacterDropDown_OnShow();
 
 	-- Current Cash
 	AccountantClassic_CurrentMoney = GetMoney();
@@ -328,33 +354,47 @@ function AccountantClassic_OnLoad(self)
 --	CursorHasItem = AccountantClassic_CursorHasItem;
 
 	-- tabs
-	AccountantFrameTab1:SetText(L["ACCLOC_SESS"]);
-	PanelTemplates_TabResize(AccountantFrameTab1, 10);
+	AccountantClassicFrameTab1:SetText(L["ACCLOC_SESS"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab1, 10);
 	
-	AccountantFrameTab2:SetText(L["ACCLOC_DAY"]);
-	PanelTemplates_TabResize(AccountantFrameTab2, 10);
+	AccountantClassicFrameTab2:SetText(L["ACCLOC_DAY"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab2, 10);
 	
-	AccountantFrameTab3:SetText(L["ACCLOC_WEEK"]);
-	PanelTemplates_TabResize(AccountantFrameTab3, 10);
+	AccountantClassicFrameTab3:SetText(L["ACCLOC_WEEK"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab3, 10);
 	
-	AccountantFrameTab4:SetText(L["ACCLOC_MONTH"]);
-	PanelTemplates_TabResize(AccountantFrameTab4, 10);
+	AccountantClassicFrameTab4:SetText(L["ACCLOC_MONTH"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab4, 10);
 	
-	AccountantFrameTab5:SetText(L["ACCLOC_TOTAL"]);
-	PanelTemplates_TabResize(AccountantFrameTab5, 10);
+	AccountantClassicFrameTab5:SetText(L["ACCLOC_TOTAL"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab5, 10);
 
---	AccountantFrameTab6:SetText(L["ACCLOC_PRVMON"]);
---	PanelTemplates_TabResize(AccountantFrameTab6, 10);
+--	AccountantClassicFrameTab6:SetText(L["ACCLOC_PRVMON"]);
+--	PanelTemplates_TabResize(AccountantClassicFrameTab6, 10);
 	
-	AccountantFrameTab6:SetText(L["ACCLOC_CHARS"]);
-	PanelTemplates_TabResize(AccountantFrameTab6, 10);
+	AccountantClassicFrameTab6:SetText(L["ACCLOC_CHARS"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab6, 10);
 	
-	PanelTemplates_SetNumTabs(AccountantFrame, 6);
-	PanelTemplates_SetTab(AccountantFrame, AccountantFrameTab1);
-	PanelTemplates_UpdateTabs(AccountantFrame);
+	PanelTemplates_SetNumTabs(AccountantClassicFrame, 6);
+	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
+	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 
 	ACC_Print(L["ACCLOC_TITLE"].." "..L["ACCLOC_LOADED"]);
 	
+end
+
+-- Code by Grayhoof (SCT)
+local function AccountantClassic_CloneTable(tablein)	-- Return a copy of the table tablein
+	local new_table = {};			-- Create a new table
+	local ka, va = next(tablein, nil);	-- The ka is an index of tablein; va = tablein[ka]
+	while ka do
+		if type(va) == "table" then 
+			va = AccountantClassic_CloneTable(va);
+		end 
+		new_table[ka] = va;
+		ka, va = next(tablein, ka);	-- Get next index
+	end
+	return new_table;
 end
 
 function AccountantClassic_LoadData()
@@ -369,21 +409,36 @@ function AccountantClassic_LoadData()
 	local cweek = "";
 	local cmonth = date("%m");
 
+--[[
 	if (Accountant_SaveData == nil) then
 		Accountant_SaveData = {};
+	end
+]]
+	if (Accountant_ClassicSaveData == nil) then
+		local loadable = select(4, GetAddOnInfo("Accountant"));
+		local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
+		if (enabled >= 0) and loadable then
+			Accountant_ClassicSaveData = {};
+		else
+			if (Accountant_SaveData ~= nil) then
+				Accountant_ClassicSaveData = AccountantClassic_CloneTable(Accountant_SaveData);
+			else
+				Accountant_ClassicSaveData = {};
+			end
+		end
 	end
 	if (Accountant_Classic_NewDB == nil) then
 		Accountant_Classic_NewDB = {};
 	end
-	if (Accountant_SaveData[AccountantClassic_Server] == nil) then
-		Accountant_SaveData[AccountantClassic_Server] = {};
+	if (Accountant_ClassicSaveData[AccountantClassic_Server] == nil) then
+		Accountant_ClassicSaveData[AccountantClassic_Server] = {};
 	end
 	if (Accountant_Classic_NewDB[AccountantClassic_Server] == nil) then
 		Accountant_Classic_NewDB[AccountantClassic_Server] = {};
 	end
 	
-	if (Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
-		Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player] = {
+	if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
+		Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] = {
 			options = defaultoptions,
 			data = { },
 		};
@@ -400,7 +455,7 @@ function AccountantClassic_LoadData()
 		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate] = { };
 	end
 
-	AccountantClassic_Profile = Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player];
+	AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
 
 	order = 1;
 	for key, value in pairs(AccountantClassic_Data) do
@@ -424,6 +479,7 @@ function AccountantClassic_LoadData()
 		AccountantClassic_Data[key]["Session"].In = 0;
 		AccountantClassic_Data[key]["Session"].Out = 0;
 
+--[[
 		-- Old Version Conversion
 		if (AccountantClassic_Profile["data"][key].TotalIn ~= nil) then
 			AccountantClassic_Profile["data"][key]["Total"].In = AccountantClassic_Profile["data"][key].TotalIn;
@@ -439,6 +495,7 @@ function AccountantClassic_LoadData()
 			Accountant_SaveData[key] = nil;
 		end
 		-- End OVC
+]]
 		AccountantClassic_Data[key].order = order;
 		order = order + 1;
 	end
@@ -525,7 +582,7 @@ function Accountant_Slash(msg)
 	local function helper(word) table.insert(args, word) end
 	string.gsub(msg, "[_%w]+", helper);
 	if args[1] == 'log'  then
-		ShowUIPanel(AccountantFrame);
+		ShowUIPanel(AccountantClassicFrame);
 	elseif args[1] == 'verbose' then
 		if AccountantClassic_Verbose == nil then
 			AccountantClassic_Verbose = 1;
@@ -560,7 +617,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 	end
 
 	if (event == "ADDON_LOADED" and arg1 == "Accountant_Classic") then
-		AccountantClassic_Profile = Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player];
+		AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
 	elseif ( event == "GARRISON_MISSION_FINISHED" or 
 	event == "GARRISON_UPDATE" or
 	event == "GARRISON_ARCHITECT_OPENED" or
@@ -645,6 +702,8 @@ function AccountantClassic_OnEvent(self, event, ...)
 	end
 	
 	if AccountantClassic_Verbose and AccountantClassic_Mode ~= oldmode then ACC_Print("Accountant mode changed to '"..AccountantClassic_Mode.."'"); end
+	
+	Accountant_ClassicMiniMapLDB.text = AccountantClassic_GetFormattedValue(GetMoney());
 end
 
 function AccountantClassic_DetectAhMail()
@@ -830,36 +889,36 @@ function AccountantClassic_OnShow(self)
 		TotalOut = 0;
 		mode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
 		for key,value in pairs(AccountantClassic_Data) do
-			row = _G["AccountantFrameRow"..AccountantClassic_Data[key].InPos.."In"];
+			row = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."In"];
 			local mIn = AccountantClassic_Data[key][mode].In;
 			row:SetText(AccountantClassic_GetFormattedValue(mIn));
 			TotalIn = TotalIn + mIn;
-			row = _G["AccountantFrameRow"..AccountantClassic_Data[key].InPos.."Out"];
+			row = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."Out"];
 			local mOut = AccountantClassic_Data[key][mode].Out;
 			TotalOut = TotalOut + mOut;
 			row:SetText(AccountantClassic_GetFormattedValue(mOut));
 		end
-		AccountantFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalIn));
-		AccountantFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalOut));
+		AccountantClassicFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalIn));
+		AccountantClassicFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalOut));
 		if (TotalOut > TotalIn) then
 			diff = TotalOut - TotalIn;
-			AccountantFrameTotalFlow:SetText("|cFFFF3333"..L["ACCLOC_NETLOSS"]..":");
-			AccountantFrameTotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
+			AccountantClassicFrameTotalFlow:SetText("|cFFFF3333"..L["ACCLOC_NETLOSS"]..":");
+			AccountantClassicFrameTotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
 		else
 			if (TotalOut ~= TotalIn) then
 				diff = TotalIn - TotalOut;
-				AccountantFrameTotalFlow:SetText("|cFF00FF00"..L["ACCLOC_NETPROF"]..":");
-				AccountantFrameTotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
+				AccountantClassicFrameTotalFlow:SetText("|cFF00FF00"..L["ACCLOC_NETPROF"]..":");
+				AccountantClassicFrameTotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
 			else
-				AccountantFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
-				AccountantFrameTotalFlowValue:SetText("");
+				AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
+				AccountantClassicFrameTotalFlowValue:SetText("");
 			end
 		end
 		-- Set row 18 to be empty so that the total row from all characters will be clean out
-		_G["AccountantFrameRow18Title"]:SetText("");
-		_G["AccountantFrameRow18In"]:SetText("");
+		_G["AccountantClassicFrameRow18Title"]:SetText("");
+		_G["AccountantClassicFrameRow18In"]:SetText("");
 		
-		--AccountantFrameCharacterDropDown:Show();
+		--AccountantClassicFrameCharacterDropDown:Show();
 
 	else
 		-- all characters' tab
@@ -867,90 +926,90 @@ function AccountantClassic_OnShow(self)
 		local allin = 0;
 		local allout = 0;
 		local i = 1;
-		for char, charvalue in pairs(Accountant_SaveData[AccountantClassic_Server]) do
-			if (Accountant_SaveData[AccountantClassic_Server][char]["options"].faction) then
-				local factionstr = Accountant_SaveData[AccountantClassic_Server][char]["options"].faction;
+		for char, charvalue in pairs(Accountant_ClassicSaveData[AccountantClassic_Server]) do
+			if (Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].faction) then
+				local factionstr = Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].faction;
 				local icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s";
-				_G["AccountantFrameRow"..i.."Title"]:SetText(format(icon, char));
-				--_G["AccountantFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
+				_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(icon, char));
+				--_G["AccountantClassicFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
 			else
-				_G["AccountantFrameRow"..i.."Title"]:SetText(char);
+				_G["AccountantClassicFrameRow"..i.."Title"]:SetText(char);
 			end
-			if Accountant_SaveData[AccountantClassic_Server][char]["options"]["totalcash"] ~= nil then
-				_G["AccountantFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_SaveData[AccountantClassic_Server][char]["options"]["totalcash"]));
-				alltotal = alltotal + Accountant_SaveData[AccountantClassic_Server][char]["options"]["totalcash"];
-				_G["AccountantFrameRow"..i.."Out"]:SetText(Accountant_SaveData[AccountantClassic_Server][char]["options"]["date"]);
+			if Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"] ~= nil then
+				_G["AccountantClassicFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"]));
+				alltotal = alltotal + Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"];
+				_G["AccountantClassicFrameRow"..i.."Out"]:SetText(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["date"]);
 			else
-				_G["AccountantFrameRow"..i.."In"]:SetText("Unknown");
+				_G["AccountantClassicFrameRow"..i.."In"]:SetText("Unknown");
 			end
-			for key, value in pairs(Accountant_SaveData[AccountantClassic_Server][char]["data"]) do
-				allin = allin + Accountant_SaveData[AccountantClassic_Server][char]["data"][key]["Total"]["In"];
-				allout = allout + Accountant_SaveData[AccountantClassic_Server][char]["data"][key]["Total"]["Out"];
+			for key, value in pairs(Accountant_ClassicSaveData[AccountantClassic_Server][char]["data"]) do
+				allin = allin + Accountant_ClassicSaveData[AccountantClassic_Server][char]["data"][key]["Total"]["In"];
+				allout = allout + Accountant_ClassicSaveData[AccountantClassic_Server][char]["data"][key]["Total"]["Out"];
 			end
 			i=i+1;
 		end
-		AccountantFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allin));
-		AccountantFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allout));
+		AccountantClassicFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allin));
+		AccountantClassicFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allout));
 		if (allout > allin) then
 			diff = allout - allin;
-			AccountantFrameTotalFlow:SetText("|cFFFF3333"..L["ACCLOC_NETLOSS"]..":");
-			AccountantFrameTotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
+			AccountantClassicFrameTotalFlow:SetText("|cFFFF3333"..L["ACCLOC_NETLOSS"]..":");
+			AccountantClassicFrameTotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
 		else
 			if allout ~= allin then
 				diff = allin - allout;
-				AccountantFrameTotalFlow:SetText("|cFF00FF00"..L["ACCLOC_NETPROF"]..":");
-				AccountantFrameTotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
+				AccountantClassicFrameTotalFlow:SetText("|cFF00FF00"..L["ACCLOC_NETPROF"]..":");
+				AccountantClassicFrameTotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
 			else
-				AccountantFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
-				AccountantFrameTotalFlowValue:SetText("");
+				AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
+				AccountantClassicFrameTotalFlowValue:SetText("");
 			end
 		end
-		_G["AccountantFrameRow18Title"]:SetText(L["ACCLOC_SUM"]);
-		_G["AccountantFrameRow18In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(alltotal));
+		_G["AccountantClassicFrameRow18Title"]:SetText(L["ACCLOC_SUM"]);
+		_G["AccountantClassicFrameRow18In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(alltotal));
 		
-		--AccountantFrameCharacterDropDown:Hide();
+		--AccountantClassicFrameCharacterDropDown:Hide();
 		
 
 	end
-	SetPortraitTexture(AccountantFramePortrait, "player");
+	SetPortraitTexture(AccountantClassicFramePortrait, "player");
 
 	if (AccountantClassic_CurrentTab == 3) then
-		AccountantFrameExtra:SetText(L["ACCLOC_WEEKSTART"]..":");
-		AccountantFrameExtraValue:SetText(AccountantClassic_Profile["options"]["dateweek"]);
+		AccountantClassicFrameExtra:SetText(L["ACCLOC_WEEKSTART"]..":");
+		AccountantClassicFrameExtraValue:SetText(AccountantClassic_Profile["options"]["dateweek"]);
 	else
-		AccountantFrameExtra:SetText("");
-		AccountantFrameExtraValue:SetText("");
+		AccountantClassicFrameExtra:SetText("");
+		AccountantClassicFrameExtraValue:SetText("");
 	end
 
-	PanelTemplates_SetTab(AccountantFrame, AccountantClassic_CurrentTab);
+	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassic_CurrentTab);
 	
 end
 
-function AccountantFrameCharacterDropDown_Init()
+function AccountantClassicFrameCharacterDropDown_Init()
 	local info;
 	local Characters_List = { };
 	local server_key, server_value, char_key, char_value;
-	for server_key, server_value in pairs(Accountant_SaveData) do
-		for char_key, char_value in pairs(Accountant_SaveData[server_key]) do
+	for server_key, server_value in pairs(Accountant_ClassicSaveData) do
+		for char_key, char_value in pairs(Accountant_ClassicSaveData[server_key]) do
 			info = { };
 			info.text = server_key.." - "..char_key;
 			info.value = char_key;
 			info.arg1 = server_key;
-			info.func = AccountantFrameCharacterDropDown_OnClick;
+			info.func = AccountantClassicFrameCharacterDropDown_OnClick;
 			UIDropDownMenu_AddButton(info);
 		end
 	end
 end
 
-function AccountantFrameCharacterDropDown_OnShow()
-	UIDropDownMenu_Initialize(AccountantFrameCharacterDropDown, AccountantFrameCharacterDropDown_Init);
-	UIDropDownMenu_SetSelectedName(AccountantFrameCharacterDropDown, AccountantClassic_ShowPlayer);
+function AccountantClassicFrameCharacterDropDown_OnShow()
+	UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
+	UIDropDownMenu_SetSelectedName(AccountantClassicFrameCharacterDropDown, AccountantClassic_ShowPlayer);
 end
 
-function AccountantFrameCharacterDropDown_OnClick(self, arg1)
+function AccountantClassicFrameCharacterDropDown_OnClick(self, arg1)
 	local selected_char = self.value;
 	local selected_srv  = arg1;
-	UIDropDownMenu_SetSelectedID(AccountantFrameCharacterDropDown, self:GetID());
+	UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
 end
 
 function AccountantClassic_OnHide()
@@ -1015,17 +1074,17 @@ function AccountantClassic_ResetConfirmed()
 		AccountantClassic_Profile["data"][key][mode].In = 0;
 		AccountantClassic_Profile["data"][key][mode].Out = 0;
 	end
-	if AccountantFrame:IsVisible() then
+	if AccountantClassicFrame:IsVisible() then
 		AccountantClassic_OnShow();
 	end
 end
 
 function AccountantClassic_CharacterRemovalConfirmed(server, character)
-	for ka, va in pairs(Accountant_SaveData) do
+	for ka, va in pairs(Accountant_ClassicSaveData) do
 		if (ka == server) then
-			for kb, vb in pairs(Accountant_SaveData[ka]) do
+			for kb, vb in pairs(Accountant_ClassicSaveData[ka]) do
 				if (kb == character) then
-					Accountant_SaveData[ka][kb] = nil;
+					Accountant_ClassicSaveData[ka][kb] = nil;
 					ACC_Print(server.." - "..character..L["ACCLOC_CHARREMOVEDONE"]);
 					return;
 				end
@@ -1078,13 +1137,13 @@ function AccountantClassic_UpdateLog()
 	end
 
 
-	if AccountantFrame:IsVisible() then
+	if AccountantClassicFrame:IsVisible() then
 		AccountantClassic_OnShow();
 	end
 end
 
 function AccountantClassicTab_OnClick(self)
-	PanelTemplates_SetTab(AccountantFrame, self:GetID());
+	PanelTemplates_SetTab(AccountantClassicFrame, self:GetID());
 	AccountantClassic_CurrentTab = self:GetID();
 	PlaySound("igCharacterInfoTab");
 	AccountantClassic_OnShow();
@@ -1122,8 +1181,8 @@ end
 
 function AccountantClassicMoneyInfoFrame_Update()
 	local frametxt = "|cFFFFFFFF"..AccountantClassic_GetFormattedValue(GetMoney());
-	AccountantMoneyInfoText:SetText(frametxt);
-	--AccountantMoneyInfoText:SetText(AccountantClassic_BackpackTokenFrame_Update());
+	AccountantClassicMoneyInfoText:SetText(frametxt);
+	--AccountantClassicMoneyInfoText:SetText(AccountantClassic_BackpackTokenFrame_Update());
 end
 
 function AccountantClassicMoneyInfoFrame_HandleMouseDown(self, buttonName)    
@@ -1133,7 +1192,7 @@ function AccountantClassicMoneyInfoFrame_HandleMouseDown(self, buttonName)
 	end
 	-- Handle left button clicks
 	if (buttonName == "LeftButton") then
-		AccountantMoneyInfoFrame:StartMoving();
+		AccountantClassicMoneyInfoFrame:StartMoving();
 		GameTooltip:Hide();
 	elseif (buttonName == "RightButton") then
 		AccountantClassic_ButtonOnClick();
@@ -1142,10 +1201,10 @@ function AccountantClassicMoneyInfoFrame_HandleMouseDown(self, buttonName)
 end
 
 function AccountantClassicMoneyInfoFrame_HandleMouseUp(self, button)
-	AccountantMoneyInfoFrame:StopMovingOrSizing();
+	AccountantClassicMoneyInfoFrame:StopMovingOrSizing();
 --[[	local x, y;
 
-	_, _, _, x, y = AccountantMoneyInfoFrame:GetPoint();
+	_, _, _, x, y = AccountantClassicMoneyInfoFrame:GetPoint();
 	AccountantClassic_Profile["options"].moneyinfoframe_x = x;
 	AccountantClassic_Profile["options"].moneyinfoframe_y = y;
 ]]
@@ -1159,13 +1218,13 @@ function AccountantClassicMoneyInfoFrame_Init()
 		AccountantClassic_Profile["options"].showmoneyinfo = true;
 	end
 	if(AccountantClassic_Profile["options"].showmoneyinfo == true) then
-		AccountantMoneyInfoFrame:Show();
+		AccountantClassicMoneyInfoFrame:Show();
 --[[		if (offsetx  and offsety ) then
-			AccountantMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", offsetx, offsety);
+			AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", offsetx, offsety);
 		end
 ]]
 	else
-		AccountantMoneyInfoFrame:Hide();
+		AccountantClassicMoneyInfoFrame:Hide();
 	end
 end
 
@@ -1214,7 +1273,7 @@ function AccountantClassicMoneyInfoFrame_OnEnter(self)
 		if (tokenstr) then
 			GameTooltip:AddLine(tokenstr, 1, 1, 1, 1);
 		end
-		if (Accountant_SaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showintrotip == true) then
+		if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showintrotip == true) then
 			GameTooltip:AddLine("("..L["ACCLOC_TIP2"]..")", 0.8, 0.8, 0.8, 1);
 		end
 		GameTooltip:Show();

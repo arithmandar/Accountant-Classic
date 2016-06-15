@@ -4,7 +4,7 @@
 	<Script file="Accountant_Classic.lua"/>
 
 	<!-- Item Row Template -->
-	<Button name="AccountantTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="AccountantClassicTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				AccountantClassicTab_OnClick(self);
@@ -12,7 +12,7 @@
 		</Scripts>
 	</Button>
 	<!-- Floating current money info -->
-	<Frame name="AccountantMoneyInfoFrame" movable="true" enableMouse="true" parent="UIParent"> 
+	<Frame name="AccountantClassicMoneyInfoFrame" movable="true" enableMouse="true" parent="UIParent"> 
 		<Size>
 			<AbsDimension x="160" y="28" />
 		</Size>
@@ -24,7 +24,7 @@
 			</Anchor>
 		</Anchors>
 		<Frames>	
-			<Frame name="AccountantMoneyInfoTextFrame">
+			<Frame name="AccountantClassicMoneyInfoTextFrame">
 				<Size>
 					<AbsDimension x="160" y="21" />
 				</Size>
@@ -37,7 +37,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString name="AccountantMoneyInfoText" inherits="GameFontNormal" Text="Current Money">
+						<FontString name="AccountantClassicMoneyInfoText" inherits="GameFontNormal" Text="Current Money">
 							<Anchors>
 								<Anchor point="TOPLEFT" />
 								<Anchor point="BOTTOMRIGHT" />
@@ -71,7 +71,7 @@
 	</Frame>
 
 	<!-- Text rows -->
-	<Frame name="AccountantRowTemplate" virtual="true">
+	<Frame name="AccountantClassicRowTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="482" y="19"/>
 		</Size>
@@ -117,43 +117,8 @@
 		</Layers>
 	</Frame>
 
-	<!-- Compact Money Frame -->
-	<Frame name="AccountantMoneyFrameTemplate" virtual="true">
-		<Frames>
-			<Frame name="$parentMoney"  inherits="SmallMoneyFrameTemplate">
-				<Size>
-					<AbsDimension x="100" y="25"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="7" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("STATIC");
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Backdrop bgFile="Interface\Tooltips\ChatBubble-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-	</Frame>
-
 	<!-- Main Window -->
-	<Frame name="AccountantFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+	<Frame name="AccountantClassicFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="512" y="512"/>
 		</Size>
@@ -166,7 +131,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="AccountantFramePortrait">
+				<Texture name="AccountantClassicFramePortrait">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -180,7 +145,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTopLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-TopLeft">
+				<Texture name="$parentTopLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -188,7 +153,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-TopRight">
+				<Texture name="$parentTopRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-TopRight">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -196,7 +161,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-BotLeft">
+				<Texture name="$parentBotLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -208,7 +173,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantFrame-BotRight">
+				<Texture name="$parentBotRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-BotRight">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -358,7 +323,7 @@
 				<Scripts>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentRow1" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow1" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
 						<Offset>
@@ -367,7 +332,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow2" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow2" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow1" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -376,7 +341,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow3" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow3" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow2" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -385,7 +350,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow4" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow4" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow3" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -394,7 +359,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow5" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow5" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow4" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -403,7 +368,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow6" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow6" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow5" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -412,7 +377,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow7" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow7" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow6" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -421,7 +386,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow8" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow8" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow7" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -430,7 +395,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow9" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow9" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow8" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -439,7 +404,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow10" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow10" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow9" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -448,7 +413,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow11" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow11" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow10" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -457,7 +422,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow12" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow12" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow11" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -466,7 +431,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow13" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow13" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow12" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -475,7 +440,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow14" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow14" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow13" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -484,7 +449,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow15" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow15" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow14" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -493,7 +458,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow16" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow16" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow15" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -502,7 +467,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow17" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow17" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow16" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -511,7 +476,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow18" inherits="AccountantRowTemplate">
+			<Frame name="$parentRow18" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRow17" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -580,7 +545,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="AccountantMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame name="AccountantClassicMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -589,7 +554,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Button name="$parentTab1" inherits="AccountantTabTemplate" id="1" text="Session">
+			<Button name="$parentTab1" inherits="AccountantClassicTabTemplate" id="1" text="Session">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -598,7 +563,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" inherits="AccountantTabTemplate" id="2" text="Day">
+			<Button name="$parentTab2" inherits="AccountantClassicTabTemplate" id="2" text="Day">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>
@@ -607,7 +572,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab3" inherits="AccountantTabTemplate" id="3" text="Week">
+			<Button name="$parentTab3" inherits="AccountantClassicTabTemplate" id="3" text="Week">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
 						<Offset>
@@ -616,7 +581,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab4" inherits="AccountantTabTemplate" id="4" text="Month">
+			<Button name="$parentTab4" inherits="AccountantClassicTabTemplate" id="4" text="Month">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
 						<Offset>
@@ -625,7 +590,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab5" inherits="AccountantTabTemplate" id="5" text="Total">
+			<Button name="$parentTab5" inherits="AccountantClassicTabTemplate" id="5" text="Total">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT">
 						<Offset>
@@ -634,7 +599,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab6" inherits="AccountantTabTemplate" id="6" text="All Chars">
+			<Button name="$parentTab6" inherits="AccountantClassicTabTemplate" id="6" text="All Chars">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>
@@ -647,11 +612,12 @@
 		<Scripts>
 			<OnLoad>
 				<!-- Make Frame Moveable.-->
-				tinsert(UISpecialFrames, "AccountantFrame");
-				UIPanelWindows["AccountantFrame"] = { area = "left", pushable = 11 };
+				tinsert(UISpecialFrames, "AccountantClassicFrame");
+				UIPanelWindows["AccountantClassicFrame"] = { area = "left", pushable = 11 };
 				self:RegisterForDrag("LeftButton");
 
 				<!-- Setup -->
+				AccountantClassic_DetectConflict();
 				AccountantClassic_RegisterEvents(self);
 			</OnLoad>
 			<OnShow>
@@ -677,5 +643,4 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
-	<GameTooltip name="AccountantTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="false"/>
 </Ui>

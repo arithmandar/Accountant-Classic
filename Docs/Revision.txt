@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.06.12 (Jun. XX, 2016)
+  - Updated LDB related function to set label text and also title text to show real-time money
+  - SaveData and framenames changed to use AccountantClassic to aviod fromt he confliction with the "Accountant" addon.
+  - Change LDB type to data source and revise the displaying text to be realtime money
+
 * v2.06.11 (Jun. 14, 2016)
   - Enhanced the AccountFrame's showing / hiding method so that it will remember the position from last draging.
   - Added faction icon on All Characters tab for each of the characters 

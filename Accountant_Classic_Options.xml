@@ -3,7 +3,7 @@ $Id$
 -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	<Script file="Accountant_Classic_Options.lua"/>
-	<Frame name="AccountantOptionsFrame" hidden="true">
+	<Frame name="AccountantClassicOptionsFrame" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString inherits="GameFontNormalLarge" text="ACCLOC_OPTS">
@@ -126,7 +126,7 @@ $Id$
 				</Size>
 				<Scripts>
 					<OnClick>
-						AccountantMoneyInfoFrame_ResetPosition();
+						AccountantClassicMoneyInfoFrame_ResetPosition();
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -180,7 +180,7 @@ $Id$
 					</Layer>
 				</Layers>
 			</Frame>
-<!--			<Button name="AccountantOptionsFrameDone" inherits="OptionsButtonTemplate" text="ACCLOC_DONE">
+<!--			<Button name="AccountantClassicOptionsFrameDone" inherits="OptionsButtonTemplate" text="ACCLOC_DONE">
 				<Anchors>
 					<Anchor point="BOTTOM">
 						<Offset>
