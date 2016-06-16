@@ -75,7 +75,7 @@ L["ACCLOC_GOLD"]		= "g ";
 L["ACCLOC_SILVER"]		= "s ";
 L["ACCLOC_CENT"]		= "c";
 L["ACCLOC_ABOUT"]		= "About";
-L["ACCLOC_CONFLICT"]		= "Detected the conflicted addon - \"Accountant\" exists and loaded. \nFor now both the \"Accountant\" and \"Accountant Classic\" will need to be disabled. \nClick Okay button to temporary disable both of them. \nOr you can logout and disable \"Accountant\" and then login again. ";
+L["ACCLOC_CONFLICT"]		= "Detected the conflicted addon - \"Accountant\" exists and loaded.\nIt has been disabled, click Okay button to reload the game.";
 
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"]	= "Accountant Classic";

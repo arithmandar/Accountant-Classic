@@ -357,10 +357,10 @@ end
 
 function AccountantClassic_DetectConflict()
 	local loadable = select(4, GetAddOnInfo("Accountant"));
-	local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
-	if (enabled >= 0) and loadable then
+	local enabled = GetAddOnEnableState(UnitName("player"), GetAddOnInfo("Accountant"));
+	if (enabled > 0) and loadable then
 		DisableAddOn("Accountant");
-		DisableAddOn("Accountant_Classic");
+		--DisableAddOn("Accountant_Classic");
 
 		LibDialog:Register("ACCOUNTANT_CONFLICT", {
 			text = L["ACCLOC_CONFLICT"],
