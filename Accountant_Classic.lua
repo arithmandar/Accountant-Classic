@@ -154,6 +154,39 @@ local function AccountantClassic_InitOptions()
 	end
 
 	AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
+
+	if (AccountantClassic_Profile["options"].showmoneyinfo == nil) then
+		AccountantClassic_Profile["options"].showmoneyinfo = true;
+	end
+	if (AccountantClassic_Profile["options"].showintrotip == nil) then
+		AccountantClassic_Profile["options"].showintrotip = false;
+	end
+	if (AccountantClassic_Profile["options"].showmoneyonbutton == nil) then
+		AccountantClassic_Profile["options"].showmoneyonbutton = true;
+	end
+	if (AccountantClassic_Profile["options"].showsessiononbutton == nil) then
+		AccountantClassic_Profile["options"].showsessiononbutton = true;
+	end
+	
+	if (AccountantClassic_Profile["options"]["weekstart"] == nil) then
+		AccountantClassic_Profile["options"]["weekstart"] = 1;
+	end
+	if (AccountantClassic_Profile["options"]["dateweek"] == nil) then
+		AccountantClassic_Profile["options"]["dateweek"] = AccountantClassic_WeekStart();
+	end
+	if (AccountantClassic_Profile["options"]["date"] == nil) then
+		AccountantClassic_Profile["options"]["date"] = cdate;
+	end
+	if (AccountantClassic_Profile["options"]["month"] == nil) then
+		AccountantClassic_Profile["options"]["month"] = cmonth;
+	end
+	if (AccountantClassic_Profile["options"].moneyinfoframe_x == nil) then
+		AccountantClassic_Profile["options"].moneyinfoframe_x = 90;
+		AccountantClassic_Profile["options"].moneyinfoframe_y = 0;
+	end
+	if (AccountantClassic_Profile["options"].faction == nil) then
+		AccountantClassic_Profile["options"].faction = AccountantClassic_Faction;
+	end
 	
 end
 
@@ -166,7 +199,7 @@ local AccountantClassic_Events = {
 	"GARRISON_ARCHITECT_CLOSED",
 	"GARRISON_MISSION_NPC_OPENED",
 	"GARRISON_MISSION_NPC_CLOSED",
-	"GARRISON_SHIPYARD_NPS_OPENED",
+	"GARRISON_SHIPYARD_NPC_OPENED",
 	"GARRISON_SHIPYARD_NPC_CLOSED",
 	"GARRISON_UPDATE",
 	-- Barber shop
@@ -271,10 +304,6 @@ function Accountant_Classic_GetButtonText()
 end
 
 function addon:OnInitialize()
-	local cdate = date("%d/%m/%y");
-	local cdate = string.sub(cdate,0,8);
-	local cmonth = date("%m");
-
 	local defaults = {
 		global = { },
 		profile = {
@@ -453,7 +482,6 @@ function AccountantClassic_LoadData()
 	end
 
 	local cdate = date("%d/%m/%y");
-	cdate = string.sub(cdate,0,8);
 	local cweek = "";
 	local cmonth = date("%m");
 
@@ -552,39 +580,6 @@ function AccountantClassic_LoadData()
 	AccountantClassic_Profile["options"].version = AccountantClassic_Version;
 	AccountantClassic_Profile["options"].totalcash = GetMoney();
 
-	if (AccountantClassic_Profile["options"].showmoneyinfo == nil) then
-		AccountantClassic_Profile["options"].showmoneyinfo = true;
-	end
-	if (AccountantClassic_Profile["options"].showintrotip == nil) then
-		AccountantClassic_Profile["options"].showintrotip = false;
-	end
-	if (AccountantClassic_Profile["options"].showmoneyonbutton == nil) then
-		AccountantClassic_Profile["options"].showmoneyonbutton = true;
-	end
-	if (AccountantClassic_Profile["options"].showsessiononbutton == nil) then
-		AccountantClassic_Profile["options"].showsessiononbutton = true;
-	end
-	
-	if (AccountantClassic_Profile["options"]["weekstart"] == nil) then
-		AccountantClassic_Profile["options"]["weekstart"] = 1;
-	end
-	if (AccountantClassic_Profile["options"]["dateweek"] == nil) then
-		AccountantClassic_Profile["options"]["dateweek"] = AccountantClassic_WeekStart();
-	end
-	if (AccountantClassic_Profile["options"]["date"] == nil) then
-		AccountantClassic_Profile["options"]["date"] = cdate;
-	end
-	if (AccountantClassic_Profile["options"]["month"] == nil) then
-		AccountantClassic_Profile["options"]["month"] = cmonth;
-	end
-	if (AccountantClassic_Profile["options"].moneyinfoframe_x == nil) then
-		AccountantClassic_Profile["options"].moneyinfoframe_x = 90;
-		AccountantClassic_Profile["options"].moneyinfoframe_y = 0;
-	end
-	if (AccountantClassic_Profile["options"].faction == nil) then
-		AccountantClassic_Profile["options"].faction = AccountantClassic_Faction;
-	end
-
 	--Duplicate below from OnShow as the day and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
 	-- Check to see if the day has rolled over
 	if (AccountantClassic_Profile["options"]["date"] ~= cdate) then
@@ -654,7 +649,6 @@ function AccountantClassic_OnEvent(self, event, ...)
 
 	if (event == "ADDON_LOADED" and arg1 == "Accountant_Classic") then
 		AccountantClassic_InitOptions();
-		AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
 	end
 
 	if ( event == "UNIT_NAME_UPDATE" and arg1 == "player" ) or (event=="PLAYER_ENTERING_WORLD") then
@@ -672,14 +666,16 @@ function AccountantClassic_OnEvent(self, event, ...)
 		return;
 	end
 
-	if ( event == "GARRISON_MISSION_FINISHED" or 
+	if ( 
+	event == "GARRISON_MISSION_FINISHED" or 
 	event == "GARRISON_UPDATE" or
 	event == "GARRISON_ARCHITECT_OPENED" or
 	event == "GARRISON_MISSION_NPC_OPENED" or
-	event == "GARRISON_SHIPYARD_NPS_OPENED"
+	event == "GARRISON_SHIPYARD_NPC_OPENED"
 	) then
 		AccountantClassic_Mode = "GARRISON";
-	elseif ( event == "GARRISON_ARCHITECT_CLOSED" or
+	elseif ( 
+	event == "GARRISON_ARCHITECT_CLOSED" or
 	event == "GARRISON_MISSION_NPC_CLOSED" or
 	event == "GARRISON_SHIPYARD_NPC_CLOSED" or
 	event == "BARBER_SHOP_APPEARANCE_APPLIED" or
@@ -692,7 +688,11 @@ function AccountantClassic_OnEvent(self, event, ...)
 	event == "AUCTION_HOUSE_CLOSED"
 	) then
 		AccountantClassic_Mode = "";
-	elseif (event == "GUILDBANKFRAME_OPENED" or event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY") then
+	elseif (
+	event == "GUILDBANKFRAME_OPENED" or 
+	event == "GUILDBANK_UPDATE_MONEY" or 
+	event == "GUILDBANK_UPDATE_WITHDRAWMONEY"
+	) then
 		AccountantClassic_Mode = "GUILD";
 	elseif event == "GUILDBANKFRAME_CLOSED" then
 		AccountantClassic_Mode = "";
@@ -743,7 +743,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 		AccountantClassic_Mode = "AH";
 	elseif event == "PLAYER_MONEY" then
 		AccountantClassic_UpdateLog();
--- This event is supposed to be fired before PLAYER_MONEY.
+	-- This event is supposed to be fired before PLAYER_MONEY.
 	elseif event == "CHAT_MSG_MONEY" then
 		AccountantClassic_OnShareMoney(arg1);
 	end
