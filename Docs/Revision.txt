@@ -12,6 +12,7 @@ Revision History:
   - Change LDB type to data source and revise the displaying text to be realtime money
   - New install should now have no problem in setting up and loading the profile options.
   - Typo of GARRISON_SHIPYARD_NPC_OPENED fixed.
+  - Handles the confliction when "Accountant" is also enabled.
 
 * v2.06.11 (Jun. 14, 2016)
   - Enhanced the AccountFrame's showing / hiding method so that it will remember the position from last draging.

@@ -116,7 +116,9 @@ local function AccountantClassic_InitOptions()
 		local loadable = select(4, GetAddOnInfo("Accountant"));
 		local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
 		if (enabled >= 0) and loadable then
-			Accountant_ClassicSaveData = {};
+			-- Means we detect Accountant (maintained by urnati and thorismud) and therefore we have to skip converting our old data.
+			--Accountant_ClassicSaveData = {};
+			return;
 		else
 			if (Accountant_SaveData ~= nil) then
 				Accountant_ClassicSaveData = AccountantClassic_CloneTable(Accountant_SaveData);
@@ -358,11 +360,15 @@ function AccountantClassic_DetectConflict()
 	local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
 	if (enabled >= 0) and loadable then
 		DisableAddOn("Accountant");
+		DisableAddOn("Accountant_Classic");
 
 		LibDialog:Register("ACCOUNTANT_CONFLICT", {
-			text = "Detect the conflict addon - \"Accountant\" exit, it has been disabled for now. \n",
+			text = L["ACCLOC_CONFLICT"],
 			buttons = {
-				text = "OK",
+				{
+					text = OKAY,
+					on_click = ReloadUI,
+				},
 			},
 			show_while_dead = false,
 			hide_on_escape = true,
