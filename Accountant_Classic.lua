@@ -19,8 +19,9 @@ $Id$
 	Everyone who commented and voted for the mod on curse-gaming.com
   Thiou for the French loc, Snj & JokerGermany for the German loc
   ---------------------------------------------------------------------
-  v2.4 - current version:
-     Updated by: Arith, Tntdruid
+  v2.4 - v2.6:
+     Updated by: Arith
+     Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5
 ]]
 local LibStub = _G.LibStub
 local pairs = _G.pairs
@@ -31,6 +32,7 @@ local string = _G.string
 local LibDialog = LibStub("LibDialog-1.0");
 local addon = LibStub("AceAddon-3.0"):NewAddon("Accountant_Classic", "AceConsole-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Accountant_Classic");
+local ACbutton = LibStub("LibDBIcon-1.0")
 
 local AccountantClassic_RepairAllItems_old;
 local AccountantClassic_CursorHasItem_old;
@@ -75,7 +77,10 @@ local AccountantClassic_Data = {
 		["GUILD"] =	{Title = GUILD};
 };
 
-local defaultoptions = {
+local cdate = date("%d/%m/%y");
+local cmonth = date("%m");
+
+local AccountantClassicDefaultOptions = {
 	showbutton = true, 
 	showmoneyinfo = true, 
 	showintrotip = true,
@@ -84,14 +89,74 @@ local defaultoptions = {
 	buttonpos = 150, 
 	version = AccountantClassic_Version, 
 	date = cdate, 
-	weekdate = cweek, 
+	weekdate = "", 
 	month = cmonth,
 	weekstart = 1, 
 	totalcash = 0,
 	moneyinfoframe_x = 90,
 	moneyinfoframe_y = 0,
 };
+
+-- Code by Grayhoof (SCT)
+local function AccountantClassic_CloneTable(tablein)	-- Return a copy of the table tablein
+	local new_table = {};			-- Create a new table
+	local ka, va = next(tablein, nil);	-- The ka is an index of tablein; va = tablein[ka]
+	while ka do
+		if type(va) == "table" then 
+			va = AccountantClassic_CloneTable(va);
+		end 
+		new_table[ka] = va;
+		ka, va = next(tablein, ka);	-- Get next index
+	end
+	return new_table;
+end
+
+local function AccountantClassic_InitOptions()
+	if (Accountant_ClassicSaveData == nil) then
+		local loadable = select(4, GetAddOnInfo("Accountant"));
+		local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
+		if (enabled >= 0) and loadable then
+			Accountant_ClassicSaveData = {};
+		else
+			if (Accountant_SaveData ~= nil) then
+				Accountant_ClassicSaveData = AccountantClassic_CloneTable(Accountant_SaveData);
+			else
+				Accountant_ClassicSaveData = {};
+			end
+		end
+	end
+	if (Accountant_Classic_NewDB == nil) then
+		Accountant_Classic_NewDB = {};
+	end
+	if (Accountant_ClassicSaveData[AccountantClassic_Server] == nil) then
+		Accountant_ClassicSaveData[AccountantClassic_Server] = {};
+	end
+	if (Accountant_Classic_NewDB[AccountantClassic_Server] == nil) then
+		Accountant_Classic_NewDB[AccountantClassic_Server] = {};
+	end
 	
+	if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
+		Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] = {
+			options = AccountantClassicDefaultOptions,
+			data = { },
+		};
+		ACC_Print(L["ACCLOC_NEWPROFILE"].." "..AccountantClassic_Player);
+	else
+		ACC_Print(L["ACCLOC_LOADPROFILE"].." "..AccountantClassic_Player);
+	end
+	if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
+		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] = {
+			data = { },
+		};
+	end
+	if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player][cdate] == nil ) then
+		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate] = { };
+	end
+
+	AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
+	
+end
+
 local AccountantClassic_Events = {
 	"PLAYER_LOGIN",
 	"ADDON_LOADED",
@@ -196,7 +261,7 @@ if myAddOnsList then
 	myAddOnsList.Accountant = {name = L["ACCLOC_TITLE"], description = L["ACCLOC_DESC"], version = AccountantClassic_Version, frame = "AccountantClassicFrame", optionsframe = "AccountantClassicOptionsFrame"};
 end
 
-local function Accountant_Classic_GetButtonText()
+function Accountant_Classic_GetButtonText()
 	local str = AccountantClassic_GetFormattedValue(GetMoney());
 	if (str) then
 		return str;
@@ -204,8 +269,6 @@ local function Accountant_Classic_GetButtonText()
 		return L["ACCLOC_TITLE"];
 	end
 end
-
-local ACbutton = LibStub("LibDBIcon-1.0")
 
 function addon:OnInitialize()
 	local cdate = date("%d/%m/%y");
@@ -220,7 +283,7 @@ function addon:OnInitialize()
 				show = true,
 				minimapPos = 153,
 			},
-			options = defaultoptions,
+			options = AccountantClassicDefaultOptions,
 		},
 	};
 
@@ -234,7 +297,6 @@ function addon:OnInitialize()
 	self:RegisterChatCommand("accountantbutton", AccountantClassic_ButtonToggle);
 	self:RegisterChatCommand("accountant", Accountant_Slash);
 	self:RegisterChatCommand("acc", Accountant_Slash);
-	--AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
 	AccountantClassicFrame:SetClampedToScreen(true);
 end
 
@@ -383,20 +445,6 @@ function AccountantClassic_OnLoad(self)
 	
 end
 
--- Code by Grayhoof (SCT)
-local function AccountantClassic_CloneTable(tablein)	-- Return a copy of the table tablein
-	local new_table = {};			-- Create a new table
-	local ka, va = next(tablein, nil);	-- The ka is an index of tablein; va = tablein[ka]
-	while ka do
-		if type(va) == "table" then 
-			va = AccountantClassic_CloneTable(va);
-		end 
-		new_table[ka] = va;
-		ka, va = next(tablein, ka);	-- Get next index
-	end
-	return new_table;
-end
-
 function AccountantClassic_LoadData()
 	for key,value in pairs(AccountantClassic_Data) do
 		for modekey,mode in pairs(AccountantClassic_LogModes) do
@@ -414,6 +462,7 @@ function AccountantClassic_LoadData()
 		Accountant_SaveData = {};
 	end
 ]]
+--[[
 	if (Accountant_ClassicSaveData == nil) then
 		local loadable = select(4, GetAddOnInfo("Accountant"));
 		local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
@@ -439,7 +488,7 @@ function AccountantClassic_LoadData()
 	
 	if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
 		Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] = {
-			options = defaultoptions,
+			options = AccountantClassicDefaultOptions,
 			data = { },
 		};
 		ACC_Print(L["ACCLOC_NEWPROFILE"].." "..AccountantClassic_Player);
@@ -456,6 +505,7 @@ function AccountantClassic_LoadData()
 	end
 
 	AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
+]]
 
 	order = 1;
 	for key, value in pairs(AccountantClassic_Data) do
@@ -601,6 +651,12 @@ end
 function AccountantClassic_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	local oldmode = AccountantClassic_Mode;
+
+	if (event == "ADDON_LOADED" and arg1 == "Accountant_Classic") then
+		AccountantClassic_InitOptions();
+		AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
+	end
+
 	if ( event == "UNIT_NAME_UPDATE" and arg1 == "player" ) or (event=="PLAYER_ENTERING_WORLD") then
 		if (AccountantClassic_GotName) then
 			return;
@@ -616,9 +672,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 		return;
 	end
 
-	if (event == "ADDON_LOADED" and arg1 == "Accountant_Classic") then
-		AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
-	elseif ( event == "GARRISON_MISSION_FINISHED" or 
+	if ( event == "GARRISON_MISSION_FINISHED" or 
 	event == "GARRISON_UPDATE" or
 	event == "GARRISON_ARCHITECT_OPENED" or
 	event == "GARRISON_MISSION_NPC_OPENED" or
