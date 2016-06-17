@@ -4,7 +4,7 @@ local AceLocale = LibStub:GetLibrary("AceLocale-3.0");
 local L = AceLocale:NewLocale("Accountant_Classic", "enUS", true, is_silent);
 
 if not L then return end
-
+--@do-not-package@
 -- Header
 L["ACCLOC_TITLE"]		= "Accountant Classic";
 L["ACCLOC_DESC"]		= "A basic tool to track your monetary incomings and outgoings within WoW.";
@@ -76,8 +76,11 @@ L["ACCLOC_SILVER"]		= "s ";
 L["ACCLOC_CENT"]		= "c";
 L["ACCLOC_ABOUT"]		= "About";
 L["ACCLOC_CONFLICT"]		= "Detected the conflicted addon - \"|cFFFF0000Accountant|r\" exists and loaded.\nIt has been disabled, click Okay button to reload the game.";
-L["ACCLOC_CLEANUPACCOUNTANT"] 	= "You have manually call the function \n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \nto clean up conflicted data existed in \"Accountant\". \nNow click Okay button to reload the game.";
+L["ACCLOC_CLEANUPACCOUNTANT"] 	= "You have manually called the function \n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \nto clean up conflicted data existed in \"Accountant\". \nNow click Okay button to reload the game.";
 
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"]	= "Accountant Classic";
 L["BINDING_NAME_ACCOUNTANTTOG"]	= "Toggle Accountant Classic";
+
+--@end-do-not-package@
+--@localization(locale="enUS", format="lua_additive_table")@
