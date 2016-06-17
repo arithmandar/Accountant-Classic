@@ -617,7 +617,6 @@
 				self:RegisterForDrag("LeftButton");
 
 				<!-- Setup -->
-				AccountantClassic_DetectConflict();
 				AccountantClassic_RegisterEvents(self);
 			</OnLoad>
 			<OnShow>

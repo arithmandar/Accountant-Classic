@@ -95,6 +95,7 @@ local AccountantClassicDefaultOptions = {
 	totalcash = 0,
 	moneyinfoframe_x = 90,
 	moneyinfoframe_y = 0,
+	faction = AccountantClassic_Faction,
 };
 
 -- Code by Grayhoof (SCT)
@@ -111,32 +112,78 @@ local function AccountantClassic_CloneTable(tablein)	-- Return a copy of the tab
 	return new_table;
 end
 
-local function AccountantClassic_InitOptions()
-	if (Accountant_ClassicSaveData == nil) then
-		local loadable = select(4, GetAddOnInfo("Accountant"));
-		local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
-		if (enabled >= 0) and loadable then
-			-- Means we detect Accountant (maintained by urnati and thorismud) and therefore we have to skip converting our old data.
-			--Accountant_ClassicSaveData = {};
-			return;
-		else
-			if (Accountant_SaveData ~= nil) then
-				Accountant_ClassicSaveData = AccountantClassic_CloneTable(Accountant_SaveData);
-			else
-				Accountant_ClassicSaveData = {};
+-- Cleaning up the database record which brough in from "Accountant"
+local function AccountantClassic_CleanUpDB()
+	if (Accountant_ClassicSaveData ~= nil) then
+		for k,v in pairs(Accountant_ClassicSaveData) do
+			if (strfind(k, "-")) then
+				Accountant_ClassicSaveData[k] = nil;
 			end
 		end
 	end
-	if (Accountant_Classic_NewDB == nil) then
-		Accountant_Classic_NewDB = {};
+end
+
+-- This function is designed for user who have both Accountant and Accountant_Classic installed and Accountant's DB has broken due to DB confliction
+-- This function will not be called within Accountant_Classic, this is intended for user to call it manually
+function AccountantClassic_CleanUpAccountantDB()
+	if (Accountant_SaveData ~= nil) then
+		for k,v in pairs(Accountant_SaveData) do
+			if (strfind(k, "-")) then
+				-- do nothing
+			else
+				Accountant_SaveData[k] = nil;
+			end
+		end
+	end
+	LibDialog:Register("ACCOUNTANT_CONFLICT_CLEANUP", {
+		text = L["ACCLOC_CLEANUPACCOUNTANT"],
+		width = 500,
+		buttons = {
+			{
+				text = OKAY,
+				on_click = ReloadUI,
+			},
+		},
+		show_while_dead = false,
+		hide_on_escape = true,
+	});
+	LibDialog:Spawn("ACCOUNTANT_CONFLICT_CLEANUP");
+end
+
+local function AccountantClassic_InitOptions()
+	if (Accountant_ClassicSaveData == nil) then
+		if (Accountant_SaveData ~= nil) then
+			local loadable = select(4, GetAddOnInfo("Accountant"));
+			local enabled = GetAddOnEnableState(UnitName("player"), GetAddOnInfo("Accountant"));
+			if ( (enabled > 0) and loadable ) then
+				local myversion = false;
+				for k, v in pairs(Accountant_SaveData) do
+					-- "Accountant" DB use server-playername as the key. So if Accountant_SaveData exist, and if all the key contains "-", means Accountant_Classic is fresh install
+					if (strfind(k, "-")) then
+						-- do nothing
+					else
+						myversion = true;
+					end
+				end
+				if (myversion) then -- Means we detect Accountant (maintained by urnati and thorismud) and therefore we have to skip converting our old data.
+					AccountantClassic_DetectConflict();
+					return;
+				else
+					Accountant_ClassicSaveData = {};
+				end
+			else
+				Accountant_ClassicSaveData = AccountantClassic_CloneTable(Accountant_SaveData);
+				Accountant_SaveData = nil;
+				AccountantClassic_CleanUpDB();
+			end
+		-- Both Accountant_ClassicSaveData and Accountant_SaveData == nil means this is a fresh install
+		else
+			Accountant_ClassicSaveData = {};
+		end
 	end
 	if (Accountant_ClassicSaveData[AccountantClassic_Server] == nil) then
 		Accountant_ClassicSaveData[AccountantClassic_Server] = {};
 	end
-	if (Accountant_Classic_NewDB[AccountantClassic_Server] == nil) then
-		Accountant_Classic_NewDB[AccountantClassic_Server] = {};
-	end
-	
 	if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
 		Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] = {
 			options = AccountantClassicDefaultOptions,
@@ -146,13 +193,21 @@ local function AccountantClassic_InitOptions()
 	else
 		ACC_Print(L["ACCLOC_LOADPROFILE"].." "..AccountantClassic_Player);
 	end
-	if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
-		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] = {
-			data = { },
-		};
-	end
-	if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player][cdate] == nil ) then
-		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate] = { };
+	if (AC_NewDB) then
+		if (Accountant_Classic_NewDB == nil) then
+			Accountant_Classic_NewDB = {};
+		end
+		if (Accountant_Classic_NewDB[AccountantClassic_Server] == nil) then
+			Accountant_Classic_NewDB[AccountantClassic_Server] = {};
+		end
+		if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
+			Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] = {
+				data = { },
+			};
+		end
+		if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player][cdate] == nil ) then
+			Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate] = { };
+		end
 	end
 
 	AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
@@ -169,7 +224,6 @@ local function AccountantClassic_InitOptions()
 	if (AccountantClassic_Profile["options"].showsessiononbutton == nil) then
 		AccountantClassic_Profile["options"].showsessiononbutton = true;
 	end
-	
 	if (AccountantClassic_Profile["options"]["weekstart"] == nil) then
 		AccountantClassic_Profile["options"]["weekstart"] = 1;
 	end
@@ -189,7 +243,6 @@ local function AccountantClassic_InitOptions()
 	if (AccountantClassic_Profile["options"].faction == nil) then
 		AccountantClassic_Profile["options"].faction = AccountantClassic_Faction;
 	end
-	
 end
 
 local AccountantClassic_Events = {
@@ -356,25 +409,20 @@ function AccountantClassic_ButtonOnClick()
 end
 
 function AccountantClassic_DetectConflict()
-	local loadable = select(4, GetAddOnInfo("Accountant"));
-	local enabled = GetAddOnEnableState(UnitName("player"), GetAddOnInfo("Accountant"));
-	if (enabled > 0) and loadable then
-		DisableAddOn("Accountant");
-		--DisableAddOn("Accountant_Classic");
+	DisableAddOn("Accountant");
 
-		LibDialog:Register("ACCOUNTANT_CONFLICT", {
-			text = L["ACCLOC_CONFLICT"],
-			buttons = {
-				{
-					text = OKAY,
-					on_click = ReloadUI,
-				},
+	LibDialog:Register("ACCOUNTANT_CONFLICT", {
+		text = L["ACCLOC_CONFLICT"],
+		buttons = {
+			{
+				text = OKAY,
+				on_click = ReloadUI,
 			},
-			show_while_dead = false,
-			hide_on_escape = true,
-		});
-		LibDialog:Spawn("ACCOUNTANT_CONFLICT");
-	end
+		},
+		show_while_dead = false,
+		hide_on_escape = true,
+	});
+	LibDialog:Spawn("ACCOUNTANT_CONFLICT");
 end
 
 function AccountantClassic_RegisterEvents(self)
@@ -491,66 +539,18 @@ function AccountantClassic_LoadData()
 	local cweek = "";
 	local cmonth = date("%m");
 
---[[
-	if (Accountant_SaveData == nil) then
-		Accountant_SaveData = {};
-	end
-]]
---[[
-	if (Accountant_ClassicSaveData == nil) then
-		local loadable = select(4, GetAddOnInfo("Accountant"));
-		local enabled = GetAddOnEnableState(nil, GetAddOnInfo("Accountant"));
-		if (enabled >= 0) and loadable then
-			Accountant_ClassicSaveData = {};
-		else
-			if (Accountant_SaveData ~= nil) then
-				Accountant_ClassicSaveData = AccountantClassic_CloneTable(Accountant_SaveData);
-			else
-				Accountant_ClassicSaveData = {};
-			end
-		end
-	end
-	if (Accountant_Classic_NewDB == nil) then
-		Accountant_Classic_NewDB = {};
-	end
-	if (Accountant_ClassicSaveData[AccountantClassic_Server] == nil) then
-		Accountant_ClassicSaveData[AccountantClassic_Server] = {};
-	end
-	if (Accountant_Classic_NewDB[AccountantClassic_Server] == nil) then
-		Accountant_Classic_NewDB[AccountantClassic_Server] = {};
-	end
-	
-	if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
-		Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player] = {
-			options = AccountantClassicDefaultOptions,
-			data = { },
-		};
-		ACC_Print(L["ACCLOC_NEWPROFILE"].." "..AccountantClassic_Player);
-	else
-		ACC_Print(L["ACCLOC_LOADPROFILE"].." "..AccountantClassic_Player);
-	end
-	if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] == nil ) then
-		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player] = {
-			data = { },
-		};
-	end
-	if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player][cdate] == nil ) then
-		Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate] = { };
-	end
-
-	AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
-]]
-
 	order = 1;
 	for key, value in pairs(AccountantClassic_Data) do
 		if (AccountantClassic_Profile["data"][key] == nil) then
 			AccountantClassic_Profile["data"][key] = { };
 		end
-		if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][key] == nil) then
-			Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][key] = {
-				In = 0;
-				Out = 0;
-			};
+		if (AC_NewDB) then
+			if (Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][key] == nil) then
+				Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][key] = {
+					In = 0;
+					Out = 0;
+				};
+			end
 		end
 		for modekey,mode in pairs(AccountantClassic_LogModes) do
 			if (AccountantClassic_Profile["data"][key][mode] == nil) then
