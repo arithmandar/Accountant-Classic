@@ -6,6 +6,9 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.07.01 (Jun. 20, 2016)
+  - Fixed wrong language declaration for zhCN
+
 * v2.07.00 (Jun. 17, 2016)
   - Updated LDB related functions to set label text and also title text to show real-time money
   - Change LDB type to data source and revise the displaying text to be realtime money
