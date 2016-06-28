@@ -21,7 +21,7 @@ $Id$
   ---------------------------------------------------------------------
   v2.4 - v2.6:
      Updated by: Arith
-     Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5
+     Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5.22
 ]]
 local LibStub = _G.LibStub
 local pairs = _G.pairs

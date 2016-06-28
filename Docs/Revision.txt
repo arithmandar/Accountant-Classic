@@ -6,10 +6,18 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.07.02 (Jun. 28, 2016)
+==========================
+  - Translation update:
+    - German (pas06)
+    - Korean (next96)
+
 * v2.07.01 (Jun. 20, 2016)
+==========================
   - Fixed wrong language declaration for zhCN
 
 * v2.07.00 (Jun. 17, 2016)
+==========================
   - Updated LDB related functions to set label text and also title text to show real-time money
   - Change LDB type to data source and revise the displaying text to be realtime money
   - New install should now have no problem in setting up and loading the profile options.
@@ -19,6 +27,7 @@ Revision History:
   - Created function AccountantClassic_CleanUpAccountantDB() to handle "Accountant" DB's cleaning up
 
 * v2.06.11 (Jun. 14, 2016)
+==========================
   - Enhanced the AccountFrame's showing / hiding method so that it will remember the position from last draging.
   - Added faction icon on All Characters tab for each of the characters 
    (you will need to login with each character to record the faction info)
@@ -26,12 +35,15 @@ Revision History:
   - Fixed the bug that new character's profile failed to be created
 
 * v2.06.10 (May 28, 2016)
+==========================
   - Now supports to remove character in options frame
 
 * v2.06.09 (May 27, 2016)
+==========================
   - Fixed Minimap button enable / disable issue
 
 * v2.06.08 (May 25, 2016)
+==========================
   - Fixed the problem that option frame not open when minimap button has been right-clicked
   - Enhanced to prevent the money frame to be draged when in combat
   - Hide tooltip while draging or in combat
@@ -39,11 +51,13 @@ Revision History:
   - Revised function names to use "AccountantClassic" as prefix; code files' name also revised to "Accountant_Classic" as prefix
 
 * v2.6.07 (May 13, 2016)
+==========================
   - Corrected the language code defined in Spanish file
   - Translation update:
     - deDE: pas06
 
 * v2.6.06 (May 12, 2016)
+==========================
   - Added LibDiag-1.0
   - Added Spanish translation (IsabelGarcia)
   - Translation update
@@ -52,6 +66,7 @@ Revision History:
     - ruRU: unw1s3
 
 * v2.6.05 (May 9, 2016)
+==========================
   - Added to support guildbank's incoming / outgoing (tested, report bugs if any)
   - Fixed Barber shop's tracking error
   - Convert events to table and call with for loop
@@ -60,21 +75,26 @@ Revision History:
   - Added several toggle options
 
 * v2.6.04 (May 6, 2016)
+==========================
   - Added session session income / outgoing and net profit/lost info as tooltip to Minimap button
   - Fixed package problem, now linked proper libs in the new version
 
 * v2.6.03 (May 6, 2016)
+==========================
   - Introducing ACE libs and LibDBIcon to manage minimap button
   - Minimap button now can be drag directly by mouse clicking and draging
   - Supports MBB (Minimap Button Bag)
 
 * v2.6.02 (May 2, 2016)
+==========================
   - Updated total characters tab to show all characters' total incoming / outgoing and net profit.
 
 * v2.6.01 (Apr. 27, 2016)
+==========================
   - Added session income / outgoing and net profit/lost info as tooltip to floating money frame
 
 * v2.6.00 (Apr. 24, 2016)
+==========================
   - Enlarge frame to add 3 more rows
   - Updated Garrison event name to fix the bug that garrison's income did not get categorized correctly
   - Added new floating frame to show the current money
@@ -82,12 +102,15 @@ Revision History:
   - Change money format to use coin's symbols
 
 * v2.5.24 (Jul. 07, 2015)
+==========================
   - TOC update to support WoW 6.2
 
 * v2.5.23 (Mar. 06, 2015)
+==========================
   - TOC update to support WoW 6.1
 
 * v2.5.22 (Oct. 30, 2014)
+==========================
   - Track on the following new spending / earning (codes by Tntdruid)
     - Gold earned from Auction House (when received money via mail)
     - Barber Shop.
@@ -97,105 +120,133 @@ Revision History:
     - Gold used in Void Storage.
 
 * v2.5.21 (Oct. 18, 2014)
+==========================
   - TOC update to support WoW 6.0
 
 * v2.5.20 (Jul. 20, 2014)
+==========================
   - Minor formating enhancement 
 
 * v2.5.19 (Nov. 01, 2013)
+==========================
   - TOC update to support WoW 5.4.1
   - Fix the unsupport GetCVar("realmName") issue 
     Thanks for W4Andy 
   - Fix minimap button right click won't open the Option frame
 
 * v2.5.18 (Dec. 13, 2012)
+==========================
   - TOC update to support WoW 5.1
 
 * v2.5.17 (Nov. 24, 2012)
+==========================
   - Fixed the Russian become the default language issue
   
 * v2.5.16 (Nov. 20, 2012)
+==========================
   - Added Russian translation (Константин Гудович)
 
 * v2.5.15 (Sep. 26, 2012)
+==========================
   - TOC update to support WoW 5.0
 
 * v2.5.14 (Dec. 01, 2011)
+==========================
   - Packaging method update
   - Fix no-lib packing issue, to hard-embed libdatabroker
   
 * v2.5.13 (Nov. 30, 2011)
+==========================
   - TOC update to support WoW 4.3
   - Packaging method update
 
 * v2.5.12 (Jun. 29, 2011)
+==========================
   - TOC update to support WoW 4.2
 
 * v2.5.11 (Apr. 30, 2011)
+==========================
   - TOC update to support WoW 4.1
 
 * v2.5.10 (Jan. 03, 2011)
+==========================
   - Fix the day/week amount aren't showing correctly when you never open those tabs in a fresh day / weekday
   
 * v2.5.09 (Dec. 4, 2010)
+==========================
   - Update LibAboutPanel version to 1.51
   - Fix missing About panel
   - Enlarge Accountant frame size
 
 * v2.5.08 (Oct. 27, 2010)
+==========================
   - Added LibDataBroker and CallbackHandler libraries
   - Added support for Titan Panel
 
 * v2.5.07 (Oct. 20, 2010)
+==========================
   - Fix incorrect ending of Korean translation issue
 
 * v2.5.06 (Oct. 19, 2010)
+==========================
   - Korean translation added - thanks to 막내 (maknae)
   - Option button now will call InterfaceOptionsFrame
   
 * v2.5.05 (Oct. 15, 2010)
+==========================
   - Fixed to support WoW 4.0
   - Added option panel to WoW default addon option panel
   - Added About panel
 
 * v2.5.04 (May 30, 2010)
+==========================
   - Exclude the gear repair fee which was withdrew from guild bank
 
 * v2.5.03 (Dec. 14, 2009)
+==========================
   - Update TOC to support WoW 3.3.0
 
 * v2.5.02 (Aug. 22, 2009)
+==========================
   - Update TOC to support WoW 3.2.0
   
 * v2.5.01 (June 06, 2009)
+==========================
   - Support WoW 3.1.3
 
 * v2.42 (June 01, 2007)
+==========================
   - Update TOC to support WoW 2.1.0
 
 * v2.41 (Apr. 25, 2007)
+==========================
   - Fixed repair not detecting problem
   - Fixed the targeting error
 
 * v2.4 (Apr. 22, 2007)
+==========================
   - Updated UI Version Number to support WoW 2.0.12
   - Cross-server is now supported in this version
   - zhTW and zhCN localizations are now added
 
 * v2.3
+==========================
   - Updated UI Version Number
   - Localization file included
 
 * v2.2
+==========================
   - Localization file included 
   - Will now track share gold loot while in party.( thanks to Rophy for the awesome code.)
   - cleaned up some codes
 
 * v2.1 
+==========================
   - Updated UI Version Number 
   - Localization file included 
   - Fixed Typos in program. 
 
 * v2.0 
+==========================
   - Updated UI Version Number 
   - Localization file included
