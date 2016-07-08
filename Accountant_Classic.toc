@@ -6,22 +6,22 @@
 ## Title-esMX: @localization(locale="esMX", key="Title", namespace="ToC")@
 ## Title-frFR: @localization(locale="frFR", key="Title", namespace="ToC")@
 ## Title-itIT: @localization(locale="itIT", key="Title", namespace="ToC")@
-## Title-koKR: |cFF00FF00[가계부]|r@localization(locale="koKR", key="Title", namespace="ToC")@
+## Title-koKR: @localization(locale="koKR", key="Title", namespace="ToC")@
 ## Title-ptBR: @localization(locale="ptBR", key="Title", namespace="ToC")@
 ## Title-ruRU: @localization(locale="ruRU", key="Title", namespace="ToC")@
-## Title-zhCN: |cFF00FF00[信息]|r@localization(locale="zhCN", key="Title", namespace="ToC")@
-## Title-zhTW: |cFF00FF00[資訊]|r@localization(locale="zhTW", key="Title", namespace="ToC")@
+## Title-zhCN: @localization(locale="zhCN", key="Title", namespace="ToC")@
+## Title-zhTW: @localization(locale="zhTW", key="Title", namespace="ToC")@
 ## Notes: @localization(locale="enUS", key="Description", namespace="ToC")@
 ## Notes-deDE: @localization(locale="deDE", key="Description", namespace="ToC")@
 ## Notes-esES: @localization(locale="esES", key="Description", namespace="ToC")@
 ## Notes-esMX: @localization(locale="esMX", key="Description", namespace="ToC")@
 ## Notes-frFR: @localization(locale="frFR", key="Description", namespace="ToC")@
 ## Notes-itIT: @localization(locale="itIT", key="Description", namespace="ToC")@
-## Notes-koKR: |cff00CC33@localization(locale="koKR", key="Description", namespace="ToC")@|r
+## Notes-koKR: @localization(locale="koKR", key="Description", namespace="ToC")@
 ## Notes-ptBR: @localization(locale="ptBR", key="Description", namespace="ToC")@
 ## Notes-ruRU: @localization(locale="ruRU", key="Description", namespace="ToC")@
-## Notes-zhCN: |cff00CC33@localization(locale="zhCN", key="Description", namespace="ToC")@|r
-## Notes-zhTW: |cff00CC33@localization(locale="zhTW", key="Description", namespace="ToC")@|r
+## Notes-zhCN: @localization(locale="zhCN", key="Description", namespace="ToC")@
+## Notes-zhTW: @localization(locale="zhTW", key="Description", namespace="ToC")@
 #@end-non-debug@
 #@debug@
 ## Title: Accountant Classic
@@ -30,7 +30,7 @@
 ## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
 #@end-debug@
 ## Author: @project-author@
-## Version: 2.07.02
+## Version: 2.07.03
 ## OptionalDeps: LibAboutPanel, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibDialog-1.0
 ## SavedVariables: Accountant_SaveData, Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB
 ## X-Credits: Sabaki, Shadow, Rophy

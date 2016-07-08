@@ -19,7 +19,7 @@ $Id$
 	Everyone who commented and voted for the mod on curse-gaming.com
   Thiou for the French loc, Snj & JokerGermany for the German loc
   ---------------------------------------------------------------------
-  v2.4 - v2.6:
+  v2.4 - v2.7:
      Updated by: Arith
      Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5.22
 ]]
@@ -54,6 +54,7 @@ AccountantClassic_Server = GetRealmName();
 AccountantClassic_Faction = UnitFactionGroup("player");
 local AccountantClassic_ShowPlayer = AccountantClassic_Player;
 local isInLockdown = false;
+local AC_MNYSTR = nil;
 
 -- NewDB
 local AC_NewDB = fales;
@@ -66,7 +67,7 @@ local AccountantClassic_Data = {
 		["MERCH"] = 	{Title = L["ACCLOC_MERCH"]};
 		["REPAIRS"] = 	{Title = L["ACCLOC_REPAIR"]};
 		["MAIL"] = 	{Title = L["ACCLOC_MAIL"]};
-		["QUEST"] = 	{Title = L["ACCLOC_QUEST"]};
+		["QUEST"] = 	{Title = QUESTS_LABEL};
 		["LOOT"] = 	{Title = LOOT};
 		["OTHER"] = 	{Title = L["ACCLOC_OTHER"]};
 		["VOID"] =  	{Title = VOID_STORAGE};
@@ -96,6 +97,7 @@ local AccountantClassicDefaultOptions = {
 	moneyinfoframe_x = 90,
 	moneyinfoframe_y = 0,
 	faction = AccountantClassic_Faction,
+	dateformat = 1;
 };
 
 -- Code by Grayhoof (SCT)
@@ -189,9 +191,9 @@ local function AccountantClassic_InitOptions()
 			options = AccountantClassicDefaultOptions,
 			data = { },
 		};
-		ACC_Print(L["ACCLOC_NEWPROFILE"].." "..AccountantClassic_Player);
+		ACC_Print(format(L["ACCLOC_NEWPROFILE"], AccountantClassic_Player));
 	else
-		ACC_Print(L["ACCLOC_LOADPROFILE"].." "..AccountantClassic_Player);
+		ACC_Print(format(L["ACCLOC_LOADPROFILE"], AccountantClassic_Player));
 	end
 	if (AC_NewDB) then
 		if (Accountant_Classic_NewDB == nil) then
@@ -242,6 +244,9 @@ local function AccountantClassic_InitOptions()
 	end
 	if (AccountantClassic_Profile["options"].faction == nil) then
 		AccountantClassic_Profile["options"].faction = AccountantClassic_Faction;
+	end
+	if (AccountantClassic_Profile["options"].dateformat == nil) then
+		AccountantClassic_Profile["options"].dateformat = 1;
 	end
 end
 
@@ -318,7 +323,7 @@ local Accountant_ClassicMiniMapLDB = LibStub("LibDataBroker-1.1"):NewDataObject(
 	type = "data source",
 	text = L["ACCLOC_TITLE"],
 	label = L["ACCLOC_TITLE"],
-	icon = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantButton-Up",
+	icon = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantClassicButton-Up",
 	OnClick = function(self, button)
 		if button == "LeftButton" then
 			AccountantClassic_ButtonOnClick();
@@ -524,7 +529,7 @@ function AccountantClassic_OnLoad(self)
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 
-	ACC_Print(L["ACCLOC_TITLE"].." "..L["ACCLOC_LOADED"]);
+	ACC_Print(L["ACCLOC_LOADED"]);
 	
 end
 
@@ -998,7 +1003,7 @@ function AccountantClassic_OnShow(self)
 			if Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"] ~= nil then
 				_G["AccountantClassicFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"]));
 				alltotal = alltotal + Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"];
-				_G["AccountantClassicFrameRow"..i.."Out"]:SetText(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["date"]);
+				_G["AccountantClassicFrameRow"..i.."Out"]:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["date"]));
 			else
 				_G["AccountantClassicFrameRow"..i.."In"]:SetText("Unknown");
 			end
@@ -1104,7 +1109,7 @@ function AccountantClassic_ResetData()
 
 	-- Confirm box
 	LibDialog:Register("ACCOUNTANT_RESET", {
-		text = L["ACCLOC_RESET_CONF"].."\""..logmode.."\"",
+		text = format(L["ACCLOC_RESET_CONF"], logmode),
 		buttons = {
 			{
 				text = OKAY,
@@ -1145,7 +1150,7 @@ function AccountantClassic_CharacterRemovalConfirmed(server, character)
 			for kb, vb in pairs(Accountant_ClassicSaveData[ka]) do
 				if (kb == character) then
 					Accountant_ClassicSaveData[ka][kb] = nil;
-					ACC_Print(server.." - "..character..L["ACCLOC_CHARREMOVEDONE"]);
+					ACC_Print(format(L["ACCLOC_CHARREMOVEDONE"], server, character));
 					return;
 				end
 			end
@@ -1241,8 +1246,11 @@ end
 
 function AccountantClassicMoneyInfoFrame_Update()
 	local frametxt = "|cFFFFFFFF"..AccountantClassic_GetFormattedValue(GetMoney());
-	AccountantClassicMoneyInfoText:SetText(frametxt);
-	--AccountantClassicMoneyInfoText:SetText(AccountantClassic_BackpackTokenFrame_Update());
+	if (frametxt ~= AC_MNYSTR) then
+		AccountantClassicMoneyInfoText:SetText(frametxt);
+		--AccountantClassicMoneyInfoText:SetText(AccountantClassic_BackpackTokenFrame_Update());
+		AC_MNYSTR = frametxt;
+	end
 end
 
 function AccountantClassicMoneyInfoFrame_HandleMouseDown(self, buttonName)    
@@ -1344,4 +1352,28 @@ end
 
 function AccountantClassicMoneyInfoFrame_OnLeave(self)
 	GameTooltip_Hide();
+end
+
+function AccountantClassic_ParseDateStrings(s)
+	local mm, dd, yy;
+	local sdate = s;
+	
+	dd = string.sub(sdate, 1, 2);
+	mm = string.sub(sdate, 4, 5);
+	yy = string.sub(sdate, 7, 8);
+
+--[[ /////////////////////////
+	[1] = "mm/dd/yy";
+	[2] = "dd/mm/yy";
+	[3] = "yy/mm/dd";
+]]
+	if (AccountantClassic_Profile["options"].dateformat == 1) then
+		sdate = mm.."/"..dd.."/"..yy;
+	elseif (AccountantClassic_Profile["options"].dateformat == 2) then
+		sdate = dd.."/"..mm.."/"..yy;
+	else
+		sdate = yy.."/"..mm.."/"..dd;
+	end
+	
+	return sdate;
 end

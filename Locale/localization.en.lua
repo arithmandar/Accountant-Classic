@@ -63,14 +63,17 @@ L["ACCLOC_DONE"]		= "Done";
 L["ACCLOC_INTROTIPS"]		= "Display Instruction Tips";
 L["ACCLOC_INTROTIPS_TIP"]	= "Toggle whether to display minimap button or floating money frame's operation tips.";
 L["ACCLOC_REMOVECHAR"]		= "Select the character to be removed:";
+L["ACCLOC_REMOVECHAR_TIP"]	= "The selected character's Accountant Classic data will be removed.";
 L["ACCLOC_CHARREMOVETEXT"]	= "The selected character is about to be removed.\nAre you sure you want to remove the following character from Accountant Classic?";
-L["ACCLOC_CHARREMOVEDONE"]	= " character has been removed.";
+L["ACCLOC_CHARREMOVEDONE"]	= "\"%s - %s\" character's Accountant Classic data has been removed."; -- "servername - charactername" character's Accountant Classic data has been removed.
+L["ACCLOC_DATEFORMAT"]		= "Select the date format:";
+L["ACCLOC_DATEFORMAT_TIP"]	= "Date format showing in \"All Chars\" tab";
 
 -- Misc
-L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the ";
-L["ACCLOC_NEWPROFILE"]		= "New Accountant Classic profile created for ";
-L["ACCLOC_LOADPROFILE"]		= "Loaded Accountant Classic Profile for ";
-L["ACCLOC_LOADED"]		= "Loaded";
+L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the \"%s\" data?"; -- %s would be the log mode, for example, Session, Day, Week, etc.
+L["ACCLOC_NEWPROFILE"]		= "New Accountant Classic profile created for %s"; -- %s would be the character name
+L["ACCLOC_LOADPROFILE"]		= "Loaded Accountant Classic Profile for %s"; -- %s would be the character name
+L["ACCLOC_LOADED"]		= "Accountant Classic loaded.";
 L["ACCLOC_GOLD"]		= "g ";
 L["ACCLOC_SILVER"]		= "s ";
 L["ACCLOC_CENT"]		= "c";

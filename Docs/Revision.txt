@@ -6,6 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.07.03 (Jul. XX, 2016)
+==========================
+- Button name renamed
+- Reduce the on-screen money frame's settext frequency
+- Addon strings update
+- Added date format option to be used in All Characters' tab
+
 * v2.07.02 (Jun. 28, 2016)
 ==========================
   - Translation update:

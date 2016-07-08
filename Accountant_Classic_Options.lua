@@ -38,6 +38,8 @@ function AccountantClassicOptions_OnShow()
 	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
 	UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
 	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameCharacterDropDown, AccountantClassicOptionsCharacterDropDown_Init);
+	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameDateDropDown, AccountantClassicOptionsDateDropDown_Init);
+	UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, AccountantClassic_Profile["options"].dateformat);
 end
 
 function AccountantClassicOptions_OnHide(self)
@@ -142,5 +144,27 @@ function AccountantClassicOptionsCharacterDropDown_OnClick(self, arg1)
 		
 	});
 	LibDialog:Spawn("ACCLOC_CHARREMOVE");
-
 end
+
+function AccountantClassicOptionsDateDropDown_Init()
+	local options = {
+		"mm/dd/yy",
+		"dd/mm/yy",
+		"yy/mm/dd",
+	};
+	local info;
+	for i = 1, getn(options), 1 do
+		info = { };
+		info.text = options[i];
+		info.value = i;
+		info.arg1 = i;
+		info.func = AccountantClassicOptionsDateDropDown_OnClick;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function AccountantClassicOptionsDateDropDown_OnClick(self, arg1)
+	UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, arg1);
+	AccountantClassic_Profile["options"].dateformat = arg1;
+end
+
