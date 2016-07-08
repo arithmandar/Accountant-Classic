@@ -9,7 +9,7 @@ L["ACCLOC_AUC"] = "拍賣場"
 L["ACCLOC_BUTPOS"] = "小地圖按鈕位置"
 L["ACCLOC_CENT"] = "銅"
 L["ACCLOC_CHAR"] = "角色"
-L["ACCLOC_CHARREMOVEDONE"] = "\"%s - %s\"角色的個人會計資料已經移除。"
+L["ACCLOC_CHARREMOVEDONE"] = "「%s - %s」角色的個人會計資料已經移除。"
 L["ACCLOC_CHARREMOVETEXT"] = [=[即將移除選取的角色。
 是否確定要從個人會計的資料庫中移除下列角色?]=]
 L["ACCLOC_CHARS"] = "所有角色"
@@ -19,6 +19,8 @@ L["ACCLOC_CLEANUPACCOUNTANT"] = [=[您以手動執行了以下函式
 現在請按下確定按鍵以重新載入遊戲。]=]
 L["ACCLOC_CONFLICT"] = [=[偵測到衝突的插件 - |cFFFF0000Accountant|r。
 它已被停止啟用，按下確定按鍵以重新載入遊戲。]=]
+L["ACCLOC_DATEFORMAT"] = "選擇日期格式："
+L["ACCLOC_DATEFORMAT_TIP"] = "在「本週」與「所有角色」頁籤所顯示的日期格式"
 L["ACCLOC_DAY"] = "本日"
 L["ACCLOC_DESC"] = "追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。"
 L["ACCLOC_DONE"] = "完成"
@@ -49,9 +51,10 @@ L["ACCLOC_OUT"] = "支出"
 L["ACCLOC_PRVMON"] = "上一月"
 L["ACCLOC_QUEST"] = "任務獎勵"
 L["ACCLOC_REMOVECHAR"] = "選擇要移除的角色:"
+L["ACCLOC_REMOVECHAR_TIP"] = "被選取的角色的個人會計資料將會被移除。"
 L["ACCLOC_REPAIR"] = "修理裝備"
 L["ACCLOC_RESET"] = "歸零"
-L["ACCLOC_RESET_CONF"] = "是否確定要將\"%s\"資料歸零?"
+L["ACCLOC_RESET_CONF"] = "是否確定要將「%s」頁籤的資料歸零?"
 L["ACCLOC_RSTMNYFRM_TIP"] = "重置畫面上顯示現金的位置"
 L["ACCLOC_RSTPOSITION"] = "重置位置"
 L["ACCLOC_SESS"] = "本次"
@@ -76,8 +79,6 @@ L["ACCLOC_WEEK"] = "本週"
 L["ACCLOC_WEEKSTART"] = "當週首日"
 L["BINDING_HEADER_ACCOUNTANT"] = "個人會計"
 L["BINDING_NAME_ACCOUNTANTTOG"] = "切換個人會計"
-
-
 --@end-do-not-package@
 --@localization(locale="zhTW", format="lua_additive_table")@
 

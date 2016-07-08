@@ -11,7 +11,7 @@ Revision History:
 - Button name renamed
 - Reduce the on-screen money frame's settext frequency
 - Addon strings update
-- Added date format option to be used in All Characters' tab
+- Added date format option to be used in All Characters and Week' tabs
 
 * v2.07.02 (Jun. 28, 2016)
 ==========================

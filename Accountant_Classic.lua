@@ -619,6 +619,8 @@ function AccountantClassic_LoadData()
 	-- Check to see if the month has rolled over
 	if (AccountantClassic_Profile["options"]["month"] ~= cmonth) then
 		-- It's a new month! Copy the month data to "previous" month
+		-- TBD
+
 		-- It's a new month! clear out the month tab
 		for mode,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[mode]["Month"].In = 0;
@@ -1003,7 +1005,7 @@ function AccountantClassic_OnShow(self)
 			if Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"] ~= nil then
 				_G["AccountantClassicFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"]));
 				alltotal = alltotal + Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"];
-				_G["AccountantClassicFrameRow"..i.."Out"]:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["date"]));
+				_G["AccountantClassicFrameRow"..i.."Out"]:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["date"], 2));
 			else
 				_G["AccountantClassicFrameRow"..i.."In"]:SetText("Unknown");
 			end
@@ -1040,7 +1042,7 @@ function AccountantClassic_OnShow(self)
 
 	if (AccountantClassic_CurrentTab == 3) then
 		AccountantClassicFrameExtra:SetText(L["ACCLOC_WEEKSTART"]..":");
-		AccountantClassicFrameExtraValue:SetText(AccountantClassic_Profile["options"]["dateweek"]);
+		AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1));
 	else
 		AccountantClassicFrameExtra:SetText("");
 		AccountantClassicFrameExtraValue:SetText("");
@@ -1354,12 +1356,17 @@ function AccountantClassicMoneyInfoFrame_OnLeave(self)
 	GameTooltip_Hide();
 end
 
-function AccountantClassic_ParseDateStrings(s)
+function AccountantClassic_ParseDateStrings(s, typ)
 	local mm, dd, yy;
 	local sdate = s;
 	
-	dd = string.sub(sdate, 1, 2);
-	mm = string.sub(sdate, 4, 5);
+	if (typ == 1) then -- mm/dd/yy, currently used in dateweek (WeekStart)
+		mm = string.sub(sdate, 1, 2);
+		dd = string.sub(sdate, 4, 5);
+	else
+		dd = string.sub(sdate, 1, 2);
+		mm = string.sub(sdate, 4, 5);
+	end
 	yy = string.sub(sdate, 7, 8);
 
 --[[ /////////////////////////
