@@ -6,6 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.07.04 (Jul. 10, 2016)
+==========================
+  - Translation update:
+    - German (pas06)
+    - Korean (next96)
+    - Portuguese (Canettieri)
+
 * v2.07.03 (Jul. 09, 2016)
 ==========================
   - Button name renamed
