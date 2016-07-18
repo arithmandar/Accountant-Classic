@@ -94,8 +94,8 @@ local AccountantClassicDefaultOptions = {
 	month = cmonth,
 	weekstart = 1, 
 	totalcash = 0,
-	moneyinfoframe_x = 90,
-	moneyinfoframe_y = 0,
+	moneyinfoframe_x = 10,
+	moneyinfoframe_y = -80,
 	faction = AccountantClassic_Faction,
 	dateformat = 1;
 };

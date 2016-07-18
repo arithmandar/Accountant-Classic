@@ -99,9 +99,9 @@ function AccountantClassicOptionsSessionOnMinimap_Toggle()
 end
 
 function AccountantClassicMoneyInfoFrame_ResetPosition()
-	AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 90, 0);
-	AccountantClassic_Profile["options"].moneyinfoframe_x = 90;
-	AccountantClassic_Profile["options"].moneyinfoframe_y = 0;
+	AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 10, -80);
+	AccountantClassic_Profile["options"].moneyinfoframe_x = 10;
+	AccountantClassic_Profile["options"].moneyinfoframe_y = -80;
 end
 
 function AccountantClassicOptionsCharacterDropDown_Init()
