@@ -68,6 +68,7 @@ L["ACCLOC_CHARREMOVETEXT"]	= "The selected character is about to be removed.\nAr
 L["ACCLOC_CHARREMOVEDONE"]	= "\"%s - %s\" character's Accountant Classic data has been removed."; -- "servername - charactername" character's Accountant Classic data has been removed.
 L["ACCLOC_DATEFORMAT"]		= "Select the date format:";
 L["ACCLOC_DATEFORMAT_TIP"]	= "Date format showing in \"All Chars\" and \"Week\" tabs";
+L["ACCLOC_LDBINFOTYPE"]		= "Show current session's net income / expanse instead of total money on LDB"
 
 -- Misc
 L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the \"%s\" data?"; -- %s would be the log mode, for example, Session, Day, Week, etc.

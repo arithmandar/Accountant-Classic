@@ -137,9 +137,26 @@ $Id$
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<CheckButton name="$parentToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentToggleMoneyDisplayOnLDB" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplay">
+						<Offset>
+							<AbsDimension x="-10" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_LDBINFOTYPE);
+					</OnLoad>
+					<OnClick>
+						AccountantClassicLDBDisplay_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplayOnLDB">
 						<Offset>
 							<AbsDimension x="0" y="-25"/>
 						</Offset>

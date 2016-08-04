@@ -52,6 +52,7 @@ local AccountantClassic_ShowPlayer;
 AccountantClassic_Player = UnitName("player");
 AccountantClassic_Server = GetRealmName();
 AccountantClassic_Faction = UnitFactionGroup("player");
+_, AccountantClassic_Class = UnitClass("player");
 local AccountantClassic_ShowPlayer = AccountantClassic_Player;
 local isInLockdown = false;
 local AC_MNYSTR = nil;
@@ -97,7 +98,9 @@ local AccountantClassicDefaultOptions = {
 	moneyinfoframe_x = 10,
 	moneyinfoframe_y = -80,
 	faction = AccountantClassic_Faction,
+	class = AccountantClassic_Class,
 	dateformat = 1;
+	LDBDisplaySessionInfo = false;
 };
 
 -- Code by Grayhoof (SCT)
@@ -245,8 +248,14 @@ local function AccountantClassic_InitOptions()
 	if (AccountantClassic_Profile["options"].faction == nil) then
 		AccountantClassic_Profile["options"].faction = AccountantClassic_Faction;
 	end
+	if (AccountantClassic_Profile["options"].class == nil) then
+		AccountantClassic_Profile["options"].class = AccountantClassic_Class;
+	end
 	if (AccountantClassic_Profile["options"].dateformat == nil) then
 		AccountantClassic_Profile["options"].dateformat = 1;
+	end
+	if (AccountantClassic_Profile["options"].LDBDisplaySessionInfo == nil) then
+		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = false;
 	end
 end
 
@@ -761,7 +770,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 		AccountantClassic_OnShareMoney(arg1);
 	end
 
-	-- for combact lockdown
+	-- for combat lockdown
 	if (event == "PLAYER_REGEN_DISABLED") then
 		isInLockdown = true;
 	elseif (event == "PLAYER_REGEN_ENABLED") then
@@ -770,7 +779,11 @@ function AccountantClassic_OnEvent(self, event, ...)
 	
 	if AccountantClassic_Verbose and AccountantClassic_Mode ~= oldmode then ACC_Print("Accountant mode changed to '"..AccountantClassic_Mode.."'"); end
 	
-	Accountant_ClassicMiniMapLDB.text = AccountantClassic_GetFormattedValue(GetMoney());
+	if (not Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].LDBDisplaySessionInfo) then
+		Accountant_ClassicMiniMapLDB.text = AccountantClassic_GetFormattedValue(GetMoney());
+	else
+		Accountant_ClassicMiniMapLDB.text = AccountantClassic_ShowSessionNetMoney();
+	end
 end
 
 function AccountantClassic_DetectAhMail()
@@ -994,10 +1007,19 @@ function AccountantClassic_OnShow(self)
 		local allout = 0;
 		local i = 1;
 		for char, charvalue in pairs(Accountant_ClassicSaveData[AccountantClassic_Server]) do
+			local player_text, factionstr, faction_icon, classToken, class_color;
 			if (Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].faction) then
-				local factionstr = Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].faction;
-				local icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s";
-				_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(icon, char));
+				factionstr = Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].faction;
+				faction_icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s";
+				if (Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].class) then
+					classToken = Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].class;
+					class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
+				end
+				if(classToken) then 
+					_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(class_color..faction_icon.."|r", char));
+				else
+					_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(faction_icon, char));
+				end
 				--_G["AccountantClassicFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
 			else
 				_G["AccountantClassicFrameRow"..i.."Title"]:SetText(char);
@@ -1298,6 +1320,39 @@ function AccountantClassicMoneyInfoFrame_Init()
 	end
 end
 
+function AccountantClassic_ShowSessionNetMoney()
+	local amoney_str = "";
+
+	local TotalIn = 0;
+	local TotalOut = 0;
+	local diff = 0;
+	if (AccountantClassic_Data["REPAIRS"]["Session"]) then
+		for key,value in pairs(AccountantClassic_Data) do
+			TotalIn = TotalIn + AccountantClassic_Data[key]["Session"].In;
+			TotalOut = TotalOut + AccountantClassic_Data[key]["Session"].Out;
+		end
+		if (TotalOut > TotalIn) then
+			diff = TotalOut-TotalIn;
+			amoney_str = amoney_str.."|cFFFF3333"..L["ACCLOC_NETLOSS"]..": ";
+			amoney_str = amoney_str..AccountantClassic_GetFormattedValue(diff);
+		else
+			diff = TotalIn-TotalOut;
+			if (diff == 0) then
+				amoney_str = AccountantClassic_GetFormattedValue(GetMoney());
+			else
+				amoney_str = amoney_str.."|cFF00FF00"..L["ACCLOC_NETPROF"]..": ";
+				amoney_str = amoney_str..AccountantClassic_GetFormattedValue(diff);
+			end
+		end
+	else
+		amoney_str = AccountantClassic_GetFormattedValue(GetMoney());
+	end
+	
+	if (amoney_str) then
+		return amoney_str;
+	end
+end
+
 function AccountantClassic_ShowSessionToolTip()
 	local amoney_str = "";
 
@@ -1319,7 +1374,8 @@ function AccountantClassic_ShowSessionToolTip()
 			amoney_str = amoney_str.."|cFF00FF00"..L["ACCLOC_NETPROF"]..": ";
 			amoney_str = amoney_str..AccountantClassic_GetFormattedValue(diff);
 		else
-			end
+			-- do nothing
+		end
 	end
 	
 	if (amoney_str) then

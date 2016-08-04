@@ -34,6 +34,7 @@ function AccountantClassicOptions_OnShow()
 	AccountantClassicOptionsFrameToggleDisplayInstroTips:SetChecked(AccountantClassic_Profile["options"].showintrotip);
 	AccountantClassicOptionsFrameToggleMoneyOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showmoneyonbutton);
 	AccountantClassicOptionsFrameToggleSessionOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showsessiononbutton);
+	AccountantClassicOptionsFrameToggleMoneyDisplayOnLDB:SetChecked(AccountantClassic_Profile["options"].LDBDisplaySessionInfo);
 	--AccountantSliderButtonPos:SetValue(AccountantClassic_Profile["options"].buttonpos);
 	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
 	UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
@@ -95,6 +96,14 @@ function AccountantClassicOptionsSessionOnMinimap_Toggle()
 		AccountantClassic_Profile["options"].showsessiononbutton = false;
 	else
 		AccountantClassic_Profile["options"].showsessiononbutton = true;
+	end
+end
+
+function AccountantClassicLDBDisplay_Toggle()
+	if (AccountantClassic_Profile["options"].LDBDisplaySessionInfo == true) then
+		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = false;
+	else
+		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = true;
 	end
 end
 
