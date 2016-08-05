@@ -514,25 +514,25 @@ function AccountantClassic_OnLoad(self)
 
 	-- tabs
 	AccountantClassicFrameTab1:SetText(L["ACCLOC_SESS"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab1, 10);
+	PanelTemplates_TabResize(AccountantClassicFrameTab1, 20);
 	
 	AccountantClassicFrameTab2:SetText(L["ACCLOC_DAY"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab2, 10);
+	PanelTemplates_TabResize(AccountantClassicFrameTab2, 20);
 	
 	AccountantClassicFrameTab3:SetText(L["ACCLOC_WEEK"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab3, 10);
+	PanelTemplates_TabResize(AccountantClassicFrameTab3, 20);
 	
 	AccountantClassicFrameTab4:SetText(L["ACCLOC_MONTH"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab4, 10);
+	PanelTemplates_TabResize(AccountantClassicFrameTab4, 20);
 	
 	AccountantClassicFrameTab5:SetText(L["ACCLOC_TOTAL"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab5, 10);
+	PanelTemplates_TabResize(AccountantClassicFrameTab5, 20);
 
 --	AccountantClassicFrameTab6:SetText(L["ACCLOC_PRVMON"]);
---	PanelTemplates_TabResize(AccountantClassicFrameTab6, 10);
+--	PanelTemplates_TabResize(AccountantClassicFrameTab6, 20);
 	
 	AccountantClassicFrameTab6:SetText(L["ACCLOC_CHARS"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab6, 10);
+	PanelTemplates_TabResize(AccountantClassicFrameTab6, 25);
 	
 	PanelTemplates_SetNumTabs(AccountantClassicFrame, 6);
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);

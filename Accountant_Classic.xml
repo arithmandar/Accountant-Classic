@@ -81,7 +81,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="3" y="-2"/>
+								<AbsDimension x="3" y="-4"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -99,7 +99,7 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="323" y="-4"/>
+								<AbsDimension x="442" y="-4"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -108,7 +108,7 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="480" y="-4"/>
+								<AbsDimension x="604" y="-4"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -120,7 +120,7 @@
 	<!-- Main Window -->
 	<Frame name="AccountantClassicFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
 		<Size>
-			<AbsDimension x="512" y="512"/>
+			<AbsDimension x="640" y="512"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -145,54 +145,34 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTopLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-TopLeft">
+				<Texture name="$parentLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-Left">
 					<Size>
-						<AbsDimension x="256" y="256"/>
+						<AbsDimension x="512" y="512"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-TopRight">
+				<Texture name="$parentRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-Right">
 					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotLeft" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
+						<AbsDimension x="128" y="512"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-256"/>
+								<AbsDimension x="512" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotRight" file="Interface\AddOns\Accountant_Classic\Images\AccountantClassicFrame-BotRight">
+				<FontString name="$parentTitleText" inherits="GameFontHighlight" text="ACCLOC_TITLE">
 					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-256"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentTitleText" inherits="GameFontHighlight" text="SOME_TITLE">
-					<Size>
-						<AbsDimension x="300" y="14"/>
+						<AbsDimension x="620" y="14"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-16"/>
+								<AbsDimension x="0" y="-21"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -208,18 +188,18 @@
 				</FontString>
 				<FontString name="$parentIn" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOPLEFT">
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="265" y="-93"/>
+								<AbsDimension x="460" y="-93"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentOut" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOPLEFT">
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="422" y="-93"/>
+								<AbsDimension x="620" y="-93"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -237,7 +217,7 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="330" y="-39"/>
+								<AbsDimension x="360" y="-39"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -255,7 +235,7 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="330" y="-55"/>
+								<AbsDimension x="360" y="-55"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -273,7 +253,7 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="330" y="-71"/>
+								<AbsDimension x="360" y="-71"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -282,7 +262,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="475" y="-39"/>
+								<AbsDimension x="500" y="-39"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -489,36 +469,19 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="4" y="-8"/>
+							<AbsDimension x="3" y="-12"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentOptionsButton" inherits="UIPanelButtonTemplate" text="ACCLOC_OPTBUT">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentCloseButton" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="6" y="-4"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						AccountantClassicOptions_Toggle();
-					</OnClick>
-				</Scripts>
 			</Button>
 			<Button name="$parentExitButton" inherits="UIPanelButtonTemplate" text="ACCLOC_EXIT">
 				<Size>
-					<AbsDimension x="77" y="21"/>
+					<AbsDimension x="124" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRight" relativePoint="BOTTOMRIGHT">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-10" y="21"/>
+							<AbsDimension x="-10" y="17"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -528,14 +491,31 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="ACCLOC_RESET">
+			<Button name="$parentOptionsButton" inherits="UIPanelButtonTemplate" text="ACCLOC_OPTBUT">
 				<Size>
-					<AbsDimension x="80" y="22"/>
+					<AbsDimension x="124" y="22"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentExitButton" relativePoint="TOPLEFT">
 						<Offset>
-							<AbsDimension x="0" y="0"/>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AccountantClassicOptions_Toggle();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="ACCLOC_RESET">
+				<Size>
+					<AbsDimension x="124" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentOptionsButton" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -549,7 +529,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="266" y="38"/>
+							<AbsDimension x="266" y="32"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -558,7 +538,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="15" y="-16"/>
+							<AbsDimension x="30" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -603,7 +583,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="-16"/>
+							<AbsDimension x="0" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

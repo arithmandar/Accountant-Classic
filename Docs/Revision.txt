@@ -10,6 +10,7 @@ Revision History:
 ==========================
   - Added new option to toggle LDB display. User can choose to show total money or current session's net money
   - Added class color on Total tab
+  - Revamped main frame to make it wider
 
 * v2.07.05 (Jul. 19, 2016)
 ==========================

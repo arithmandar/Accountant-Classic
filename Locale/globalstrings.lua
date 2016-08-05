@@ -4,6 +4,7 @@ $Id$
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Accountant_Classic");
 
+ACCLOC_TITLE		= L["ACCLOC_TITLE"];
 ACCLOC_OPTS		= L["ACCLOC_OPTS"];
 ACCLOC_STARTWEEK	= L["ACCLOC_STARTWEEK"];
 ACCLOC_MINIBUT		= L["ACCLOC_MINIBUT"];

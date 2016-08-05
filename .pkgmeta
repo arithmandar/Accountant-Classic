@@ -22,10 +22,9 @@ ignore:
     - Libs/LibAboutPanel
     - Libs/LibDataBroker-1.1
     - Libs/LibDialog-1.0
-    - Images/AccountantClassicFrame-BotLeft.psd
-    - Images/AccountantClassicFrame-BotRight.psd
-    - Images/AccountantClassicFrame-TopLeft.psd
-    - Images/AccountantClassicFrame-TopRight.psd
+    - Images/AccountantClassicFrame-Main.psd
+    - Images/AccountantClassicFrame-Right.psd
+    - Images/AccountantClassicFrame-Left.psd
 
 license-output: Docs/LICENSE.txt
 

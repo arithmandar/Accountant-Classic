@@ -29,6 +29,7 @@ L["ACCLOC_GOLD"] = "金"
 L["ACCLOC_IN"] = "收入"
 L["ACCLOC_INTROTIPS"] = "顯示指引提示"
 L["ACCLOC_INTROTIPS_TIP"] = "選擇是否在小地圖按鈕或浮動視窗顯示額外的操作提示"
+L["ACCLOC_LDBINFOTYPE"] = "在 LDB 支援的顯示列上顯示本次的淨收入/支出而不是總是顯示總金額"
 L["ACCLOC_LFG"] = "隨機地城、團隊與事件"
 L["ACCLOC_LOADED"] = "個人會計插件已載入"
 L["ACCLOC_LOADPROFILE"] = "讀取個人會計資料給%s"
@@ -79,6 +80,7 @@ L["ACCLOC_WEEK"] = "本週"
 L["ACCLOC_WEEKSTART"] = "當週首日"
 L["BINDING_HEADER_ACCOUNTANT"] = "個人會計"
 L["BINDING_NAME_ACCOUNTANTTOG"] = "切換個人會計"
+
 --@end-do-not-package@
 --@localization(locale="zhTW", format="lua_additive_table")@
 
