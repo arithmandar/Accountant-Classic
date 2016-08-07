@@ -6,11 +6,15 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.07.06 (Aug. XX, 2016)
+* v2.07.06 (Aug. 07, 2016)
 ==========================
   - Added new option to toggle LDB display. User can choose to show total money or current session's net money
   - Added class color on Total tab
   - Revamped main frame to make it wider
+  - Libraries update:LibDBIcon
+  - Translation update:
+    - German (pas06)
+    - Korean (next96)
 
 * v2.07.05 (Jul. 19, 2016)
 ==========================
