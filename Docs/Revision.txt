@@ -9,6 +9,8 @@ Revision History:
 * v2.07.07 (Aug. 21, 2016)
 ==========================
   - Minor update to change the default frame coordinates
+  - Translation update:
+    - French (gurki35)
 
 * v2.07.06 (Aug. 07, 2016)
 ==========================
