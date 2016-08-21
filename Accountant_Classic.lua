@@ -242,8 +242,8 @@ local function AccountantClassic_InitOptions()
 		AccountantClassic_Profile["options"]["month"] = cmonth;
 	end
 	if (AccountantClassic_Profile["options"].moneyinfoframe_x == nil) then
-		AccountantClassic_Profile["options"].moneyinfoframe_x = 90;
-		AccountantClassic_Profile["options"].moneyinfoframe_y = 0;
+		AccountantClassic_Profile["options"].moneyinfoframe_x = 10;
+		AccountantClassic_Profile["options"].moneyinfoframe_y = -80;
 	end
 	if (AccountantClassic_Profile["options"].faction == nil) then
 		AccountantClassic_Profile["options"].faction = AccountantClassic_Faction;

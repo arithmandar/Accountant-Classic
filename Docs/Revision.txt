@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.07.07 (Aug. 21, 2016)
+==========================
+  - Minor update to change the default frame coordinates
+
 * v2.07.06 (Aug. 07, 2016)
 ==========================
   - Added new option to toggle LDB display. User can choose to show total money or current session's net money
