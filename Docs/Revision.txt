@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.07.08 (Oct. 27, 2016)
+==========================
+- Toc update to support WoW 7.1.0
+
 * v2.07.07 (Aug. 21, 2016)
 ==========================
   - Minor update to change the default frame coordinates
