@@ -9,6 +9,8 @@ Revision History:
 * v2.07.08 (Oct. 27, 2016)
 ==========================
 - Toc update to support WoW 7.1.0
+  - Translation update:
+    - French (marsgames)
 
 * v2.07.07 (Aug. 21, 2016)
 ==========================
