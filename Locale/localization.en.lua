@@ -41,10 +41,11 @@ L["ACCLOC_OPTBUT"]		= "Options";
 L["ACCLOC_EXIT"]		= "Exit";
 
 -- Tabs
-L["ACCLOC_SESS"]		= "Session";
-L["ACCLOC_DAY"]			= "Day";
-L["ACCLOC_WEEK"]		= "Week";
-L["ACCLOC_MONTH"]		= "Month";
+L["ACCLOC_SESS"]		= "This Session";
+L["ACCLOC_DAY"]			= "Today";
+L["ACCLOC_WEEK"]		= "This Week";
+L["ACCLOC_PRVWEEK"]		= "Prv. Week";
+L["ACCLOC_MONTH"]		= "This Month";
 L["ACCLOC_PRVMON"]		= "Prv. Month";
 L["ACCLOC_TOTAL"]		= "Total";
 L["ACCLOC_CHARS"]		= "All Chars";

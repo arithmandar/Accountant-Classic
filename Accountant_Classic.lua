@@ -42,11 +42,12 @@ local AccountantClassic_Version = GetAddOnMetadata("Accountant_Classic", "Versio
 --AccountantClassic_Disabled = false;
 local AccountantClassic_Mode = "";
 local AccountantClassic_CurrentMoney = 0;
+local AccountantClassic_LastSessionMoney = 0;
 local AccountantClassic_LastMoney = 0;
 local AccountantClassic_Verbose = nil;
 local AccountantClassic_GotName = false;
 local AccountantClassic_CurrentTab = 1;
-local AccountantClassic_LogModes = {"Session", "Day", "Week", "Month", "Total"};
+local AccountantClassic_LogModes = {"Session", "Day", "Week", "LastWeek", "Month", "LastMonth", "Total" };
 local AccountantClassic_LogTypes = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"};
 local AccountantClassic_ShowPlayer;
 AccountantClassic_Player = UnitName("player");
@@ -56,6 +57,9 @@ _, AccountantClassic_Class = UnitClass("player");
 local AccountantClassic_ShowPlayer = AccountantClassic_Player;
 local isInLockdown = false;
 local AC_MNYSTR = nil;
+
+-- Number of Accountant Classic tabs; also the tab number of "All Character"
+local AC_TABS = 8;
 
 -- NewDB
 local AC_NewDB = fales;
@@ -70,7 +74,7 @@ local AccountantClassic_Data = {
 		["MAIL"] = 	{Title = L["ACCLOC_MAIL"]};
 		["QUEST"] = 	{Title = QUESTS_LABEL};
 		["LOOT"] = 	{Title = LOOT};
-		["OTHER"] = 	{Title = L["ACCLOC_OTHER"]};
+		["OTHER"] = 	{Title = L["ACCLOC_OTHER"]}; -- Actually we display it as "Unknown"
 		["VOID"] =  	{Title = VOID_STORAGE};
 		["TRANSMO"] =	{Title = TRANSMOGRIFY};
 		["GARRISON"] =	{Title = GARRISON_LOCATION_TOOLTIP};
@@ -448,7 +452,7 @@ end
 
 function AccountantClassic_SetLabels(self)
 	-- if current tab is All Chars tab
-	if (AccountantClassic_CurrentTab == 6) then
+	if (AccountantClassic_CurrentTab == AC_TABS) then
 		AccountantClassicFrameResetButton:Hide();
 
 		AccountantClassicFrameSource:SetText(L["ACCLOC_CHAR"]);
@@ -502,10 +506,15 @@ function AccountantClassic_OnLoad(self)
 	AccountantClassic_SetLabels();
 	--AccountantClassicFrameCharacterDropDown_OnShow();
 
-	-- Current Cash
+	-- Cash
 	AccountantClassic_CurrentMoney = GetMoney();
+	if (AccountantClassic_LastSessionMoney ~= AccountantClassic_CurrentMoney) then
+		AccountantClassic_Mode = "OTHER";
+		AccountantClassic_LastMoney = AccountantClassic_LastSessionMoney;
+		AccountantClassic_UpdateLog();
+	end
 	AccountantClassic_LastMoney = AccountantClassic_CurrentMoney;
-
+	
 	-- hooks
 	AccountantClassic_RepairAllItems_old = RepairAllItems;
 	RepairAllItems = AccountantClassic_RepairAllItems;
@@ -522,19 +531,22 @@ function AccountantClassic_OnLoad(self)
 	AccountantClassicFrameTab3:SetText(L["ACCLOC_WEEK"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab3, 20);
 	
-	AccountantClassicFrameTab4:SetText(L["ACCLOC_MONTH"]);
+	AccountantClassicFrameTab4:SetText(L["ACCLOC_PRVWEEK"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab4, 20);
 	
-	AccountantClassicFrameTab5:SetText(L["ACCLOC_TOTAL"]);
+	AccountantClassicFrameTab5:SetText(L["ACCLOC_MONTH"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab5, 20);
+	
+	AccountantClassicFrameTab6:SetText(L["ACCLOC_PRVMON"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab6, 20);
 
---	AccountantClassicFrameTab6:SetText(L["ACCLOC_PRVMON"]);
---	PanelTemplates_TabResize(AccountantClassicFrameTab6, 20);
+	AccountantClassicFrameTab7:SetText(L["ACCLOC_TOTAL"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab7, 20);
+
+	AccountantClassicFrameTab8:SetText(L["ACCLOC_CHARS"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab8, 25);
 	
-	AccountantClassicFrameTab6:SetText(L["ACCLOC_CHARS"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab6, 25);
-	
-	PanelTemplates_SetNumTabs(AccountantClassicFrame, 6);
+	PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 
@@ -598,6 +610,8 @@ function AccountantClassic_LoadData()
 		order = order + 1;
 	end
 	AccountantClassic_Profile["options"].version = AccountantClassic_Version;
+	-- Here we retrieve the last session money before we set the option-value to the current one
+	AccountantClassic_LastSessionMoney = AccountantClassic_Profile["options"].totalcash;
 	AccountantClassic_Profile["options"].totalcash = GetMoney();
 
 	--Duplicate below from OnShow as the day and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
@@ -617,9 +631,14 @@ function AccountantClassic_LoadData()
 	if (AccountantClassic_Profile["options"]["dateweek"] ~= AccountantClassic_WeekStart()) then
 		-- It's a new week! clear out the week tab
 		for mode,value in pairs(AccountantClassic_Data) do
+			AccountantClassic_Data[mode]["LastWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
 			AccountantClassic_Data[mode]["Week"].In = 0;
+			AccountantClassic_Profile["data"][mode]["LastWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
 			AccountantClassic_Profile["data"][mode]["Week"].In = 0;
+			
+			AccountantClassic_Data[mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
 			AccountantClassic_Data[mode]["Week"].Out = 0;
+			AccountantClassic_Profile["data"][mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
 			AccountantClassic_Profile["data"][mode]["Week"].Out = 0;
 		end
 	end
@@ -627,14 +646,16 @@ function AccountantClassic_LoadData()
 
 	-- Check to see if the month has rolled over
 	if (AccountantClassic_Profile["options"]["month"] ~= cmonth) then
-		-- It's a new month! Copy the month data to "previous" month
-		-- TBD
-
 		-- It's a new month! clear out the month tab
 		for mode,value in pairs(AccountantClassic_Data) do
+			AccountantClassic_Data[mode]["LastMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
 			AccountantClassic_Data[mode]["Month"].In = 0;
+			AccountantClassic_Profile["data"][mode]["LastMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
 			AccountantClassic_Profile["data"][mode]["Month"].In = 0;
+			
+			AccountantClassic_Data[mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
 			AccountantClassic_Data[mode]["Month"].Out = 0;
+			AccountantClassic_Profile["data"][mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
 			AccountantClassic_Profile["data"][mode]["Month"].Out = 0;
 		end
 	end
@@ -837,7 +858,6 @@ function AccountantClassic_OnShareMoney(arg1)
 
 end
 
-
 function AccountantClassic_NiceCash(amount)
 	local agold = 10000;
 	local asilver = 100;
@@ -869,7 +889,6 @@ function AccountantClassic_NiceCash(amount)
 	return outstr;
 end
 
-
 -- code adopted from SellTrash and MoneyFrame.lua
 function AccountantClassic_GetFormattedValue(amount)
 	local gold = floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
@@ -891,7 +910,6 @@ function AccountantClassic_GetFormattedValue(amount)
 	end
 end
 
-
 function AccountantClassic_GetFormattedCurrency(currencyID)
 	local name, amount, icon = GetCurrencyInfo(currencyID);
 	
@@ -902,7 +920,6 @@ function AccountantClassic_GetFormattedCurrency(currencyID)
 		return "";
 	end
 end
-
 
 function AccountantClassic_WeekStart()
 	local oneday = 86400;
@@ -943,8 +960,10 @@ function AccountantClassic_OnShow(self)
 		-- Its a new week! clear out the week tab
 		for mode,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[mode]["Week"].In = 0;
+--			AccountantClassic_Profile["data"][mode]["LastWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
 			AccountantClassic_Profile["data"][mode]["Week"].In = 0;
 			AccountantClassic_Data[mode]["Week"].Out = 0;
+--			AccountantClassic_Profile["data"][mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
 			AccountantClassic_Profile["data"][mode]["Week"].Out = 0;
 		end
 	end
@@ -955,15 +974,17 @@ function AccountantClassic_OnShow(self)
 		-- Its a new month! clear out the month tab
 		for mode,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[mode]["Month"].In = 0;
+--			AccountantClassic_Profile["data"][mode]["LastMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
 			AccountantClassic_Profile["data"][mode]["Month"].In = 0;
 			AccountantClassic_Data[mode]["Month"].Out = 0;
+--			AccountantClassic_Profile["data"][mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
 			AccountantClassic_Profile["data"][mode]["Month"].Out = 0;
 		end
 	end
 	AccountantClassic_Profile["options"]["month"] = cmonth;
 
 	AccountantClassic_SetLabels();
-	if ( AccountantClassic_CurrentTab ~= 6 ) then
+	if ( AccountantClassic_CurrentTab ~= AC_TABS ) then
 		-- for all the tabs except for character tab
 		TotalIn = 0;
 		TotalOut = 0;
@@ -1125,8 +1146,12 @@ function AccountantClassic_ResetData()
 		logmode = L["ACCLOC_DAY"];
 	elseif logmode == "Week" then
 		logmode = L["ACCLOC_WEEK"];
+	elseif logmode == "LastWeek" then
+		logmode = L["ACCLOC_PRVWEEK"];
 	elseif logmode == "Month" then
 		logmode = L["ACCLOC_MONTH"];
+	elseif logmode == "LastMonth" then
+		logmode = L["ACCLOC_PRVMONTH"];
 	else
 
 	end

@@ -2,13 +2,23 @@
 Known Issue(s):
 ===============
 - Some incomes were categorized into Unknown instead of corresponding group.
+- "LastWeek" and "LastMonth" tracking data currently is assumed you play WoW 
+  every week / every month. Which means for example if you played in September
+  but not October, and then play again in November, the data in Last Month is
+  actually from September.
 
 Revision History:
 =================
 
+* v2.08.00 (Dec. XX, 2016)
+==========================
+  - Added net profit tracking on previous week and month
+  - Detect untracked money in/out when it was managed out-side of game or when 
+    the addon was disable, and log it into Unknown category
+
 * v2.07.08 (Oct. 27, 2016)
 ==========================
-- Toc update to support WoW 7.1.0
+  - Toc update to support WoW 7.1.0
   - Translation update:
     - French (marsgames)
 
@@ -20,7 +30,8 @@ Revision History:
 
 * v2.07.06 (Aug. 07, 2016)
 ==========================
-  - Added new option to toggle LDB display. User can choose to show total money or current session's net money
+  - Added new option to toggle LDB display. User can choose to show total 
+    money or current session's net money
   - Added class color on Total tab
   - Revamped main frame to make it wider
   - Libraries update:LibDBIcon
@@ -63,17 +74,23 @@ Revision History:
 
 * v2.07.00 (Jun. 17, 2016)
 ==========================
-  - Updated LDB related functions to set label text and also title text to show real-time money
-  - Change LDB type to data source and revise the displaying text to be realtime money
-  - New install should now have no problem in setting up and loading the profile options.
+  - Updated LDB related functions to set label text and also title text to 
+    show real-time money
+  - Change LDB type to data source and revise the displaying text to be 
+    realtime money
+  - New install should now have no problem in setting up and loading the 
+    profile options.
   - Typo of GARRISON_SHIPYARD_NPC_OPENED fixed.
-  - SaveData and frame names changed to use AccountantClassic to aviod from the confliction with the "Accountant" addon.
+  - SaveData and frame names changed to use AccountantClassic to aviod from 
+    the confliction with the "Accountant" addon.
   - Handles the confliction when "Accountant" is also enabled.
-  - Created function AccountantClassic_CleanUpAccountantDB() to handle "Accountant" DB's cleaning up
+  - Created function AccountantClassic_CleanUpAccountantDB() to handle 
+    "Accountant" DB's cleaning up
 
 * v2.06.11 (Jun. 14, 2016)
 ==========================
-  - Enhanced the AccountFrame's showing / hiding method so that it will remember the position from last draging.
+  - Enhanced the AccountFrame's showing / hiding method so that it will 
+    remember the position from last draging.
   - Added faction icon on All Characters tab for each of the characters 
    (you will need to login with each character to record the faction info)
   - Formated currency strings to add leading 0
@@ -89,11 +106,14 @@ Revision History:
 
 * v2.06.08 (May 25, 2016)
 ==========================
-  - Fixed the problem that option frame not open when minimap button has been right-clicked
+  - Fixed the problem that option frame not open when minimap button has 
+    been right-clicked
   - Enhanced to prevent the money frame to be draged when in combat
   - Hide tooltip while draging or in combat
-  - Migrate locale to use AceLocale; also added other non-translated languages, the translation will get loaded once anyone provide translation via CurseForge
-  - Revised function names to use "AccountantClassic" as prefix; code files' name also revised to "Accountant_Classic" as prefix
+  - Migrate locale to use AceLocale; also added other non-translated languages, 
+    the translation will get loaded once anyone provide translation via CurseForge
+  - Revised function names to use "AccountantClassic" as prefix; code files' name 
+    also revised to "Accountant_Classic" as prefix
 
 * v2.6.07 (May 13, 2016)
 ==========================
@@ -121,7 +141,8 @@ Revision History:
 
 * v2.6.04 (May 6, 2016)
 ==========================
-  - Added session session income / outgoing and net profit/lost info as tooltip to Minimap button
+  - Added session session income / outgoing and net profit/lost info as tooltip 
+    to Minimap button
   - Fixed package problem, now linked proper libs in the new version
 
 * v2.6.03 (May 6, 2016)
@@ -132,16 +153,19 @@ Revision History:
 
 * v2.6.02 (May 2, 2016)
 ==========================
-  - Updated total characters tab to show all characters' total incoming / outgoing and net profit.
+  - Updated total characters tab to show all characters' total incoming / 
+    outgoing and net profit.
 
 * v2.6.01 (Apr. 27, 2016)
 ==========================
-  - Added session income / outgoing and net profit/lost info as tooltip to floating money frame
+  - Added session income / outgoing and net profit/lost info as tooltip to 
+    floating money frame
 
 * v2.6.00 (Apr. 24, 2016)
 ==========================
   - Enlarge frame to add 3 more rows
-  - Updated Garrison event name to fix the bug that garrison's income did not get categorized correctly
+  - Updated Garrison event name to fix the bug that garrison's income did not 
+    get categorized correctly
   - Added new floating frame to show the current money
   - Added monthly logs
   - Change money format to use coin's symbols
@@ -159,7 +183,8 @@ Revision History:
   - Track on the following new spending / earning (codes by Tntdruid)
     - Gold earned from Auction House (when received money via mail)
     - Barber Shop.
-    – Garrison - track gold used on building, upgrading and gold from followers missions.
+    – Garrison - track gold used on building, upgrading and gold from followers 
+      missions.
     – Gold earned from LFD, LFR and Scenarios.
     - Gold used on Transmogrify.
     - Gold used in Void Storage.
@@ -215,7 +240,8 @@ Revision History:
 
 * v2.5.10 (Jan. 03, 2011)
 ==========================
-  - Fix the day/week amount aren't showing correctly when you never open those tabs in a fresh day / weekday
+  - Fix the day/week amount aren't showing correctly when you never open those 
+    tabs in a fresh day / weekday
   
 * v2.5.09 (Dec. 4, 2010)
 ==========================

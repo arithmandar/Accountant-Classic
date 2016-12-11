@@ -21,7 +21,7 @@ L["ACCLOC_CONFLICT"] = [=[偵測到衝突的插件 - |cFFFF0000Accountant|r。
 它已被停止啟用，按下確定按鍵以重新載入遊戲。]=]
 L["ACCLOC_DATEFORMAT"] = "選擇日期格式："
 L["ACCLOC_DATEFORMAT_TIP"] = "在「本週」與「所有角色」頁籤所顯示的日期格式"
-L["ACCLOC_DAY"] = "本日"
+L["ACCLOC_DAY"] = "今天"
 L["ACCLOC_DESC"] = "追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。"
 L["ACCLOC_DONE"] = "完成"
 L["ACCLOC_EXIT"] = "離開"
@@ -49,7 +49,8 @@ L["ACCLOC_OPTBUT"] = "選項"
 L["ACCLOC_OPTS"] = "個人會計選項"
 L["ACCLOC_OTHER"] = "未知"
 L["ACCLOC_OUT"] = "支出"
-L["ACCLOC_PRVMON"] = "上一月"
+L["ACCLOC_PRVMON"] = "上月"
+L["ACCLOC_PRVWEEK"] = "上週"
 L["ACCLOC_QUEST"] = "任務獎勵"
 L["ACCLOC_REMOVECHAR"] = "選擇要移除的角色:"
 L["ACCLOC_REMOVECHAR_TIP"] = "被選取的角色的個人會計資料將會被移除。"
@@ -70,9 +71,9 @@ L["ACCLOC_TIP"] = [=[左鍵開啟個人會計
 L["ACCLOC_TIP2"] = [=[右鍵並拖曳以移動圖示按鈕位置
 右鍵開啟個人會計]=]
 L["ACCLOC_TITLE"] = "個人會計"
-L["ACCLOC_TOTAL"] = "總計"
 L["ACCLOC_TOT_IN"] = "總收入"
 L["ACCLOC_TOT_OUT"] = "總支出"
+L["ACCLOC_TOTAL"] = "總計"
 L["ACCLOC_TRADE"] = "交易"
 L["ACCLOC_TRAIN"] = "訓練費用"
 L["ACCLOC_UPDATED"] = "更新"
@@ -80,7 +81,6 @@ L["ACCLOC_WEEK"] = "本週"
 L["ACCLOC_WEEKSTART"] = "當週首日"
 L["BINDING_HEADER_ACCOUNTANT"] = "個人會計"
 L["BINDING_NAME_ACCOUNTANTTOG"] = "切換個人會計"
-
 --@end-do-not-package@
 --@localization(locale="zhTW", format="lua_additive_table")@
 
