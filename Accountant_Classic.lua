@@ -1151,7 +1151,7 @@ function AccountantClassic_ResetData()
 	elseif logmode == "Month" then
 		logmode = L["ACCLOC_MONTH"];
 	elseif logmode == "LastMonth" then
-		logmode = L["ACCLOC_PRVMONTH"];
+		logmode = L["ACCLOC_PRVMON"];
 	else
 
 	end
