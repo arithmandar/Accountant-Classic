@@ -631,14 +631,16 @@ function AccountantClassic_LoadData()
 	if (AccountantClassic_Profile["options"]["dateweek"] ~= AccountantClassic_WeekStart()) then
 		-- It's a new week! clear out the week tab
 		for mode,value in pairs(AccountantClassic_Data) do
+			-- Copy week data to LastWeek first
 			AccountantClassic_Data[mode]["LastWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
-			AccountantClassic_Data[mode]["Week"].In = 0;
 			AccountantClassic_Profile["data"][mode]["LastWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
+			AccountantClassic_Data[mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
+			AccountantClassic_Profile["data"][mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
+
+			AccountantClassic_Data[mode]["Week"].In = 0;
 			AccountantClassic_Profile["data"][mode]["Week"].In = 0;
 			
-			AccountantClassic_Data[mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
 			AccountantClassic_Data[mode]["Week"].Out = 0;
-			AccountantClassic_Profile["data"][mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
 			AccountantClassic_Profile["data"][mode]["Week"].Out = 0;
 		end
 	end
@@ -648,14 +650,16 @@ function AccountantClassic_LoadData()
 	if (AccountantClassic_Profile["options"]["month"] ~= cmonth) then
 		-- It's a new month! clear out the month tab
 		for mode,value in pairs(AccountantClassic_Data) do
+			-- Copy Month data to LastMonth first
 			AccountantClassic_Data[mode]["LastMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
-			AccountantClassic_Data[mode]["Month"].In = 0;
 			AccountantClassic_Profile["data"][mode]["LastMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
+			AccountantClassic_Data[mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
+			AccountantClassic_Profile["data"][mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
+
+			AccountantClassic_Data[mode]["Month"].In = 0;
 			AccountantClassic_Profile["data"][mode]["Month"].In = 0;
 			
-			AccountantClassic_Data[mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
 			AccountantClassic_Data[mode]["Month"].Out = 0;
-			AccountantClassic_Profile["data"][mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
 			AccountantClassic_Profile["data"][mode]["Month"].Out = 0;
 		end
 	end
@@ -960,10 +964,8 @@ function AccountantClassic_OnShow(self)
 		-- Its a new week! clear out the week tab
 		for mode,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[mode]["Week"].In = 0;
---			AccountantClassic_Profile["data"][mode]["LastWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
 			AccountantClassic_Profile["data"][mode]["Week"].In = 0;
 			AccountantClassic_Data[mode]["Week"].Out = 0;
---			AccountantClassic_Profile["data"][mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
 			AccountantClassic_Profile["data"][mode]["Week"].Out = 0;
 		end
 	end
@@ -974,10 +976,8 @@ function AccountantClassic_OnShow(self)
 		-- Its a new month! clear out the month tab
 		for mode,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[mode]["Month"].In = 0;
---			AccountantClassic_Profile["data"][mode]["LastMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
 			AccountantClassic_Profile["data"][mode]["Month"].In = 0;
 			AccountantClassic_Data[mode]["Month"].Out = 0;
---			AccountantClassic_Profile["data"][mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
 			AccountantClassic_Profile["data"][mode]["Month"].Out = 0;
 		end
 	end
@@ -1222,11 +1222,15 @@ function AccountantClassic_UpdateLog()
 	if mode == "" then mode = "OTHER"; end
 	if (diff >0) then
 		for key,logmode in pairs(AccountantClassic_LogModes) do
-			AccountantClassic_Data[mode][logmode].In = AccountantClassic_Data[mode][logmode].In + diff
-			AccountantClassic_Profile["data"][mode][logmode].In = AccountantClassic_Data[mode][logmode].In;
-			if (AC_NewDB) then
-				if (logmode == "Day") then
-					Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][mode].In = AccountantClassic_Data[mode][logmode].In;
+			if (logmode == "LastWeek" or logmode == "LastMonth") then
+				-- do nothing
+			else
+				AccountantClassic_Data[mode][logmode].In = AccountantClassic_Data[mode][logmode].In + diff
+				AccountantClassic_Profile["data"][mode][logmode].In = AccountantClassic_Data[mode][logmode].In;
+				if (AC_NewDB) then
+					if (logmode == "Day") then
+						Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][mode].In = AccountantClassic_Data[mode][logmode].In;
+					end
 				end
 			end
 		end
@@ -1234,11 +1238,15 @@ function AccountantClassic_UpdateLog()
 	elseif (diff < 0) then
 		diff = diff * -1;
 		for key,logmode in pairs(AccountantClassic_LogModes) do
-			AccountantClassic_Data[mode][logmode].Out = AccountantClassic_Data[mode][logmode].Out + diff
-			AccountantClassic_Profile["data"][mode][logmode].Out = AccountantClassic_Data[mode][logmode].Out;
-			if (AC_NewDB) then
-				if (logmode == "Day") then
-					Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][mode].Out = AccountantClassic_Data[mode][logmode].Out;
+			if (logmode == "LastWeek" or logmode == "LastMonth") then
+				-- do nothing
+			else
+				AccountantClassic_Data[mode][logmode].Out = AccountantClassic_Data[mode][logmode].Out + diff
+				AccountantClassic_Profile["data"][mode][logmode].Out = AccountantClassic_Data[mode][logmode].Out;
+				if (AC_NewDB) then
+					if (logmode == "Day") then
+						Accountant_Classic_NewDB[AccountantClassic_Server][AccountantClassic_Player]["data"][cdate][mode].Out = AccountantClassic_Data[mode][logmode].Out;
+					end
 				end
 			end
 		end
