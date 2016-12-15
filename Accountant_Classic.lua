@@ -47,7 +47,7 @@ local AccountantClassic_LastMoney = 0;
 local AccountantClassic_Verbose = nil;
 local AccountantClassic_GotName = false;
 local AccountantClassic_CurrentTab = 1;
-local AccountantClassic_LogModes = {"Session", "Day", "Week", "LastWeek", "Month", "LastMonth", "Total" };
+local AccountantClassic_LogModes = {"Session", "Day", "PrvDay", "Week", "PrvWeek", "Month", "PrvMonth", "Total" };
 local AccountantClassic_LogTypes = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"};
 local AccountantClassic_ShowPlayer;
 AccountantClassic_Player = UnitName("player");
@@ -58,8 +58,9 @@ local AccountantClassic_ShowPlayer = AccountantClassic_Player;
 local isInLockdown = false;
 local AC_MNYSTR = nil;
 
+local months = {CalendarGetMonthNames()};
 -- Number of Accountant Classic tabs; also the tab number of "All Character"
-local AC_TABS = 8;
+local AC_TABS = #AccountantClassic_LogModes+1;
 
 -- NewDB
 local AC_NewDB = fales;
@@ -86,6 +87,12 @@ local AccountantClassic_Data = {
 local cdate = date("%d/%m/%y");
 local cmonth = date("%m");
 
+local function TableIndex(t,val)
+    for k,v in ipairs(t) do 
+        if v == val then return k end
+    end
+end
+
 local AccountantClassicDefaultOptions = {
 	showbutton = true, 
 	showmoneyinfo = true, 
@@ -95,8 +102,11 @@ local AccountantClassicDefaultOptions = {
 	buttonpos = 150, 
 	version = AccountantClassic_Version, 
 	date = cdate, 
+	-- prvday, 
 	weekdate = "", 
+	-- prvdateweek, 
 	month = cmonth,
+	-- prvmonth,
 	weekstart = 1, 
 	totalcash = 0,
 	moneyinfoframe_x = 10,
@@ -528,23 +538,26 @@ function AccountantClassic_OnLoad(self)
 	AccountantClassicFrameTab2:SetText(L["ACCLOC_DAY"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab2, 20);
 	
-	AccountantClassicFrameTab3:SetText(L["ACCLOC_WEEK"]);
+	AccountantClassicFrameTab3:SetText(L["ACCLOC_PRVDAY"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab3, 20);
 	
-	AccountantClassicFrameTab4:SetText(L["ACCLOC_PRVWEEK"]);
+	AccountantClassicFrameTab4:SetText(L["ACCLOC_WEEK"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab4, 20);
 	
-	AccountantClassicFrameTab5:SetText(L["ACCLOC_MONTH"]);
+	AccountantClassicFrameTab5:SetText(L["ACCLOC_PRVWEEK"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab5, 20);
 	
-	AccountantClassicFrameTab6:SetText(L["ACCLOC_PRVMON"]);
+	AccountantClassicFrameTab6:SetText(L["ACCLOC_MONTH"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab6, 20);
-
-	AccountantClassicFrameTab7:SetText(L["ACCLOC_TOTAL"]);
+	
+	AccountantClassicFrameTab7:SetText(L["ACCLOC_PRVMON"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab7, 20);
 
-	AccountantClassicFrameTab8:SetText(L["ACCLOC_CHARS"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab8, 25);
+	AccountantClassicFrameTab8:SetText(L["ACCLOC_TOTAL"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab8, 20);
+
+	AccountantClassicFrameTab9:SetText(L["ACCLOC_CHARS"]);
+	PanelTemplates_TabResize(AccountantClassicFrameTab9, 25);
 	
 	PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
@@ -619,6 +632,13 @@ function AccountantClassic_LoadData()
 	if (AccountantClassic_Profile["options"]["date"] ~= cdate) then
 		-- It's a new day! clear out the day tab
 		for mode,value in pairs(AccountantClassic_Data) do
+			-- Copy day data to PrvDay first
+			AccountantClassic_Profile["options"]["prvday"] = AccountantClassic_Profile["options"]["date"];
+			AccountantClassic_Data[mode]["PrvDay"].In = AccountantClassic_Profile["data"][mode]["Day"].In; 
+			AccountantClassic_Profile["data"][mode]["PrvDay"].In = AccountantClassic_Profile["data"][mode]["Day"].In;
+			AccountantClassic_Data[mode]["PrvDay"].Out = AccountantClassic_Profile["data"][mode]["Day"].Out;
+			AccountantClassic_Profile["data"][mode]["PrvDay"].Out = AccountantClassic_Profile["data"][mode]["Day"].Out;
+			
 			AccountantClassic_Data[mode]["Day"].In = 0;
 			AccountantClassic_Profile["data"][mode]["Day"].In = 0;
 			AccountantClassic_Data[mode]["Day"].Out = 0;
@@ -631,11 +651,12 @@ function AccountantClassic_LoadData()
 	if (AccountantClassic_Profile["options"]["dateweek"] ~= AccountantClassic_WeekStart()) then
 		-- It's a new week! clear out the week tab
 		for mode,value in pairs(AccountantClassic_Data) do
-			-- Copy week data to LastWeek first
-			AccountantClassic_Data[mode]["LastWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
-			AccountantClassic_Profile["data"][mode]["LastWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
-			AccountantClassic_Data[mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
-			AccountantClassic_Profile["data"][mode]["LastWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
+			-- Copy week data to PrvWeek first
+			AccountantClassic_Profile["options"]["prvdateweek"] = AccountantClassic_Profile["options"]["dateweek"];
+			AccountantClassic_Data[mode]["PrvWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
+			AccountantClassic_Profile["data"][mode]["PrvWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
+			AccountantClassic_Data[mode]["PrvWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
+			AccountantClassic_Profile["data"][mode]["PrvWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
 
 			AccountantClassic_Data[mode]["Week"].In = 0;
 			AccountantClassic_Profile["data"][mode]["Week"].In = 0;
@@ -650,11 +671,12 @@ function AccountantClassic_LoadData()
 	if (AccountantClassic_Profile["options"]["month"] ~= cmonth) then
 		-- It's a new month! clear out the month tab
 		for mode,value in pairs(AccountantClassic_Data) do
-			-- Copy Month data to LastMonth first
-			AccountantClassic_Data[mode]["LastMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
-			AccountantClassic_Profile["data"][mode]["LastMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
-			AccountantClassic_Data[mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
-			AccountantClassic_Profile["data"][mode]["LastMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
+			-- Copy Month data to PrvMonth first
+			AccountantClassic_Profile["options"]["prvmonth"] = AccountantClassic_Profile["options"]["month"];
+			AccountantClassic_Data[mode]["PrvMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
+			AccountantClassic_Profile["data"][mode]["PrvMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
+			AccountantClassic_Data[mode]["PrvMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
+			AccountantClassic_Profile["data"][mode]["PrvMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
 
 			AccountantClassic_Data[mode]["Month"].In = 0;
 			AccountantClassic_Profile["data"][mode]["Month"].In = 0;
@@ -1027,36 +1049,39 @@ function AccountantClassic_OnShow(self)
 		local allin = 0;
 		local allout = 0;
 		local i = 1;
-		for char, charvalue in pairs(Accountant_ClassicSaveData[AccountantClassic_Server]) do
-			local player_text, factionstr, faction_icon, classToken, class_color;
-			if (Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].faction) then
-				factionstr = Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].faction;
-				faction_icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s";
-				if (Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].class) then
-					classToken = Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"].class;
-					class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
-				end
-				if(classToken) then 
-					_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(class_color..faction_icon.."|r", char));
+		local serverkey, servervalue, charkey, charvalue;
+		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+				local player_text, factionstr, faction_icon, classToken, class_color;
+				if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
+					factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
+					faction_icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s - %s";
+					if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
+						classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
+						class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
+					end
+					if(classToken) then 
+						_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
+					else
+						_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(faction_icon, serverkey, charkey));
+					end
+					--_G["AccountantClassicFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
 				else
-					_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(faction_icon, char));
+					_G["AccountantClassicFrameRow"..i.."Title"]:SetText(charkey);
 				end
-				--_G["AccountantClassicFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
-			else
-				_G["AccountantClassicFrameRow"..i.."Title"]:SetText(char);
+				if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
+					_G["AccountantClassicFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
+					alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+					_G["AccountantClassicFrameRow"..i.."Out"]:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"], 2));
+				else
+					_G["AccountantClassicFrameRow"..i.."In"]:SetText("Unknown");
+				end
+				for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
+					allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+				end
+				i=i+1;
 			end
-			if Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"] ~= nil then
-				_G["AccountantClassicFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"]));
-				alltotal = alltotal + Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["totalcash"];
-				_G["AccountantClassicFrameRow"..i.."Out"]:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[AccountantClassic_Server][char]["options"]["date"], 2));
-			else
-				_G["AccountantClassicFrameRow"..i.."In"]:SetText("Unknown");
-			end
-			for key, value in pairs(Accountant_ClassicSaveData[AccountantClassic_Server][char]["data"]) do
-				allin = allin + Accountant_ClassicSaveData[AccountantClassic_Server][char]["data"][key]["Total"]["In"];
-				allout = allout + Accountant_ClassicSaveData[AccountantClassic_Server][char]["data"][key]["Total"]["Out"];
-			end
-			i=i+1;
 		end
 		AccountantClassicFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allin));
 		AccountantClassicFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allout));
@@ -1083,9 +1108,42 @@ function AccountantClassic_OnShow(self)
 	end
 	SetPortraitTexture(AccountantClassicFramePortrait, "player");
 
-	if (AccountantClassic_CurrentTab == 3) then
+	-- Extra info
+	if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Week")) then
 		AccountantClassicFrameExtra:SetText(L["ACCLOC_WEEKSTART"]..":");
 		AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1));
+	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvWeek")) then
+		if (AccountantClassic_Profile["options"]["prvdateweek"]) then
+			AccountantClassicFrameExtra:SetText(L["ACCLOC_WEEKSTART"]..":");
+			AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvdateweek"], 1));
+		else
+			AccountantClassicFrameExtra:SetText("");
+			AccountantClassicFrameExtraValue:SetText("");
+		end
+	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Month")) then
+		local m = tonumber(AccountantClassic_Profile["options"]["month"]);
+		AccountantClassicFrameExtra:SetText("");
+		AccountantClassicFrameExtraValue:SetText(months[m]);
+	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvMonth")) then
+		if (AccountantClassic_Profile["options"]["prvmonth"]) then
+			local m = tonumber(AccountantClassic_Profile["options"]["prvmonth"]);
+			AccountantClassicFrameExtra:SetText("");
+			AccountantClassicFrameExtraValue:SetText(months[m]);
+		else
+			AccountantClassicFrameExtra:SetText("");
+			AccountantClassicFrameExtraValue:SetText("");
+		end
+	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Day")) then
+		AccountantClassicFrameExtra:SetText("");
+		AccountantClassicFrameExtraValue:SetText(cdate);
+	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvDay")) then
+		if (AccountantClassic_Profile["options"]["prvday"]) then
+			AccountantClassicFrameExtra:SetText("");
+			AccountantClassicFrameExtraValue:SetText(AccountantClassic_Profile["options"]["prvday"]);
+		else
+			AccountantClassicFrameExtra:SetText("");
+			AccountantClassicFrameExtraValue:SetText("");
+		end
 	else
 		AccountantClassicFrameExtra:SetText("");
 		AccountantClassicFrameExtraValue:SetText("");
@@ -1144,13 +1202,15 @@ function AccountantClassic_ResetData()
 		logmode = L["ACCLOC_SESS"];
 	elseif logmode == "Day" then
 		logmode = L["ACCLOC_DAY"];
+	elseif logmode == "PrvDay" then
+		logmode = L["ACCLOC_PRVDAY"];
 	elseif logmode == "Week" then
 		logmode = L["ACCLOC_WEEK"];
-	elseif logmode == "LastWeek" then
+	elseif logmode == "PrvWeek" then
 		logmode = L["ACCLOC_PRVWEEK"];
 	elseif logmode == "Month" then
 		logmode = L["ACCLOC_MONTH"];
-	elseif logmode == "LastMonth" then
+	elseif logmode == "PrvMonth" then
 		logmode = L["ACCLOC_PRVMON"];
 	else
 
@@ -1222,7 +1282,7 @@ function AccountantClassic_UpdateLog()
 	if mode == "" then mode = "OTHER"; end
 	if (diff >0) then
 		for key,logmode in pairs(AccountantClassic_LogModes) do
-			if (logmode == "LastWeek" or logmode == "LastMonth") then
+			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay") then
 				-- do nothing
 			else
 				AccountantClassic_Data[mode][logmode].In = AccountantClassic_Data[mode][logmode].In + diff
@@ -1238,7 +1298,7 @@ function AccountantClassic_UpdateLog()
 	elseif (diff < 0) then
 		diff = diff * -1;
 		for key,logmode in pairs(AccountantClassic_LogModes) do
-			if (logmode == "LastWeek" or logmode == "LastMonth") then
+			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay") then
 				-- do nothing
 			else
 				AccountantClassic_Data[mode][logmode].Out = AccountantClassic_Data[mode][logmode].Out + diff

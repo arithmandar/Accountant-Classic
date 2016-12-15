@@ -43,6 +43,7 @@ L["ACCLOC_EXIT"]		= "Exit";
 -- Tabs
 L["ACCLOC_SESS"]		= "This Session";
 L["ACCLOC_DAY"]			= "Today";
+L["ACCLOC_PRVDAY"]		= "Prv. Day";
 L["ACCLOC_WEEK"]		= "This Week";
 L["ACCLOC_PRVWEEK"]		= "Prv. Week";
 L["ACCLOC_MONTH"]		= "This Month";
