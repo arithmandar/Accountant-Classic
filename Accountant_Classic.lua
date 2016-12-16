@@ -1252,11 +1252,11 @@ function AccountantClassic_OnShow(self)
 		end
 	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Day")) then
 		AccountantClassicFrameExtra:SetText("");
-		AccountantClassicFrameExtraValue:SetText(cdate);
+		AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(cdate, 2));
 	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvDay")) then
 		if (AccountantClassic_Profile["options"]["prvday"]) then
 			AccountantClassicFrameExtra:SetText("");
-			AccountantClassicFrameExtraValue:SetText(AccountantClassic_Profile["options"]["prvday"]);
+			AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvday"], 2));
 		else
 			AccountantClassicFrameExtra:SetText("");
 			AccountantClassicFrameExtraValue:SetText("");
