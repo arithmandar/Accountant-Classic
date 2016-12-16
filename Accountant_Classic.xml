@@ -73,11 +73,11 @@
 	<!-- Text rows -->
 	<Frame name="AccountantClassicRowTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="482" y="19"/>
+			<AbsDimension x="600" y="19"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentTitle" inherits="GameFontNormal">
+				<FontString name="$parentTitle" parentKey="Title" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 							<Offset>
@@ -86,6 +86,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+	<!--
 				<Button name="$parentDelete" inherits="UIPanelButtonTemplate">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
@@ -95,7 +96,8 @@
 						</Anchor>
 					</Anchors>
 				</Button>
-				<FontString name="$parentIn" inherits="NumberFontNormal">
+	-->
+				<FontString name="$parentIn" parentKey="In" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -104,7 +106,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOut" inherits="NumberFontNormal">
+				<FontString name="$parentOut" parentKey="Out" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -213,7 +215,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalInValue" inherits="GameFontHighlightSmall">
+				<FontString name="$parentTotalInValue" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -231,7 +233,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalOutValue" inherits="GameFontHighlightSmall">
+				<FontString name="$parentTotalOutValue" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -249,7 +251,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalFlowValue" inherits="GameFontHighlightSmall">
+				<FontString name="$parentTotalFlowValue" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -303,6 +305,27 @@
 				<Scripts>
 				</Scripts>
 			</Frame>
+			<ScrollFrame name="AccountantClassicScrollBar" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="590" y="340" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-112"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, 19, AccountantClassicScrollBar_Update); 
+					</OnVerticalScroll>
+					<OnShow>
+						AccountantClassicScrollBar_Update()
+					</OnShow>
+				</Scripts>
+			</ScrollFrame>
+
 			<Frame name="$parentRow1" inherits="AccountantClassicRowTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">

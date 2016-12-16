@@ -49,7 +49,11 @@ local AccountantClassic_GotName = false;
 local AccountantClassic_CurrentTab = 1;
 local AccountantClassic_LogModes = {"Session", "Day", "PrvDay", "Week", "PrvWeek", "Month", "PrvMonth", "Total" };
 local AccountantClassic_LogTypes = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"};
+local AC_SCROLL_LIST = {};
 local AccountantClassic_ShowPlayer;
+local AC_CURR_LINES = 0;
+local AC_CHAR_LINES = 17;
+
 AccountantClassic_Player = UnitName("player");
 AccountantClassic_Server = GetRealmName();
 AccountantClassic_Faction = UnitFactionGroup("player");
@@ -78,7 +82,7 @@ local AccountantClassic_Data = {
 		["OTHER"] = 	{Title = L["ACCLOC_OTHER"]}; -- Actually we display it as "Unknown"
 		["VOID"] =  	{Title = VOID_STORAGE};
 		["TRANSMO"] =	{Title = TRANSMOGRIFY};
-		["GARRISON"] =	{Title = GARRISON_LOCATION_TOOLTIP};
+		["GARRISON"] =	{Title = GARRISON_LOCATION_TOOLTIP.." / "..ORDER_HALL_MISSIONS };
 		["LFG"] =	{Title = L["ACCLOC_LFG"]};
 		["BARBER"] =	{Title = BARBERSHOP};
 		["GUILD"] =	{Title = GUILD};
@@ -564,7 +568,36 @@ function AccountantClassic_OnLoad(self)
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 
 	ACC_Print(L["ACCLOC_LOADED"]);
-	
+
+		local i = 1;
+		local serverkey, servervalue, charkey, charvalue;
+
+		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+				AC_SCROLL_LIST[i] = { serverkey, charkey };
+				i = i + 1;
+			end
+		end
+		AC_CURR_LINES = i - 1;
+
+		-- Create and align any new entry buttons that we need
+		for i = 1, AC_CURR_LINES do
+			if (not _G["AccountantClassicCharacterEntry"..i]) then
+				local f = CreateFrame("Frame", "AccountantClassicCharacterEntry"..i, AccountantClassicFrame, "AccountantClassicRowTemplate");
+				if i == 1 then
+					f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0);
+				else
+					f:SetPoint("TOPLEFT", "AccountantClassicCharacterEntry"..(i - 1), "BOTTOMLEFT", 0, -1);
+				end
+			end
+		end
+
+		i = 1;
+		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+				i = i + 1;
+			end
+		end
 end
 
 function AccountantClassic_LoadData()
@@ -961,6 +994,44 @@ function AccountantClassic_WeekStart()
 	return string.sub(cdate,0,8);
 end
 
+function AccountantClassicScrollBar_Update()
+	local lineplusoffset;
+	FauxScrollFrame_Update(AccountantClassicScrollBar, AC_CURR_LINES, AC_CHAR_LINES, 19);
+	for i = 1, AC_CHAR_LINES do
+		lineplusoffset = i + FauxScrollFrame_GetOffset(AccountantClassicScrollBar);
+		if (lineplusoffset < AC_CURR_LINES) then
+			-- _G["AccountantClassicCharacterEntry"..i.."_Text"]:SetText(AC_SCROLL_LIST[lineplusoffset]);
+			local player_text, factionstr, faction_icon, classToken, class_color;
+			local serverkey = AC_SCROLL_LIST[lineplusoffset][1];
+			local charkey = AC_SCROLL_LIST[lineplusoffset][2];
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
+				factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
+				faction_icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s - %s";
+				if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
+					classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
+					class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
+				end
+				if(classToken) then 
+					_G["AccountantClassicCharacterEntry"..i].Title:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
+				else
+					_G["AccountantClassicCharacterEntry"..i].Title:SetText(format(faction_icon, serverkey, charkey));
+				end
+			else
+				_G["AccountantClassicCharacterEntry"..i].Title:SetText(charkey);
+			end
+			if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
+				_G["AccountantClassicCharacterEntry"..i].In:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
+				_G["AccountantClassicCharacterEntry"..i].Out:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"], 2));
+			else
+				_G["AccountantClassicCharacterEntry"..i].In:SetText("Unknown");
+			end
+			_G["AccountantClassicCharacterEntry"..i]:Show();
+		elseif (_G["AccountantClassicCharacterEntry"..i]) then
+			_G["AccountantClassicCharacterEntry"..i]:Hide();
+		end
+	end
+end
+
 function AccountantClassic_OnShow(self)
 	-- Check to see if the day has rolled over
 	--tnt
@@ -1008,9 +1079,17 @@ function AccountantClassic_OnShow(self)
 	AccountantClassic_SetLabels();
 	if ( AccountantClassic_CurrentTab ~= AC_TABS ) then
 		-- for all the tabs except for character tab
-		TotalIn = 0;
-		TotalOut = 0;
-		mode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
+		AccountantClassicScrollBar:Hide();
+		for i = 1, AC_CURR_LINES do
+			if (_G["AccountantClassicCharacterEntry"..i]) then
+				_G["AccountantClassicCharacterEntry"..i]:Hide();
+			end
+		end
+
+		local TotalIn = 0;
+		local TotalOut = 0;
+		local mode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
+		local row;
 		for key,value in pairs(AccountantClassic_Data) do
 			row = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."In"];
 			local mIn = AccountantClassic_Data[key][mode].In;
@@ -1045,13 +1124,43 @@ function AccountantClassic_OnShow(self)
 
 	else
 		-- all characters' tab
+		
 		local alltotal = 0;
 		local allin = 0;
 		local allout = 0;
 		local i = 1;
 		local serverkey, servervalue, charkey, charvalue;
+--[[
 		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
 			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+				i = i + 1;
+			end
+		end
+		AC_CURR_LINES = i - 1;
+]]
+--		if (AC_CURR_LINES > 17) then
+--			AccountantClassicScrollBar:Show();
+--		else
+--			AccountantClassicScrollBar:Hide();
+--		end
+
+		-- Create and align any new entry buttons that we need
+--[[		for i = 1, AC_CURR_LINES do
+			if (not _G["AccountantClassicCharacterEntry"..i]) then
+				local f = CreateFrame("Frame", "AccountantClassicCharacterEntry"..i, AccountantClassicFrame, "AccountantClassicRowTemplate");
+				if i == 1 then
+					f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0);
+				else
+					f:SetPoint("TOPLEFT", "AccountantClassicCharacterEntry"..(i - 1), "BOTTOMLEFT", 0, -1);
+				end
+			end
+		end
+]]
+		i = 1;
+		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+--				AC_SCROLL_LIST[i] = { serverkey, charkey };
+--[[
 				local player_text, factionstr, faction_icon, classToken, class_color;
 				if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
 					factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
@@ -1061,28 +1170,36 @@ function AccountantClassic_OnShow(self)
 						class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
 					end
 					if(classToken) then 
-						_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
+						_G["AccountantClassicCharacterEntry"..i].Title:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
 					else
-						_G["AccountantClassicFrameRow"..i.."Title"]:SetText(format(faction_icon, serverkey, charkey));
+						_G["AccountantClassicCharacterEntry"..i].Title:SetText(format(faction_icon, serverkey, charkey));
 					end
 					--_G["AccountantClassicFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
 				else
-					_G["AccountantClassicFrameRow"..i.."Title"]:SetText(charkey);
+					_G["AccountantClassicCharacterEntry"..i].Title:SetText(charkey);
 				end
 				if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-					_G["AccountantClassicFrameRow"..i.."In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
+					_G["AccountantClassicCharacterEntry"..i].In:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
 					alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
-					_G["AccountantClassicFrameRow"..i.."Out"]:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"], 2));
+					_G["AccountantClassicCharacterEntry"..i].Out:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"], 2));
 				else
-					_G["AccountantClassicFrameRow"..i.."In"]:SetText("Unknown");
+					_G["AccountantClassicCharacterEntry"..i].In:SetText("Unknown");
 				end
+]]
+
+				if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
+					alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+				end
+
 				for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
 					allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
 					allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
 				end
-				i=i+1;
+				i = i + 1;
 			end
 		end
+		AccountantClassicScrollBar_Update();
+
 		AccountantClassicFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allin));
 		AccountantClassicFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allout));
 		if (allout > allin) then
