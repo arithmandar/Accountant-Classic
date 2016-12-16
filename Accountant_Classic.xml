@@ -305,6 +305,30 @@
 				<Scripts>
 				</Scripts>
 			</Frame>
+			<CheckButton name="$parentToggleShowAllButton" parentKey="ShowAll" inherits="InterfaceOptionsSmallCheckButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" elativeTo="$parent" relativePoint="TOPRIGHT">>
+						<Offset>
+							<AbsDimension x="-150" y="-65"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_SHOWALL);
+					</OnLoad>
+					<OnClick>
+						AccountantClassic_ShowAllCharactersProfit();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_SHOWALLTIP, nil, nil, nil, nil, false);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
 			<ScrollFrame name="AccountantClassicScrollBar" inherits="FauxScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="590" y="340" />

@@ -83,6 +83,8 @@ L["ACCLOC_CENT"]		= "c";
 L["ACCLOC_ABOUT"]		= "About";
 L["ACCLOC_CONFLICT"]		= "Detected the conflicted addon - \"|cFFFF0000Accountant|r\" exists and loaded.\nIt has been disabled, click Okay button to reload the game.";
 L["ACCLOC_CLEANUPACCOUNTANT"] 	= "You have manually called the function \n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \nto clean up conflicted data existed in \"Accountant\". \nNow click Okay button to reload the game.";
+L["ACCLOC_SHOWALL"]		= "Show All Characters";
+L["ACCLOC_SHOWALLTIP"]		= "Show all characters' incoming and outgoing data.";
 
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"]	= "Accountant Classic";

@@ -54,17 +54,18 @@ local AccountantClassic_ShowPlayer;
 local AC_CURR_LINES = 0;
 local AC_CHAR_LINES = 17;
 
-AccountantClassic_Player = UnitName("player");
-AccountantClassic_Server = GetRealmName();
-AccountantClassic_Faction = UnitFactionGroup("player");
-_, AccountantClassic_Class = UnitClass("player");
+local AccountantClassic_Player = UnitName("player");
+local AccountantClassic_Server = GetRealmName();
+local AccountantClassic_Faction = UnitFactionGroup("player");
+local _, AccountantClassic_Class = UnitClass("player");
 local AccountantClassic_ShowPlayer = AccountantClassic_Player;
 local isInLockdown = false;
 local AC_MNYSTR = nil;
+local AC_SHOWALLCHARS = false;
 
 local months = {CalendarGetMonthNames()};
 -- Number of Accountant Classic tabs; also the tab number of "All Character"
-local AC_TABS = #AccountantClassic_LogModes+1;
+local AC_TABS = #AccountantClassic_LogModes + 1;
 
 -- NewDB
 local AC_NewDB = fales;
@@ -496,7 +497,7 @@ function AccountantClassic_SetLabels(self)
 		AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
 
 		-- Row Labels (auto generate)
-		InPos = 1
+		local InPos = 1;
 		for key,value in pairs(AccountantClassic_Data) do
 			AccountantClassic_Data[key].InPos = InPos;
 			_G["AccountantClassicFrameRow"..InPos.."Title"]:SetText(AccountantClassic_Data[key].Title);
@@ -1085,20 +1086,44 @@ function AccountantClassic_OnShow(self)
 				_G["AccountantClassicCharacterEntry"..i]:Hide();
 			end
 		end
+		if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
+			AccountantClassicFrame.ShowAll:Hide();
+		else
+			AccountantClassicFrame.ShowAll:Show();
+		end
 
 		local TotalIn = 0;
 		local TotalOut = 0;
 		local mode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
-		local row;
-		for key,value in pairs(AccountantClassic_Data) do
-			row = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."In"];
-			local mIn = AccountantClassic_Data[key][mode].In;
-			row:SetText(AccountantClassic_GetFormattedValue(mIn));
+		local colIn, colOut;
+		local key, value;
+		for key, value in pairs(AccountantClassic_Data) do
+			colIn = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."In"];
+			colOut = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."Out"];
+
+			local mIn = 0;
+			local mOut = 0;
+			if (not AC_SHOWALLCHARS or AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
+				mIn = AccountantClassic_Data[key][mode].In;
+				mOut = AccountantClassic_Data[key][mode].Out;
+			else
+				local serverkey, servervalue, charkey, charvalue, kb, vb;
+				for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+					for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
+							mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+						end
+						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
+							mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+						end
+					end
+				end
+			end
 			TotalIn = TotalIn + mIn;
-			row = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."Out"];
-			local mOut = AccountantClassic_Data[key][mode].Out;
 			TotalOut = TotalOut + mOut;
-			row:SetText(AccountantClassic_GetFormattedValue(mOut));
+
+			colIn:SetText(AccountantClassic_GetFormattedValue(mIn));
+			colOut:SetText(AccountantClassic_GetFormattedValue(mOut));
 		end
 		AccountantClassicFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalIn));
 		AccountantClassicFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalOut));
@@ -1124,38 +1149,14 @@ function AccountantClassic_OnShow(self)
 
 	else
 		-- all characters' tab
+		AccountantClassicFrame.ShowAll:Hide();
 		
 		local alltotal = 0;
 		local allin = 0;
 		local allout = 0;
 		local i = 1;
 		local serverkey, servervalue, charkey, charvalue;
---[[
-		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
-			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-				i = i + 1;
-			end
-		end
-		AC_CURR_LINES = i - 1;
-]]
---		if (AC_CURR_LINES > 17) then
---			AccountantClassicScrollBar:Show();
---		else
---			AccountantClassicScrollBar:Hide();
---		end
 
-		-- Create and align any new entry buttons that we need
---[[		for i = 1, AC_CURR_LINES do
-			if (not _G["AccountantClassicCharacterEntry"..i]) then
-				local f = CreateFrame("Frame", "AccountantClassicCharacterEntry"..i, AccountantClassicFrame, "AccountantClassicRowTemplate");
-				if i == 1 then
-					f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0);
-				else
-					f:SetPoint("TOPLEFT", "AccountantClassicCharacterEntry"..(i - 1), "BOTTOMLEFT", 0, -1);
-				end
-			end
-		end
-]]
 		i = 1;
 		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
 			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
@@ -1649,4 +1650,9 @@ function AccountantClassic_ParseDateStrings(s, typ)
 	end
 	
 	return sdate;
+end
+
+function AccountantClassic_ShowAllCharactersProfit()
+	AC_SHOWALLCHARS = not AC_SHOWALLCHARS;
+	AccountantClassic_OnShow();
 end
