@@ -19,7 +19,7 @@ $Id$
 	Everyone who commented and voted for the mod on curse-gaming.com
   Thiou for the French loc, Snj & JokerGermany for the German loc
   ---------------------------------------------------------------------
-  v2.4 - v2.7:
+  v2.4 - v2.8:
      Updated by: Arith
      Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5.22
 ]]
@@ -50,15 +50,14 @@ local AccountantClassic_CurrentTab = 1;
 local AccountantClassic_LogModes = {"Session", "Day", "PrvDay", "Week", "PrvWeek", "Month", "PrvMonth", "Total" };
 local AccountantClassic_LogTypes = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"};
 local AC_SCROLL_LIST = {};
-local AccountantClassic_ShowPlayer;
 local AC_CURR_LINES = 0;
 local AC_CHAR_LINES = 17;
+local AC_SELECTED_CHAR_NUM = 1;
 
 local AccountantClassic_Player = UnitName("player");
 local AccountantClassic_Server = GetRealmName();
 local AccountantClassic_Faction = UnitFactionGroup("player");
 local _, AccountantClassic_Class = UnitClass("player");
-local AccountantClassic_ShowPlayer = AccountantClassic_Player;
 local isInLockdown = false;
 local AC_MNYSTR = nil;
 local AC_SHOWALLCHARS = false;
@@ -106,7 +105,8 @@ local AccountantClassicDefaultOptions = {
 	showsessiononbutton = true,
 	buttonpos = 150, 
 	version = AccountantClassic_Version, 
-	date = cdate, 
+	date = cdate, -- to be used as "today"
+	lastsessiondate = cdate,
 	-- prvday, 
 	weekdate = "", 
 	-- prvdateweek, 
@@ -176,6 +176,8 @@ end
 
 local function AccountantClassic_InitOptions()
 	if (Accountant_ClassicSaveData == nil) then
+		-- we should no longer need these after v2.07.00
+		--[[
 		if (Accountant_SaveData ~= nil) then
 			local loadable = select(4, GetAddOnInfo("Accountant"));
 			local enabled = GetAddOnEnableState(UnitName("player"), GetAddOnInfo("Accountant"));
@@ -204,6 +206,8 @@ local function AccountantClassic_InitOptions()
 		else
 			Accountant_ClassicSaveData = {};
 		end
+		]]
+		Accountant_ClassicSaveData = {};
 	end
 	if (Accountant_ClassicSaveData[AccountantClassic_Server] == nil) then
 		Accountant_ClassicSaveData[AccountantClassic_Server] = {};
@@ -275,6 +279,9 @@ local function AccountantClassic_InitOptions()
 	end
 	if (AccountantClassic_Profile["options"].LDBDisplaySessionInfo == nil) then
 		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = false;
+	end
+	if (AccountantClassic_Profile["options"].lastsessiondate == nil) then
+		AccountantClassic_Profile["options"].lastsessiondate = cdate;
 	end
 end
 
@@ -512,31 +519,9 @@ function AccountantClassic_SetLabels(self)
 			header:SetText(L["ACCLOC_TITLE"]);
 		end
 	end
-
 end
 
-function AccountantClassic_OnLoad(self)
-	-- Setup
-	AccountantClassic_LoadData();
-	AccountantClassic_SetLabels();
-	--AccountantClassicFrameCharacterDropDown_OnShow();
-
-	-- Cash
-	AccountantClassic_CurrentMoney = GetMoney();
-	if (AccountantClassic_LastSessionMoney ~= AccountantClassic_CurrentMoney) then
-		AccountantClassic_Mode = "OTHER";
-		AccountantClassic_LastMoney = AccountantClassic_LastSessionMoney;
-		AccountantClassic_UpdateLog();
-	end
-	AccountantClassic_LastMoney = AccountantClassic_CurrentMoney;
-	
-	-- hooks
-	AccountantClassic_RepairAllItems_old = RepairAllItems;
-	RepairAllItems = AccountantClassic_RepairAllItems;
---	AccountantClassic_CursorHasItem_old = CursorHasItem;
---	CursorHasItem = AccountantClassic_CursorHasItem;
-
-	-- tabs
+local function AccountantClassic_SettleTabText()
 	AccountantClassicFrameTab1:SetText(L["ACCLOC_SESS"]);
 	PanelTemplates_TabResize(AccountantClassicFrameTab1, 20);
 	
@@ -567,38 +552,78 @@ function AccountantClassic_OnLoad(self)
 	PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
+end
+
+local function AccountantClassic_PopulateCharacterList()
+	local i = 1;
+	local serverkey, servervalue, charkey, charvalue;
+
+	if (#AC_SCROLL_LIST > 0) then
+		AC_SCROLL_LIST = {};
+	end
+	for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+			AC_SCROLL_LIST[i] = { serverkey, charkey };
+			i = i + 1;
+		end
+	end
+	AC_CURR_LINES = i - 1;
+
+	-- Create and align any new entry buttons that we need
+	for i = 1, AC_CURR_LINES do
+		if (not _G["AccountantClassicCharacterEntry"..i]) then
+			local f = CreateFrame("Frame", "AccountantClassicCharacterEntry"..i, AccountantClassicFrame, "AccountantClassicRowTemplate");
+			if i == 1 then
+				f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0);
+			else
+				f:SetPoint("TOPLEFT", "AccountantClassicCharacterEntry"..(i - 1), "BOTTOMLEFT", 0, -1);
+			end
+		end
+	end
+
+	i = 1;
+	for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+			i = i + 1;
+		end
+	end
+end
+
+function AccountantClassic_OnLoad(self)
+	-- Setup
+	AccountantClassic_LoadData();
+	AccountantClassic_SetLabels();
+
+	-- Cash
+	AccountantClassic_CurrentMoney = GetMoney();
+	if (AccountantClassic_LastSessionMoney ~= AccountantClassic_CurrentMoney) then
+		AccountantClassic_Mode = "OTHER";
+		AccountantClassic_LastMoney = AccountantClassic_LastSessionMoney;
+		AccountantClassic_UpdateLog();
+	end
+	AccountantClassic_LastMoney = AccountantClassic_CurrentMoney;
+	
+	-- hooks
+	AccountantClassic_RepairAllItems_old = RepairAllItems;
+	RepairAllItems = AccountantClassic_RepairAllItems;
+--	AccountantClassic_CursorHasItem_old = CursorHasItem;
+--	CursorHasItem = AccountantClassic_CursorHasItem;
+
+	-- tabs
+	AccountantClassic_SettleTabText();
 
 	ACC_Print(L["ACCLOC_LOADED"]);
 
-		local i = 1;
-		local serverkey, servervalue, charkey, charvalue;
-
-		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
-			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-				AC_SCROLL_LIST[i] = { serverkey, charkey };
-				i = i + 1;
-			end
+	AccountantClassic_PopulateCharacterList();
+	UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
+	local selected_value = 1;
+	for i = 1, #AC_SCROLL_LIST do
+		if (AccountantClassic_Server == AC_SCROLL_LIST[i][1] and AccountantClassic_Player == AC_SCROLL_LIST[i][2]) then
+			selected_value = i;
 		end
-		AC_CURR_LINES = i - 1;
-
-		-- Create and align any new entry buttons that we need
-		for i = 1, AC_CURR_LINES do
-			if (not _G["AccountantClassicCharacterEntry"..i]) then
-				local f = CreateFrame("Frame", "AccountantClassicCharacterEntry"..i, AccountantClassicFrame, "AccountantClassicRowTemplate");
-				if i == 1 then
-					f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0);
-				else
-					f:SetPoint("TOPLEFT", "AccountantClassicCharacterEntry"..(i - 1), "BOTTOMLEFT", 0, -1);
-				end
-			end
-		end
-
-		i = 1;
-		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
-			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-				i = i + 1;
-			end
-		end
+	end
+	UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, selected_value);
+	UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200);
 end
 
 function AccountantClassic_LoadData()
@@ -661,65 +686,85 @@ function AccountantClassic_LoadData()
 	AccountantClassic_LastSessionMoney = AccountantClassic_Profile["options"].totalcash;
 	AccountantClassic_Profile["options"].totalcash = GetMoney();
 
-	--Duplicate below from OnShow as the day and week data seems need to be initialize here, when the addon is loaded for a fresh day/week.
-	-- Check to see if the day has rolled over
-	if (AccountantClassic_Profile["options"]["date"] ~= cdate) then
-		-- It's a new day! clear out the day tab
-		for mode,value in pairs(AccountantClassic_Data) do
-			-- Copy day data to PrvDay first
-			AccountantClassic_Profile["options"]["prvday"] = AccountantClassic_Profile["options"]["date"];
-			AccountantClassic_Data[mode]["PrvDay"].In = AccountantClassic_Profile["data"][mode]["Day"].In; 
-			AccountantClassic_Profile["data"][mode]["PrvDay"].In = AccountantClassic_Profile["data"][mode]["Day"].In;
-			AccountantClassic_Data[mode]["PrvDay"].Out = AccountantClassic_Profile["data"][mode]["Day"].Out;
-			AccountantClassic_Profile["data"][mode]["PrvDay"].Out = AccountantClassic_Profile["data"][mode]["Day"].Out;
-			
-			AccountantClassic_Data[mode]["Day"].In = 0;
-			AccountantClassic_Profile["data"][mode]["Day"].In = 0;
-			AccountantClassic_Data[mode]["Day"].Out = 0;
-			AccountantClassic_Profile["data"][mode]["Day"].Out = 0;
+	-- Since we now (2016/12/17) supported to show specifc character or all characters' incoming / 
+	-- outgoing data in each logmode, we have to deal with the date / week / month's rotating for all
+	-- characters, not just the current one.
+	local serverkey, servervalue, charkey, charvalue;
+	for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+			-- we need lastsessiondate, codes should not be necessary once every player's all characters have this option value being set
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].lastsessiondate == nil) then
+				Accountant_ClassicSaveData[serverkey][charkey]["options"].lastsessiondate = Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"];
+			end
+			-- Check to see if the day has rolled over
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"] ~= cdate) then
+				-- It's a new day! clear out the day tab
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvday"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"];
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"] = cdate;
+				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"]) then
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"] = { In = 0, Out = 0 };
+					end
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].In;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].Out;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].In = 0;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].Out = 0;
+				end
+				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
+					for mode, value in pairs(AccountantClassic_Data) do
+						AccountantClassic_Data[mode]["PrvDay"].In = AccountantClassic_Data[mode]["Day"].In;
+						AccountantClassic_Data[mode]["PrvDay"].Out = AccountantClassic_Data[mode]["Day"].Out;
+						AccountantClassic_Data[mode]["Day"].In = 0;
+						AccountantClassic_Data[mode]["Day"].Out = 0;
+					end
+				end
+			end
+			-- Check to see if the week has rolled over
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"] ~= AccountantClassic_WeekStart()) then
+				-- It's a new week! clear out the week tab
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvdateweek"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"];
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"] = AccountantClassic_WeekStart();
+				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"]) then
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"] = { In = 0, Out = 0 };
+					end
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].In;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].Out;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].In = 0;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].Out = 0;
+				end
+				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
+					AccountantClassic_Data[mode]["PrvWeek"].In = AccountantClassic_Data[mode]["Week"].In;
+					AccountantClassic_Data[mode]["PrvWeek"].Out = AccountantClassic_Data[mode]["Week"].Out;
+					AccountantClassic_Data[mode]["Week"].In = 0;
+					AccountantClassic_Data[mode]["Week"].Out = 0;
+				end
+			end
+			-- Check to see if the month has rolled over
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"] ~= cmonth) then
+				-- It's a new month! clear out the month tab
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvmonth"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"];
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"] = cmonth;
+				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"]) then 
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"] = { In = 0, Out = 0};
+					end
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].In;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].Out;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].In = 0;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].Out = 0;
+				end
+				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
+					AccountantClassic_Data[mode]["PrvMonth"].In = AccountantClassic_Data[mode]["Month"].In;
+					AccountantClassic_Data[mode]["PrvMonth"].Out = AccountantClassic_Data[mode]["Month"].Out;
+					AccountantClassic_Data[mode]["Month"].In = 0;
+					AccountantClassic_Data[mode]["Month"].Out = 0;
+				end
+			end
 		end
 	end
-	AccountantClassic_Profile["options"]["date"] = cdate;
-
-	-- Check to see if the week has rolled over
-	if (AccountantClassic_Profile["options"]["dateweek"] ~= AccountantClassic_WeekStart()) then
-		-- It's a new week! clear out the week tab
-		for mode,value in pairs(AccountantClassic_Data) do
-			-- Copy week data to PrvWeek first
-			AccountantClassic_Profile["options"]["prvdateweek"] = AccountantClassic_Profile["options"]["dateweek"];
-			AccountantClassic_Data[mode]["PrvWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
-			AccountantClassic_Profile["data"][mode]["PrvWeek"].In = AccountantClassic_Profile["data"][mode]["Week"].In;
-			AccountantClassic_Data[mode]["PrvWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
-			AccountantClassic_Profile["data"][mode]["PrvWeek"].Out = AccountantClassic_Profile["data"][mode]["Week"].Out;
-
-			AccountantClassic_Data[mode]["Week"].In = 0;
-			AccountantClassic_Profile["data"][mode]["Week"].In = 0;
-			
-			AccountantClassic_Data[mode]["Week"].Out = 0;
-			AccountantClassic_Profile["data"][mode]["Week"].Out = 0;
-		end
-	end
-	AccountantClassic_Profile["options"]["dateweek"] = AccountantClassic_WeekStart();
-
-	-- Check to see if the month has rolled over
-	if (AccountantClassic_Profile["options"]["month"] ~= cmonth) then
-		-- It's a new month! clear out the month tab
-		for mode,value in pairs(AccountantClassic_Data) do
-			-- Copy Month data to PrvMonth first
-			AccountantClassic_Profile["options"]["prvmonth"] = AccountantClassic_Profile["options"]["month"];
-			AccountantClassic_Data[mode]["PrvMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
-			AccountantClassic_Profile["data"][mode]["PrvMonth"].In = AccountantClassic_Profile["data"][mode]["Month"].In;
-			AccountantClassic_Data[mode]["PrvMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
-			AccountantClassic_Profile["data"][mode]["PrvMonth"].Out = AccountantClassic_Profile["data"][mode]["Month"].Out;
-
-			AccountantClassic_Data[mode]["Month"].In = 0;
-			AccountantClassic_Profile["data"][mode]["Month"].In = 0;
-			
-			AccountantClassic_Data[mode]["Month"].Out = 0;
-			AccountantClassic_Profile["data"][mode]["Month"].Out = 0;
-		end
-	end
-	AccountantClassic_Profile["options"]["month"] = cmonth;
+	
+	AccountantClassic_Profile["options"].lastsessiondate = cdate;
 end
 
 function Accountant_Slash(msg)
@@ -1001,13 +1046,12 @@ function AccountantClassicScrollBar_Update()
 	for i = 1, AC_CHAR_LINES do
 		lineplusoffset = i + FauxScrollFrame_GetOffset(AccountantClassicScrollBar);
 		if (lineplusoffset < AC_CURR_LINES) then
-			-- _G["AccountantClassicCharacterEntry"..i.."_Text"]:SetText(AC_SCROLL_LIST[lineplusoffset]);
 			local player_text, factionstr, faction_icon, classToken, class_color;
 			local serverkey = AC_SCROLL_LIST[lineplusoffset][1];
 			local charkey = AC_SCROLL_LIST[lineplusoffset][2];
 			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
 				factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
-				faction_icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s - %s";
+				faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s";
 				if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
 					classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
 					class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
@@ -1022,7 +1066,7 @@ function AccountantClassicScrollBar_Update()
 			end
 			if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
 				_G["AccountantClassicCharacterEntry"..i].In:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
-				_G["AccountantClassicCharacterEntry"..i].Out:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"], 2));
+				_G["AccountantClassicCharacterEntry"..i].Out:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["lastsessiondate"], 2));
 			else
 				_G["AccountantClassicCharacterEntry"..i].In:SetText("Unknown");
 			end
@@ -1087,9 +1131,11 @@ function AccountantClassic_OnShow(self)
 			end
 		end
 		if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
-			AccountantClassicFrame.ShowAll:Hide();
+			-- AccountantClassicFrame.ShowAll:Hide();
+			AccountantClassicFrameCharacterDropDown:Hide();
 		else
-			AccountantClassicFrame.ShowAll:Show();
+			-- AccountantClassicFrame.ShowAll:Show();
+			AccountantClassicFrameCharacterDropDown:Show();
 		end
 
 		local TotalIn = 0;
@@ -1103,6 +1149,35 @@ function AccountantClassic_OnShow(self)
 
 			local mIn = 0;
 			local mOut = 0;
+			if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
+				mIn = AccountantClassic_Data[key][mode].In;
+				mOut = AccountantClassic_Data[key][mode].Out;
+			elseif (AC_SELECTED_CHAR_NUM <= #AC_SCROLL_LIST) then
+				local j = AC_SELECTED_CHAR_NUM;
+				local serverkey = AC_SCROLL_LIST[j][1];
+				local charkey = AC_SCROLL_LIST[j][2];
+				
+				if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
+					mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+				end
+				if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
+					mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+				end
+			elseif (AC_SELECTED_CHAR_NUM == #AC_SCROLL_LIST + 1) then
+				local serverkey, servervalue, charkey, charvalue;
+				for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+					for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
+							mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+						end
+						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
+							mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+						end
+					end
+				end
+			end
+			
+--[[
 			if (not AC_SHOWALLCHARS or AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
 				mIn = AccountantClassic_Data[key][mode].In;
 				mOut = AccountantClassic_Data[key][mode].Out;
@@ -1119,6 +1194,7 @@ function AccountantClassic_OnShow(self)
 					end
 				end
 			end
+]]
 			TotalIn = TotalIn + mIn;
 			TotalOut = TotalOut + mOut;
 
@@ -1145,11 +1221,11 @@ function AccountantClassic_OnShow(self)
 		_G["AccountantClassicFrameRow18Title"]:SetText("");
 		_G["AccountantClassicFrameRow18In"]:SetText("");
 		
-		--AccountantClassicFrameCharacterDropDown:Show();
 
 	else
 		-- all characters' tab
-		AccountantClassicFrame.ShowAll:Hide();
+		-- AccountantClassicFrame.ShowAll:Hide();
+		AccountantClassicFrameCharacterDropDown:Hide();
 		
 		local alltotal = 0;
 		local allin = 0;
@@ -1220,9 +1296,6 @@ function AccountantClassic_OnShow(self)
 		_G["AccountantClassicFrameRow18Title"]:SetText(L["ACCLOC_SUM"]);
 		_G["AccountantClassicFrameRow18In"]:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(alltotal));
 		
-		--AccountantClassicFrameCharacterDropDown:Hide();
-		
-
 	end
 	SetPortraitTexture(AccountantClassicFramePortrait, "player");
 
@@ -1272,30 +1345,41 @@ function AccountantClassic_OnShow(self)
 end
 
 function AccountantClassicFrameCharacterDropDown_Init()
-	local info;
-	local Characters_List = { };
-	local server_key, server_value, char_key, char_value;
-	for server_key, server_value in pairs(Accountant_ClassicSaveData) do
-		for char_key, char_value in pairs(Accountant_ClassicSaveData[server_key]) do
-			info = { };
-			info.text = server_key.." - "..char_key;
-			info.value = char_key;
-			info.arg1 = server_key;
-			info.func = AccountantClassicFrameCharacterDropDown_OnClick;
-			UIDropDownMenu_AddButton(info);
+	local info = { };
+	for i = 1, #AC_SCROLL_LIST do
+		local fstr = "";
+		local serverkey = AC_SCROLL_LIST[i][1];
+		local charkey = AC_SCROLL_LIST[i][2];
+		info = { };
+		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
+			local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
+			local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
+			info.icon = faction_icon
 		end
+		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
+			local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
+			info.colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"];
+		end
+		info.text = serverkey.." - "..charkey;
+		info.value = i;
+		info.func = AccountantClassicFrameCharacterDropDown_OnClick;
+		UIDropDownMenu_AddButton(info);
 	end
+	
+	-- Added All Chars to dropdown
+	info = { };
+	info.text = L["ACCLOC_CHARS"];
+	info.value = #AC_SCROLL_LIST + 1;
+	info.tooltipTitle = L["ACCLOC_SHOWALLTIP"];
+	info.tooltipOnButton = true;
+	info.func = AccountantClassicFrameCharacterDropDown_OnClick;
+	UIDropDownMenu_AddButton(info);
 end
 
-function AccountantClassicFrameCharacterDropDown_OnShow()
-	UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
-	UIDropDownMenu_SetSelectedName(AccountantClassicFrameCharacterDropDown, AccountantClassic_ShowPlayer);
-end
-
-function AccountantClassicFrameCharacterDropDown_OnClick(self, arg1)
-	local selected_char = self.value;
-	local selected_srv  = arg1;
+function AccountantClassicFrameCharacterDropDown_OnClick(self)
 	UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
+	AC_SELECTED_CHAR_NUM = self.value;
+	AccountantClassic_OnShow();
 end
 
 function AccountantClassic_OnHide()
@@ -1383,6 +1467,10 @@ function AccountantClassic_CharacterRemovalConfirmed(server, character)
 			end
 		end
 	end
+	AccountantClassic_PopulateCharacterList();
+	if AccountantClassicFrame:IsVisible() then
+		AccountantClassic_OnShow();
+	end
 end
 
 function AccountantClassic_UpdateLog()
@@ -1435,7 +1523,6 @@ function AccountantClassic_UpdateLog()
 	if AccountantClassic_Mode == "REPAIRS" then
 		AccountantClassic_Mode = "MERCH";
 	end
-
 
 	if AccountantClassicFrame:IsVisible() then
 		AccountantClassic_OnShow();
@@ -1652,7 +1739,3 @@ function AccountantClassic_ParseDateStrings(s, typ)
 	return sdate;
 end
 
-function AccountantClassic_ShowAllCharactersProfit()
-	AC_SHOWALLCHARS = not AC_SHOWALLCHARS;
-	AccountantClassic_OnShow();
-end
