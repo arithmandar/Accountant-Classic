@@ -38,7 +38,6 @@ local AccountantClassic_RepairAllItems_old;
 local AccountantClassic_CursorHasItem_old;
 
 local AccountantClassic_Version = GetAddOnMetadata("Accountant_Classic", "Version");
---local AccountantClassic_Data = nil;
 --AccountantClassic_Disabled = false;
 local AccountantClassic_Mode = "";
 local AccountantClassic_CurrentMoney = 0;
@@ -54,8 +53,8 @@ local AC_CURR_LINES = 0;
 local AC_CHAR_LINES = 17;
 local AC_SELECTED_CHAR_NUM = 1;
 
-local AccountantClassic_Player = UnitName("player");
 local AccountantClassic_Server = GetRealmName();
+local AccountantClassic_Player = UnitName("player");
 local AccountantClassic_Faction = UnitFactionGroup("player");
 local _, AccountantClassic_Class = UnitClass("player");
 local isInLockdown = false;
@@ -580,13 +579,17 @@ local function AccountantClassic_PopulateCharacterList()
 			end
 		end
 	end
+end
 
-	i = 1;
-	for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
-		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-			i = i + 1;
+local function AccountantClassicFrameCharacterDropDown_Setup()
+	UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
+	for i = 1, #AC_SCROLL_LIST do
+		if (AccountantClassic_Server == AC_SCROLL_LIST[i][1] and AccountantClassic_Player == AC_SCROLL_LIST[i][2]) then
+			AC_SELECTED_CHAR_NUM = i;
 		end
 	end
+	UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, AC_SELECTED_CHAR_NUM);
+	UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200);
 end
 
 function AccountantClassic_OnLoad(self)
@@ -596,6 +599,7 @@ function AccountantClassic_OnLoad(self)
 
 	-- Cash
 	AccountantClassic_CurrentMoney = GetMoney();
+	-- Check if there is any un-recorded money in or out
 	if (AccountantClassic_LastSessionMoney ~= AccountantClassic_CurrentMoney) then
 		AccountantClassic_Mode = "OTHER";
 		AccountantClassic_LastMoney = AccountantClassic_LastSessionMoney;
@@ -612,18 +616,10 @@ function AccountantClassic_OnLoad(self)
 	-- tabs
 	AccountantClassic_SettleTabText();
 
-	ACC_Print(L["ACCLOC_LOADED"]);
-
 	AccountantClassic_PopulateCharacterList();
-	UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
-	local selected_value = 1;
-	for i = 1, #AC_SCROLL_LIST do
-		if (AccountantClassic_Server == AC_SCROLL_LIST[i][1] and AccountantClassic_Player == AC_SCROLL_LIST[i][2]) then
-			selected_value = i;
-		end
-	end
-	UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, selected_value);
-	UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200);
+	AccountantClassicFrameCharacterDropDown_Setup();
+
+	ACC_Print(L["ACCLOC_LOADED"]);
 end
 
 function AccountantClassic_LoadData()
@@ -1045,7 +1041,7 @@ function AccountantClassicScrollBar_Update()
 	FauxScrollFrame_Update(AccountantClassicScrollBar, AC_CURR_LINES, AC_CHAR_LINES, 19);
 	for i = 1, AC_CHAR_LINES do
 		lineplusoffset = i + FauxScrollFrame_GetOffset(AccountantClassicScrollBar);
-		if (lineplusoffset < AC_CURR_LINES) then
+		if (lineplusoffset <= AC_CURR_LINES) then
 			local player_text, factionstr, faction_icon, classToken, class_color;
 			local serverkey = AC_SCROLL_LIST[lineplusoffset][1];
 			local charkey = AC_SCROLL_LIST[lineplusoffset][2];
@@ -1152,31 +1148,37 @@ function AccountantClassic_OnShow(self)
 			if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
 				mIn = AccountantClassic_Data[key][mode].In;
 				mOut = AccountantClassic_Data[key][mode].Out;
-			elseif (AC_SELECTED_CHAR_NUM <= #AC_SCROLL_LIST) then
-				local j = AC_SELECTED_CHAR_NUM;
-				local serverkey = AC_SCROLL_LIST[j][1];
-				local charkey = AC_SCROLL_LIST[j][2];
-				
-				if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-					mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
-				end
-				if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-					mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
-				end
-			elseif (AC_SELECTED_CHAR_NUM == #AC_SCROLL_LIST + 1) then
-				local serverkey, servervalue, charkey, charvalue;
-				for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
-					for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+			else
+				if (AC_SELECTED_CHAR_NUM <= #AC_SCROLL_LIST) then
+					local j = AC_SELECTED_CHAR_NUM;
+					local serverkey = AC_SCROLL_LIST[j][1];
+					local charkey = AC_SCROLL_LIST[j][2];
+					
+--					if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
+--						mIn = AccountantClassic_Data[key][mode].In;
+--						mOut = AccountantClassic_Data[key][mode].Out;
+--					else
 						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-							mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+							mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
 						end
 						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-							mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+							mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+						end
+--					end
+				elseif (AC_SELECTED_CHAR_NUM == #AC_SCROLL_LIST + 1) then
+					local serverkey, servervalue, charkey, charvalue;
+					for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+						for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+							if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
+								mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+							end
+							if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
+								mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+							end
 						end
 					end
 				end
 			end
-			
 --[[
 			if (not AC_SHOWALLCHARS or AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
 				mIn = AccountantClassic_Data[key][mode].In;
@@ -1347,7 +1349,6 @@ end
 function AccountantClassicFrameCharacterDropDown_Init()
 	local info = { };
 	for i = 1, #AC_SCROLL_LIST do
-		local fstr = "";
 		local serverkey = AC_SCROLL_LIST[i][1];
 		local charkey = AC_SCROLL_LIST[i][2];
 		info = { };
@@ -1362,6 +1363,8 @@ function AccountantClassicFrameCharacterDropDown_Init()
 		end
 		info.text = serverkey.." - "..charkey;
 		info.value = i;
+		info.arg1 = serverkey;
+		info.arg2 = charkey;
 		info.func = AccountantClassicFrameCharacterDropDown_OnClick;
 		UIDropDownMenu_AddButton(info);
 	end
@@ -1456,20 +1459,30 @@ function AccountantClassic_ResetConfirmed()
 end
 
 function AccountantClassic_CharacterRemovalConfirmed(server, character)
+	local faction_icon = "";
+	local class_color = "";
 	for ka, va in pairs(Accountant_ClassicSaveData) do
 		if (ka == server) then
 			for kb, vb in pairs(Accountant_ClassicSaveData[ka]) do
 				if (kb == character) then
+					if (Accountant_ClassicSaveData[ka][kb]["options"].faction) then
+						local factionstr = Accountant_ClassicSaveData[ka][kb]["options"].faction;
+						faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t";
+					end
+					if (Accountant_ClassicSaveData[ka][kb]["options"].class) then
+						local classToken = Accountant_ClassicSaveData[ka][kb]["options"].class;
+						class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
+					end
 					Accountant_ClassicSaveData[ka][kb] = nil;
-					ACC_Print(format(L["ACCLOC_CHARREMOVEDONE"], server, character));
+					ACC_Print(format(L["ACCLOC_CHARREMOVEDONE"], faction_icon..class_color..server, character));
+					AccountantClassic_PopulateCharacterList();
+					if AccountantClassicFrame:IsVisible() then
+						AccountantClassic_OnShow();
+					end
 					return;
 				end
 			end
 		end
-	end
-	AccountantClassic_PopulateCharacterList();
-	if AccountantClassicFrame:IsVisible() then
-		AccountantClassic_OnShow();
 	end
 end
 

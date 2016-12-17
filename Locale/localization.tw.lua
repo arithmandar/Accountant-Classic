@@ -9,9 +9,10 @@ L["ACCLOC_AUC"] = "拍賣場"
 L["ACCLOC_BUTPOS"] = "小地圖按鈕位置"
 L["ACCLOC_CENT"] = "銅"
 L["ACCLOC_CHAR"] = "角色"
-L["ACCLOC_CHARREMOVEDONE"] = "「%s - %s」角色的個人會計資料已經移除。"
+L["ACCLOC_CHARREMOVEDONE"] = "|cffffffff「%s - %s|cffffffff」角色的個人會計資料已經移除。"
 L["ACCLOC_CHARREMOVETEXT"] = [=[即將移除選取的角色。
-是否確定要從個人會計的資料庫中移除下列角色?]=]
+是否確定要從個人會計的資料庫中
+移除下列角色?]=]
 L["ACCLOC_CHARS"] = "所有角色"
 L["ACCLOC_CLEANUPACCOUNTANT"] = [=[您以手動執行了以下函式
 |cFF00FF00AccountantClassic_CleanUpAccountantDB()|r 

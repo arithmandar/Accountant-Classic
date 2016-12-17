@@ -115,27 +115,48 @@ end
 
 function AccountantClassicOptionsCharacterDropDown_Init()
 	local info;
-	local server_key, server_value, char_key, char_value;
-	for server_key, server_value in pairs(Accountant_ClassicSaveData) do
-		for char_key, char_value in pairs(Accountant_ClassicSaveData[server_key]) do
+	local serverkey, server_value, charkey, char_value;
+	for serverkey, server_value in pairs(Accountant_ClassicSaveData) do
+		for charkey, char_value in pairs(Accountant_ClassicSaveData[serverkey]) do
 			info = { };
-			info.text = server_key.." - "..char_key;
-			info.value = char_key;
-			info.arg1 = server_key;
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
+				local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
+				local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
+				info.icon = faction_icon
+			end
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
+				local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
+				info.colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"];
+			end
+			info.text = serverkey.." - "..charkey;
+			-- info.value = charkey;
+			info.arg1 = serverkey;
+			info.arg2 = charkey;
 			info.func = AccountantClassicOptionsCharacterDropDown_OnClick;
 			UIDropDownMenu_AddButton(info);
 		end
 	end
 end
 
-function AccountantClassicOptionsCharacterDropDown_OnClick(self, arg1)
-	local selected_char = self.value;
-	local selected_srv  = arg1;
+function AccountantClassicOptionsCharacterDropDown_OnClick(self)
+	local selected_srv  = self.arg1;
+	local selected_char  = self.arg2;
+	local faction_icon = "";
+	local class_color = "";
 	UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
-	
+
+	if (Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction) then
+		local factionstr = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction;
+		faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t";
+	end
+	if (Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class) then
+		local classToken = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class;
+		class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
+	end
+
 	-- Confirm box
 	LibDialog:Register("ACCLOC_CHARREMOVE", {
-		text = L["ACCLOC_CHARREMOVETEXT"].."\n|cFFFFFF00"..selected_srv.." - "..selected_char.."|r",
+		text = L["ACCLOC_CHARREMOVETEXT"].."\n|r"..faction_icon..class_color..self.value,
 		buttons = {
 			{
 				text = OKAY,
@@ -176,4 +197,5 @@ function AccountantClassicOptionsDateDropDown_OnClick(self, arg1)
 	UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, arg1);
 	AccountantClassic_Profile["options"].dateformat = arg1;
 end
+
 
