@@ -10,6 +10,7 @@ Revision History:
 ==========================
   - Re-packging to replace curseforge's localization keyword replacement to fix 
     the issue of localization  missing
+  - Update pkgmeta for temporary resolving the external libraries' packaging issue
 
 * v2.08.00 (Dec. 18, 2016)
 ==========================
