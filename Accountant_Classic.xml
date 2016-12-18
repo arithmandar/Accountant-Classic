@@ -577,16 +577,16 @@
 			</Button>
 			<Button name="$parentTab3" inherits="AccountantClassicTabTemplate" id="3" text="Yesterday">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="-15" y="-26"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab4" inherits="AccountantClassicTabTemplate" id="4" text="Week">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-15" y="0"/>
 						</Offset>
@@ -595,7 +595,7 @@
 			</Button>
 			<Button name="$parentTab5" inherits="AccountantClassicTabTemplate" id="5" text="Prv. Week">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-15" y="0"/>
 						</Offset>
@@ -604,7 +604,7 @@
 			</Button>
 			<Button name="$parentTab6" inherits="AccountantClassicTabTemplate" id="6" text="Month">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab5" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-15" y="0"/>
 						</Offset>
@@ -613,7 +613,7 @@
 			</Button>
 			<Button name="$parentTab7" inherits="AccountantClassicTabTemplate" id="7" text="Prv. Month">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab6" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab5" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-15" y="0"/>
 						</Offset>
@@ -622,7 +622,7 @@
 			</Button>
 			<Button name="$parentTab8" inherits="AccountantClassicTabTemplate" id="8" text="Total">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab7" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab6" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-15" y="0"/>
 						</Offset>

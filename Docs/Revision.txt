@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.03 (Dec. 18, 2016)
+==========================
+  - Split tabs into two rows as there is not enough room for all of them to be 
+    properly presented
+
 * v2.08.02 (Dec. 18, 2016)
 ==========================
   - Localization issue fixed.
