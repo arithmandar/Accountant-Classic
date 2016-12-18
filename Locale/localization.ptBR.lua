@@ -2,40 +2,21 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "ptBR", false)
 
 if not L then return end
-
 L["ACCLOC_ABOUT"] = "Sobre"
 L["ACCLOC_AUC"] = "Casa de Leilão"
 L["ACCLOC_BUTPOS"] = "Posição do Botão do Minimapa"
---Translation missing 
--- L["ACCLOC_CENT"] = "c"
 L["ACCLOC_CHAR"] = "Personagem"
 L["ACCLOC_CHARREMOVEDONE"] = "|cffffffff\"%s - %s|cffffffff\" Dados do personagem foram removidos do Accountant Classic."
 L["ACCLOC_CHARREMOVETEXT"] = [=[O personagem selecionado será removido.
 Tem certeza que deseja remover o personagem selecionado do Accountant Classic?]=]
 L["ACCLOC_CHARS"] = "Todos Personagens"
---Translation missing 
--- L["ACCLOC_CLEANUPACCOUNTANT"] = [=[You have manually called the function 
-|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r 
-to clean up conflicted data existed in "Accountant". 
-Now click Okay button to reload the game.]=]
---Translation missing 
--- L["ACCLOC_CONFLICT"] = [=[Detected the conflicted addon - "|cFFFF0000Accountant|r" exists and loaded.
-It has been disabled, click Okay button to reload the game.]=]
 L["ACCLOC_DATEFORMAT"] = "Selecione o formato da data:"
---Translation missing 
--- L["ACCLOC_DATEFORMAT_TIP"] = "Date format showing in \"All Chars\" and \"Week\" tabs"
 L["ACCLOC_DAY"] = "Hoje"
 L["ACCLOC_DESC"] = "Uma ferramenta básica para monitorar entradas e saídas no WoW."
 L["ACCLOC_DONE"] = "Feito"
 L["ACCLOC_EXIT"] = "Sair"
---Translation missing 
--- L["ACCLOC_GOLD"] = "g "
 L["ACCLOC_IN"] = "Entradas"
 L["ACCLOC_INTROTIPS"] = "Mostrar Dicas Informativas"
---Translation missing 
--- L["ACCLOC_INTROTIPS_TIP"] = "Toggle whether to display minimap button or floating money frame's operation tips."
---Translation missing 
--- L["ACCLOC_LDBINFOTYPE"] = "Show current session's net income / expanse instead of total money on LDB"
 L["ACCLOC_LFG"] = "Fila de Masmorras, Raids, Cenários"
 L["ACCLOC_LOADED"] = "Accountant Classic carregado."
 L["ACCLOC_LOADPROFILE"] = "Perfil de %s carregado pelo Accountant Classic"
@@ -55,8 +36,6 @@ L["ACCLOC_OPTBUT"] = "Opções"
 L["ACCLOC_OPTS"] = "Opções do Accountant Classic"
 L["ACCLOC_OTHER"] = "Desconhecido"
 L["ACCLOC_OUT"] = "Saídas"
---Translation missing 
--- L["ACCLOC_PRVDAY"] = "Prv. Day"
 L["ACCLOC_PRVMON"] = "Mês Passado (or \"Mês Ant.\" if you need a smaller version)"
 L["ACCLOC_PRVWEEK"] = "Semana Passada"
 L["ACCLOC_QUEST"] = "Ganho de Missões"
@@ -68,12 +47,6 @@ L["ACCLOC_RESET_CONF"] = "Você tem certeza que deseja resetar os dados de \"%s\
 L["ACCLOC_RSTMNYFRM_TIP"] = "Resetar a posição do quadro de dinheiro na tela."
 L["ACCLOC_RSTPOSITION"] = "Resetar posição"
 L["ACCLOC_SESS"] = "Esta Sessão"
---Translation missing 
--- L["ACCLOC_SHOWALL"] = "Show All Characters"
---Translation missing 
--- L["ACCLOC_SHOWALLTIP"] = "Show all characters' incoming and outgoing data."
---Translation missing 
--- L["ACCLOC_SILVER"] = "s "
 L["ACCLOC_SOURCE"] = "Fonte"
 L["ACCLOC_STARTWEEK"] = "Começo da Semana"
 L["ACCLOC_SUM"] = "Soma Total"

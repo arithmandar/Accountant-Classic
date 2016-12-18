@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.02 (Dec. 18, 2016)
+==========================
+  - Localization issue fixed.
+
 * v2.08.01 (Dec. 18, 2016)
 ==========================
   - Re-packging to replace curseforge's localization keyword replacement to fix 

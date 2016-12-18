@@ -3,7 +3,6 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "koKR", false)
 
 if not L then return end
-
 L["ACCLOC_ABOUT"] = "대하여"
 L["ACCLOC_AUC"] = "경매장"
 L["ACCLOC_BUTPOS"] = "미니맵 버튼 위치"
@@ -44,11 +43,7 @@ L["ACCLOC_OPTBUT"] = "설정"
 L["ACCLOC_OPTS"] = "Accountant 설정"
 L["ACCLOC_OTHER"] = "기타"
 L["ACCLOC_OUT"] = "지출"
---Translation missing 
--- L["ACCLOC_PRVDAY"] = "Prv. Day"
 L["ACCLOC_PRVMON"] = "지난 달"
---Translation missing 
--- L["ACCLOC_PRVWEEK"] = "Prv. Week"
 L["ACCLOC_QUEST"] = "퀘스트 보상"
 L["ACCLOC_REMOVECHAR"] = "삭제할 캐릭터를 선택하세요."
 L["ACCLOC_REMOVECHAR_TIP"] = "가계부 데이터에서 선택한 캐릭터의 정보를 삭제합니다."
@@ -58,10 +53,6 @@ L["ACCLOC_RESET_CONF"] = "\"%s\" 의 데이터를 삭제합니까?"
 L["ACCLOC_RSTMNYFRM_TIP"] = "소지 금액 창의 위치 초기화"
 L["ACCLOC_RSTPOSITION"] = "위치 초기화"
 L["ACCLOC_SESS"] = "현재"
---Translation missing 
--- L["ACCLOC_SHOWALL"] = "Show All Characters"
---Translation missing 
--- L["ACCLOC_SHOWALLTIP"] = "Show all characters' incoming and outgoing data."
 L["ACCLOC_SILVER"] = "실버 "
 L["ACCLOC_SOURCE"] = "출처"
 L["ACCLOC_STARTWEEK"] = "시작"

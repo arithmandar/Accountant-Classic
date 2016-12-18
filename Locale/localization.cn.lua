@@ -48,11 +48,7 @@ L["ACCLOC_OPTBUT"] = "选项"
 L["ACCLOC_OPTS"] = "Accountant Classic 选项"
 L["ACCLOC_OTHER"] = "未知"
 L["ACCLOC_OUT"] = "支出"
---Translation missing 
--- L["ACCLOC_PRVDAY"] = "Prv. Day"
 L["ACCLOC_PRVMON"] = "上一月"
---Translation missing 
--- L["ACCLOC_PRVWEEK"] = "Prv. Week"
 L["ACCLOC_QUEST"] = "任务奖励"
 L["ACCLOC_REMOVECHAR"] = "选择要移除的角色:"
 L["ACCLOC_REMOVECHAR_TIP"] = "被选取的角色的个人会计资料将会被移除。"
@@ -62,10 +58,6 @@ L["ACCLOC_RESET_CONF"] = "是否确定要将「%s」页签的资料归零?"
 L["ACCLOC_RSTMNYFRM_TIP"] = "重置画面上显示现金的位置"
 L["ACCLOC_RSTPOSITION"] = "重置位置"
 L["ACCLOC_SESS"] = "本次"
---Translation missing 
--- L["ACCLOC_SHOWALL"] = "Show All Characters"
---Translation missing 
--- L["ACCLOC_SHOWALLTIP"] = "Show all characters' incoming and outgoing data."
 L["ACCLOC_SILVER"] = "银"
 L["ACCLOC_SOURCE"] = "类别"
 L["ACCLOC_STARTWEEK"] = "一周的开始日"

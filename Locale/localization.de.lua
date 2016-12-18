@@ -3,7 +3,6 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "deDE", false)
 
 if not L then return end
-
 L["ACCLOC_ABOUT"] = "Über"
 L["ACCLOC_AUC"] = "Auktionshaus"
 L["ACCLOC_BUTPOS"] = "Minimap-Button Position"
@@ -29,8 +28,6 @@ L["ACCLOC_GOLD"] = "g "
 L["ACCLOC_IN"] = "Einnahmen"
 L["ACCLOC_INTROTIPS"] = "Einführungstipps anzeigen"
 L["ACCLOC_INTROTIPS_TIP"] = "Aktiviert/Deaktiviert die Anzeige von Bedienungstipps im Tooltip der Minikartenschaltfläche und des Geldfensters."
---Translation missing 
--- L["ACCLOC_LDBINFOTYPE"] = "Show current session's net income / expanse instead of total money on LDB"
 L["ACCLOC_LFG"] = "Dungeon-, SZ-Browser u. Szenario"
 L["ACCLOC_LOADED"] = "Accountant Classic gestartet."
 L["ACCLOC_LOADPROFILE"] = "Accountant-Classic-Profil für %s geladen"

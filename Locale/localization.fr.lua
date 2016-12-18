@@ -5,7 +5,6 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "frFR", false)
 
 if not L then return end
-
 L["ACCLOC_ABOUT"] = "A propos"
 L["ACCLOC_AUC"] = "Hotel des Ventes"
 L["ACCLOC_BUTPOS"] = "Position du bouton de la Minimap"
@@ -29,10 +28,6 @@ L["ACCLOC_EXIT"] = "Exit"
 L["ACCLOC_GOLD"] = "g "
 L["ACCLOC_IN"] = "Rentrées"
 L["ACCLOC_INTROTIPS"] = "Afficher les aides"
---Translation missing 
--- L["ACCLOC_INTROTIPS_TIP"] = "Toggle whether to display minimap button or floating money frame's operation tips."
---Translation missing 
--- L["ACCLOC_LDBINFOTYPE"] = "Show current session's net income / expanse instead of total money on LDB"
 L["ACCLOC_LFG"] = "LFD, LFR et scénarios."
 L["ACCLOC_LOADED"] = "Accountant Classic chargé"
 L["ACCLOC_LOADPROFILE"] = "Profil Accountant Classic chargé pour %s"
@@ -52,11 +47,7 @@ L["ACCLOC_OPTBUT"] = "Options"
 L["ACCLOC_OPTS"] = "Accountant Classic Options"
 L["ACCLOC_OTHER"] = "Inconnu"
 L["ACCLOC_OUT"] = "Dépenses"
---Translation missing 
--- L["ACCLOC_PRVDAY"] = "Prv. Day"
 L["ACCLOC_PRVMON"] = "Mois précédant"
---Translation missing 
--- L["ACCLOC_PRVWEEK"] = "Prv. Week"
 L["ACCLOC_QUEST"] = "Récompense de quêtes"
 L["ACCLOC_REMOVECHAR"] = "Sélectionner le personnage à supprimer:"
 L["ACCLOC_REMOVECHAR_TIP"] = "Les données Accoutant Classic du joueur seront supprimées"
@@ -66,10 +57,6 @@ L["ACCLOC_RESET_CONF"] = "Êtes-vous certain de vouloir réinitialiser les donn�
 L["ACCLOC_RSTMNYFRM_TIP"] = "Réinitialise la position de l'affichage de l'argent"
 L["ACCLOC_RSTPOSITION"] = "Réinitialiser la position"
 L["ACCLOC_SESS"] = "Session"
---Translation missing 
--- L["ACCLOC_SHOWALL"] = "Show All Characters"
---Translation missing 
--- L["ACCLOC_SHOWALLTIP"] = "Show all characters' incoming and outgoing data."
 L["ACCLOC_SILVER"] = "s "
 L["ACCLOC_SOURCE"] = "Sources"
 L["ACCLOC_STARTWEEK"] = "Début de Semaine"
