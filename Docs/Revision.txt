@@ -6,7 +6,7 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.08.00 (Dec. XX, 2016)
+* v2.08.00 (Dec. 18, 2016)
 ==========================
   - Added net profit tracking on previous day, week and month
   - Detect untracked money in/out when it was managed out-side of game or when 
@@ -15,7 +15,7 @@ Revision History:
   - Added server info in All Character tab
   - Supported cross-servers' data to be displayed in All Character tab
   - Now you can show all characters or specific one's incoming / outgoing in 
-    each type and in each time period
+    each expense type and in each time period
 
 * v2.07.08 (Oct. 27, 2016)
 ==========================
@@ -182,7 +182,7 @@ Revision History:
 * v2.5.22 (Oct. 30, 2014)
 ==========================
   - Track on the following new spending / earning (codes by Tntdruid)
-    - Gold earned from Auction House (when received money via mail)
+    - Gold earned from Auction House (when received money via mail) 
     - Barber Shop.
     – Garrison - track gold used on building, upgrading and gold from followers 
       missions.

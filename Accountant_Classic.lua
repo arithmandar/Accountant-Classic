@@ -908,14 +908,17 @@ function AccountantClassic_OnEvent(self, event, ...)
 	end
 end
 
+-- codes by Tntdruid
 function AccountantClassic_DetectAhMail()
-    local numItems, totalItems = GetInboxNumItems()
-    for x = 1, totalItems do    
-        local invoiceType = GetInboxInvoiceInfo(x)
-        if (invoiceType == "seller") then
-            return true
-        end
-    end
+	local numItems, totalItems = GetInboxNumItems();
+	for x = 1, totalItems do    
+		-- invoiceType, itemName, playerName, bid, buyout, deposit, consignment = GetInboxInvoiceInfo(index);
+		--    invoiceType : String - type of invoice ("buyer", "seller", or "seller_temp_invoice").
+		local invoiceType = GetInboxInvoiceInfo(x);
+		if (invoiceType == "seller") then
+			return true;
+		end
+	end
 end
 
 function AccountantClassic_OnShareMoney(arg1)
@@ -1127,10 +1130,8 @@ function AccountantClassic_OnShow(self)
 			end
 		end
 		if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
-			-- AccountantClassicFrame.ShowAll:Hide();
 			AccountantClassicFrameCharacterDropDown:Hide();
 		else
-			-- AccountantClassicFrame.ShowAll:Show();
 			AccountantClassicFrameCharacterDropDown:Show();
 		end
 
@@ -1138,7 +1139,6 @@ function AccountantClassic_OnShow(self)
 		local TotalOut = 0;
 		local mode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
 		local colIn, colOut;
-		local key, value;
 		for key, value in pairs(AccountantClassic_Data) do
 			colIn = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."In"];
 			colOut = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."Out"];
@@ -1154,17 +1154,12 @@ function AccountantClassic_OnShow(self)
 					local serverkey = AC_SCROLL_LIST[j][1];
 					local charkey = AC_SCROLL_LIST[j][2];
 					
---					if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
---						mIn = AccountantClassic_Data[key][mode].In;
---						mOut = AccountantClassic_Data[key][mode].Out;
---					else
-						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-							mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
-						end
-						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-							mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
-						end
---					end
+					if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
+						mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+					end
+					if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
+						mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+					end
 				elseif (AC_SELECTED_CHAR_NUM == #AC_SCROLL_LIST + 1) then
 					local serverkey, servervalue, charkey, charvalue;
 					for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
@@ -1179,24 +1174,7 @@ function AccountantClassic_OnShow(self)
 					end
 				end
 			end
---[[
-			if (not AC_SHOWALLCHARS or AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
-				mIn = AccountantClassic_Data[key][mode].In;
-				mOut = AccountantClassic_Data[key][mode].Out;
-			else
-				local serverkey, servervalue, charkey, charvalue, kb, vb;
-				for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
-					for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-							mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
-						end
-						if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-							mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
-						end
-					end
-				end
-			end
-]]
+
 			TotalIn = TotalIn + mIn;
 			TotalOut = TotalOut + mOut;
 
@@ -1238,34 +1216,6 @@ function AccountantClassic_OnShow(self)
 		i = 1;
 		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
 			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
---				AC_SCROLL_LIST[i] = { serverkey, charkey };
---[[
-				local player_text, factionstr, faction_icon, classToken, class_color;
-				if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
-					factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
-					faction_icon = "\124TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0\124t%s - %s";
-					if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
-						classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
-						class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
-					end
-					if(classToken) then 
-						_G["AccountantClassicCharacterEntry"..i].Title:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
-					else
-						_G["AccountantClassicCharacterEntry"..i].Title:SetText(format(faction_icon, serverkey, charkey));
-					end
-					--_G["AccountantClassicFrameRow"..i.."Title"]:SetPoint("TOPLEFT", 20, -2);
-				else
-					_G["AccountantClassicCharacterEntry"..i].Title:SetText(charkey);
-				end
-				if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-					_G["AccountantClassicCharacterEntry"..i].In:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
-					alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
-					_G["AccountantClassicCharacterEntry"..i].Out:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"], 2));
-				else
-					_G["AccountantClassicCharacterEntry"..i].In:SetText("Unknown");
-				end
-]]
-
 				if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
 					alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
 				end
