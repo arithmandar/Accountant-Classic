@@ -4,7 +4,6 @@ local AceLocale = LibStub:GetLibrary("AceLocale-3.0");
 local L = AceLocale:NewLocale("Accountant_Classic", "enUS", true, is_silent);
 
 if not L then return end
---@do-not-package@
 -- Header
 L["ACCLOC_TITLE"]		= "Accountant Classic";
 L["ACCLOC_DESC"]		= "A basic tool to track your monetary incomings and outgoings within WoW.";
@@ -90,5 +89,3 @@ L["ACCLOC_SHOWALLTIP"]		= "Show all characters' incoming and outgoing data.";
 L["BINDING_HEADER_ACCOUNTANT"]	= "Accountant Classic";
 L["BINDING_NAME_ACCOUNTANTTOG"]	= "Toggle Accountant Classic";
 
---@end-do-not-package@
---@localization(locale="enUS", format="lua_additive_table")@

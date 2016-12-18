@@ -3,7 +3,6 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "zhTW", false)
 
 if not L then return end
---@do-not-package@
 L["ACCLOC_ABOUT"] = "關於"
 L["ACCLOC_AUC"] = "拍賣場"
 L["ACCLOC_BUTPOS"] = "小地圖按鈕位置"
@@ -85,6 +84,3 @@ L["ACCLOC_WEEK"] = "本週"
 L["ACCLOC_WEEKSTART"] = "當週首日"
 L["BINDING_HEADER_ACCOUNTANT"] = "個人會計"
 L["BINDING_NAME_ACCOUNTANTTOG"] = "切換個人會計"
---@end-do-not-package@
---@localization(locale="zhTW", format="lua_additive_table")@
-

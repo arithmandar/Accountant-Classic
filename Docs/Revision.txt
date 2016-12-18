@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.01 (Dec. 18, 2016)
+==========================
+  - Re-packging to replace curseforge's localization keyword replacement to fix 
+    the issue of localization  missing
+
 * v2.08.00 (Dec. 18, 2016)
 ==========================
   - Added net profit tracking on previous day, week and month
