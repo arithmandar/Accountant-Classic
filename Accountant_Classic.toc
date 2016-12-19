@@ -1,6 +1,6 @@
 ﻿## Interface: 70100
 ## Title: Accountant Classic
-## Title-deDE: 
+## Title-deDE: Accountant Classic
 ## Title-esES: Accountant Classic
 ## Title-esMX: Accountant Classic
 ## Title-frFR: Accountant Classic
@@ -22,7 +22,7 @@
 ## Notes-zhCN: |cff00CC33追踪每个角色的所有收入与支出状况，并可显示当日小计、当周小计、以及自有记录起的总计。并可显示所有角色的总金额。|r
 ## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
 ## Author: @project-author@
-## Version: 2.08.03
+## Version: 2.08.04
 ## OptionalDeps: LibAboutPanel, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibDialog-1.0
 ## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB
 ## X-Credits: Sabaki, Shadow, Rophy
