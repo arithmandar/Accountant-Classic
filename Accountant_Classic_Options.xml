@@ -18,33 +18,6 @@ $Id$
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentWeek" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="340" y="-65"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="ACCLOC_STARTWEEK">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="21" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						AccountantClassicOptionsFrameWeek_Init();
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<CheckButton name="$parentToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -117,7 +90,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplay" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="310" y="0"/>
+							<AbsDimension x="400" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -175,9 +148,30 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentToggleCrossServer" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleDisplayInstroTips">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_CROSSSERVER);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_CROSSSERVER_TIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnClick>
+						AccountantClassicOptionsCrossServer_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<Frame name="$parentCharacterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleDisplayInstroTips" relativePoint="TOPLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleCrossServer" relativePoint="TOPLEFT">
 						<Offset>
 							<AbsDimension x="-10" y="-45"/>
 						</Offset>
@@ -206,11 +200,38 @@ $Id$
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentDateDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentWeek" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCharacterDropDown" relativePoint="TOPLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="ACCLOC_STARTWEEK">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						AccountantClassicOptionsFrameWeek_Init();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentDateDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWeek" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="310" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

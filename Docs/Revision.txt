@@ -6,6 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.05 (Dec. XX, 2016)
+==========================
+  - Added back curseforge's keyword replacement
+  - Added option to toggle whether to show crose servers' info or not. 
+    User can decide whether they want to show all characters from all realms's 
+    money info or only the current server.
+
 * v2.08.04 (Dec. 19, 2016)
 ==========================
   - Fixed missing German title in ToC

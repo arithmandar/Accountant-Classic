@@ -1,91 +1,93 @@
-﻿-- $Id$ 
+-- $Id$ 
 
 local AceLocale = LibStub:GetLibrary("AceLocale-3.0");
 local L = AceLocale:NewLocale("Accountant_Classic", "enUS", true, is_silent);
 
 if not L then return end
 -- Header
-L["ACCLOC_TITLE"]		= "Accountant Classic";
-L["ACCLOC_DESC"]		= "A basic tool to track your monetary incomings and outgoings within WoW.";
-L["ACCLOC_TIP"]			= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button.";
-L["ACCLOC_TIP2"]		= "Left-click and drag to move this button.\nRight-Click to open Accountant Classic.";
-L["ACCLOC_TOT_IN"]		= "Total Incomings";
-L["ACCLOC_TOT_OUT"]		= "Total Outgoings";
-L["ACCLOC_NET"]			= "Net Profit / Loss";
-L["ACCLOC_NETLOSS"]		= "Net Loss";
-L["ACCLOC_NETPROF"]		= "Net Profit";
-L["ACCLOC_SOURCE"]		= "Source";
-L["ACCLOC_IN"]			= "Incomings";
-L["ACCLOC_OUT"]			= "Outgoings";
-L["ACCLOC_WEEKSTART"]		= "Week Start";
-L["ACCLOC_SUM"]			= "Sum Total";
-L["ACCLOC_CHAR"]		= "Character";
-L["ACCLOC_MONEY"]		= "Money";
-L["ACCLOC_UPDATED"]		= "Updated";
+L["ACCLOC_TITLE"]		= "Accountant Classic"
+L["ACCLOC_DESC"]		= "A basic tool to track your monetary incomings and outgoings within WoW."
+L["ACCLOC_TIP"]			= "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button."
+L["ACCLOC_TIP2"]		= "Left-click and drag to move this button.\nRight-Click to open Accountant Classic."
+L["ACCLOC_TOT_IN"]		= "Total Incomings"
+L["ACCLOC_TOT_OUT"]		= "Total Outgoings"
+L["ACCLOC_NET"]			= "Net Profit / Loss"
+L["ACCLOC_NETLOSS"]		= "Net Loss"
+L["ACCLOC_NETPROF"]		= "Net Profit"
+L["ACCLOC_SOURCE"]		= "Source"
+L["ACCLOC_IN"]			= "Incomings"
+L["ACCLOC_OUT"]			= "Outgoings"
+L["ACCLOC_WEEKSTART"]		= "Week Start"
+L["ACCLOC_SUM"]			= "Sum Total"
+L["ACCLOC_CHAR"]		= "Character"
+L["ACCLOC_MONEY"]		= "Money"
+L["ACCLOC_UPDATED"]		= "Updated"
 
 -- Section Labels
-L["ACCLOC_QUEST"]		= "Quest Rewards";
-L["ACCLOC_MERCH"]		= "Merchants";
-L["ACCLOC_TRADE"]		= "Trade Window";
-L["ACCLOC_MAIL"]		= "Mail";
-L["ACCLOC_TRAIN"]		= "Training Costs";
-L["ACCLOC_TAXI"]		= "Taxi Fares";
-L["ACCLOC_OTHER"]		= "Unknown";
-L["ACCLOC_REPAIR"]		= "Repair Costs";
-L["ACCLOC_LFG"]			= "LFD, LFR and Scen.";
+L["ACCLOC_QUEST"]		= "Quest Rewards"
+L["ACCLOC_MERCH"]		= "Merchants"
+L["ACCLOC_TRADE"]		= "Trade Window"
+L["ACCLOC_MAIL"]		= "Mail"
+L["ACCLOC_TRAIN"]		= "Training Costs"
+L["ACCLOC_TAXI"]		= "Taxi Fares"
+L["ACCLOC_OTHER"]		= "Unknown"
+L["ACCLOC_REPAIR"]		= "Repair Costs"
+L["ACCLOC_LFG"]			= "LFD, LFR and Scen."
 
 -- Buttons
-L["ACCLOC_RESET"]		= "Reset";
-L["ACCLOC_OPTBUT"]		= "Options";
-L["ACCLOC_EXIT"]		= "Exit";
+L["ACCLOC_RESET"]		= "Reset"
+L["ACCLOC_OPTBUT"]		= "Options"
+L["ACCLOC_EXIT"]		= "Exit"
 
 -- Tabs
-L["ACCLOC_SESS"]		= "This Session";
-L["ACCLOC_DAY"]			= "Today";
-L["ACCLOC_PRVDAY"]		= "Prv. Day";
-L["ACCLOC_WEEK"]		= "This Week";
-L["ACCLOC_PRVWEEK"]		= "Prv. Week";
-L["ACCLOC_MONTH"]		= "This Month";
-L["ACCLOC_PRVMON"]		= "Prv. Month";
-L["ACCLOC_TOTAL"]		= "Total";
-L["ACCLOC_CHARS"]		= "All Chars";
+L["ACCLOC_SESS"]		= "This Session"
+L["ACCLOC_DAY"]			= "Today"
+L["ACCLOC_PRVDAY"]		= "Prv. Day"
+L["ACCLOC_WEEK"]		= "This Week"
+L["ACCLOC_PRVWEEK"]		= "Prv. Week"
+L["ACCLOC_MONTH"]		= "This Month"
+L["ACCLOC_PRVMON"]		= "Prv. Month"
+L["ACCLOC_TOTAL"]		= "Total"
+L["ACCLOC_CHARS"]		= "All Chars"
 
 -- Options
-L["ACCLOC_OPTS"]		= "Accountant Classic Options";
-L["ACCLOC_MINIBUT"]		= "Show minimap button";
-L["ACCLOC_MINIBUTMONEY"]	= "Show money on minimap button's tooltip";
-L["ACCLOC_MINIBUTSESSINF"]	= "Show session info on minimap button's tooltip";
-L["ACCLOC_ONSCRMONEY"]		= "Show money on screen";
-L["ACCLOC_RSTPOSITION"]		= "Reset position";
-L["ACCLOC_RSTMNYFRM_TIP"]	= "Reset money frame's position";
-L["ACCLOC_BUTPOS"]		= "Minimap Button Position";
-L["ACCLOC_STARTWEEK"]		= "Start of Week";
-L["ACCLOC_DONE"]		= "Done";
-L["ACCLOC_INTROTIPS"]		= "Display Instruction Tips";
-L["ACCLOC_INTROTIPS_TIP"]	= "Toggle whether to display minimap button or floating money frame's operation tips.";
-L["ACCLOC_REMOVECHAR"]		= "Select the character to be removed:";
-L["ACCLOC_REMOVECHAR_TIP"]	= "The selected character's Accountant Classic data will be removed.";
-L["ACCLOC_CHARREMOVETEXT"]	= "The selected character is about to be removed.\nAre you sure you want to remove the following character from Accountant Classic?";
-L["ACCLOC_CHARREMOVEDONE"]	= "|cffffffff\"%s - %s|cffffffff\" character's Accountant Classic data has been removed."; -- "servername - charactername" character's Accountant Classic data has been removed.
-L["ACCLOC_DATEFORMAT"]		= "Select the date format:";
-L["ACCLOC_DATEFORMAT_TIP"]	= "Date format showing in \"All Chars\" and \"Week\" tabs";
+L["ACCLOC_OPTS"]		= "Accountant Classic Options"
+L["ACCLOC_MINIBUT"]		= "Show minimap button"
+L["ACCLOC_MINIBUTMONEY"]	= "Show money on minimap button's tooltip"
+L["ACCLOC_MINIBUTSESSINF"]	= "Show session info on minimap button's tooltip"
+L["ACCLOC_ONSCRMONEY"]		= "Show money on screen"
+L["ACCLOC_RSTPOSITION"]		= "Reset position"
+L["ACCLOC_RSTMNYFRM_TIP"]	= "Reset money frame's position"
+L["ACCLOC_BUTPOS"]		= "Minimap Button Position"
+L["ACCLOC_STARTWEEK"]		= "Start of Week"
+L["ACCLOC_DONE"]		= "Done"
+L["ACCLOC_INTROTIPS"]		= "Display Instruction Tips"
+L["ACCLOC_INTROTIPS_TIP"]	= "Toggle whether to display minimap button or floating money frame's operation tips."
+L["ACCLOC_REMOVECHAR"]		= "Select the character to be removed:"
+L["ACCLOC_REMOVECHAR_TIP"]	= "The selected character's Accountant Classic data will be removed."
+L["ACCLOC_CHARREMOVETEXT"]	= "The selected character is about to be removed.\nAre you sure you want to remove the following character from Accountant Classic?"
+L["ACCLOC_CHARREMOVEDONE"]	= "|cffffffff\"%s - %s|cffffffff\" character's Accountant Classic data has been removed." -- "servername - charactername" character's Accountant Classic data has been removed.
+L["ACCLOC_DATEFORMAT"]		= "Select the date format:"
+L["ACCLOC_DATEFORMAT_TIP"]	= "Date format showing in \"All Chars\" and \"Week\" tabs"
 L["ACCLOC_LDBINFOTYPE"]		= "Show current session's net income / expanse instead of total money on LDB"
+L["ACCLOC_CROSSSERVER"]		= "Show all realms' characters info"
+L["ACCLOC_CROSSSERVER_TIP"]	= "Enable to show all characters' money info from all realms. Disable to only show current realm's character info."
 
 -- Misc
-L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the \"%s\" data?"; -- %s would be the log mode, for example, Session, Day, Week, etc.
-L["ACCLOC_NEWPROFILE"]		= "New Accountant Classic profile created for %s"; -- %s would be the character name
-L["ACCLOC_LOADPROFILE"]		= "Loaded Accountant Classic Profile for %s"; -- %s would be the character name
-L["ACCLOC_LOADED"]		= "Accountant Classic loaded.";
-L["ACCLOC_GOLD"]		= "g ";
-L["ACCLOC_SILVER"]		= "s ";
-L["ACCLOC_CENT"]		= "c";
-L["ACCLOC_ABOUT"]		= "About";
-L["ACCLOC_CONFLICT"]		= "Detected the conflicted addon - \"|cFFFF0000Accountant|r\" exists and loaded.\nIt has been disabled, click Okay button to reload the game.";
-L["ACCLOC_CLEANUPACCOUNTANT"] 	= "You have manually called the function \n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \nto clean up conflicted data existed in \"Accountant\". \nNow click Okay button to reload the game.";
-L["ACCLOC_SHOWALL"]		= "Show All Characters";
-L["ACCLOC_SHOWALLTIP"]		= "Show all characters' incoming and outgoing data.";
+L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the \"%s\" data?" -- %s would be the log mode, for example, Session, Day, Week, etc.
+L["ACCLOC_NEWPROFILE"]		= "New Accountant Classic profile created for %s" -- %s would be the character name
+L["ACCLOC_LOADPROFILE"]		= "Loaded Accountant Classic Profile for %s" -- %s would be the character name
+L["ACCLOC_LOADED"]		= "Accountant Classic loaded."
+L["ACCLOC_GOLD"]		= "g "
+L["ACCLOC_SILVER"]		= "s "
+L["ACCLOC_CENT"]		= "c"
+L["ACCLOC_ABOUT"]		= "About"
+L["ACCLOC_CONFLICT"]		= "Detected the conflicted addon - \"|cFFFF0000Accountant|r\" exists and loaded.\nIt has been disabled, click Okay button to reload the game."
+L["ACCLOC_CLEANUPACCOUNTANT"] 	= "You have manually called the function \n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \nto clean up conflicted data existed in \"Accountant\". \nNow click Okay button to reload the game."
+L["ACCLOC_SHOWALL"]		= "Show All Characters"
+L["ACCLOC_SHOWALLTIP"]		= "Show all characters' incoming and outgoing data."
 
 -- Key Bindings headers
-L["BINDING_HEADER_ACCOUNTANT"]	= "Accountant Classic";
-L["BINDING_NAME_ACCOUNTANTTOG"]	= "Toggle Accountant Classic";
+L["BINDING_HEADER_ACCOUNTANT"]	= "Accountant Classic"
+L["BINDING_NAME_ACCOUNTANTTOG"]	= "Toggle Accountant Classic"
 

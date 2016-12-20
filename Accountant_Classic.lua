@@ -119,6 +119,7 @@ local AccountantClassicDefaultOptions = {
 	class = AccountantClassic_Class,
 	dateformat = 1;
 	LDBDisplaySessionInfo = false;
+	cross_server = true;
 };
 
 -- Code by Grayhoof (SCT)
@@ -281,6 +282,9 @@ local function AccountantClassic_InitOptions()
 	end
 	if (AccountantClassic_Profile["options"].lastsessiondate == nil) then
 		AccountantClassic_Profile["options"].lastsessiondate = cdate;
+	end
+	if (AccountantClassic_Profile["options"].cross_server == nil) then
+		AccountantClassic_Profile["options"].cross_server = true;
 	end
 end
 
@@ -553,14 +557,22 @@ local function AccountantClassic_SettleTabText()
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 end
 
-local function AccountantClassic_PopulateCharacterList()
+function AccountantClassic_PopulateCharacterList()
 	local i = 1;
 	local serverkey, servervalue, charkey, charvalue;
 
 	if (#AC_SCROLL_LIST > 0) then
 		AC_SCROLL_LIST = {};
 	end
-	for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+	if (AccountantClassic_Profile["options"].cross_server) then
+		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+				AC_SCROLL_LIST[i] = { serverkey, charkey };
+				i = i + 1;
+			end
+		end
+	else
+		serverkey = AccountantClassic_Server;
 		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
 			AC_SCROLL_LIST[i] = { serverkey, charkey };
 			i = i + 1;
@@ -1162,7 +1174,19 @@ function AccountantClassic_OnShow(self)
 					end
 				elseif (AC_SELECTED_CHAR_NUM == #AC_SCROLL_LIST + 1) then
 					local serverkey, servervalue, charkey, charvalue;
-					for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+					if (AccountantClassic_Profile["options"].cross_server) then
+						for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+							for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+								if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
+									mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+								end
+								if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
+									mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+								end
+							end
+						end
+					else
+						serverkey = AccountantClassic_Server;
 						for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
 							if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
 								mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
@@ -1214,7 +1238,22 @@ function AccountantClassic_OnShow(self)
 		local serverkey, servervalue, charkey, charvalue;
 
 		i = 1;
-		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+		if (AccountantClassic_Profile["options"].cross_server) then
+			for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+				for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+					if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
+						alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+					end
+
+					for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+						allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
+						allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+					end
+					i = i + 1;
+				end
+			end
+		else
+			serverkey = AccountantClassic_Server;
 			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
 				if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
 					alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];

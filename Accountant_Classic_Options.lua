@@ -35,6 +35,7 @@ function AccountantClassicOptions_OnShow()
 	AccountantClassicOptionsFrameToggleMoneyOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showmoneyonbutton);
 	AccountantClassicOptionsFrameToggleSessionOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showsessiononbutton);
 	AccountantClassicOptionsFrameToggleMoneyDisplayOnLDB:SetChecked(AccountantClassic_Profile["options"].LDBDisplaySessionInfo);
+	AccountantClassicOptionsFrameToggleCrossServer:SetChecked(AccountantClassic_Profile["options"].cross_server);
 	--AccountantSliderButtonPos:SetValue(AccountantClassic_Profile["options"].buttonpos);
 	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
 	UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
@@ -104,6 +105,20 @@ function AccountantClassicLDBDisplay_Toggle()
 		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = false;
 	else
 		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = true;
+	end
+end
+
+function AccountantClassicOptionsCrossServer_Toggle()
+	if (AccountantClassic_Profile["options"].cross_server == true) then
+		AccountantClassic_Profile["options"].cross_server = false;
+	else
+		AccountantClassic_Profile["options"].cross_server = true;
+	end
+	
+	AccountantClassic_PopulateCharacterList();
+
+	if AccountantClassicFrame:IsVisible() then
+		AccountantClassic_OnShow();
 	end
 end
 
