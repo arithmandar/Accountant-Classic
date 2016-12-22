@@ -77,8 +77,8 @@ L["ACCLOC_TRACKSUBZONE_TIP"] = "启用以追踪子区域信息。例如：「苏
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "是否确定要将「%s」页签的资料归零?"
-L["ACCLOC_NEWPROFILE"] = "新的 Accountant Classic 数据已建立给%s"
-L["ACCLOC_LOADPROFILE"] = "读取 Accountant Classic 数据给%s"
+L["ACCLOC_NEWPROFILE"] = "%s的 Accountant Classic 数据已建立"
+L["ACCLOC_LOADPROFILE"] = "%s的 Accountant Classic 数据已加载"
 L["ACCLOC_LOADED"] = "Accountant Classic 插件已载入"
 L["ACCLOC_GOLD"] = "金"
 L["ACCLOC_SILVER"] = "银"

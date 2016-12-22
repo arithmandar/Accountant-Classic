@@ -79,8 +79,8 @@ L["ACCLOC_TRACKSUBZONE_TIP"] = "啟用以追蹤子區域資訊。例如：「蘇
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "是否確定要將「%s」頁籤的資料歸零?"
-L["ACCLOC_NEWPROFILE"] = "新的個人會計資料已建立給%s"
-L["ACCLOC_LOADPROFILE"] = "讀取個人會計資料給%s"
+L["ACCLOC_NEWPROFILE"] = "%s的個人會計資料已建立"
+L["ACCLOC_LOADPROFILE"] = "%s的個人會計資料已載入"
 L["ACCLOC_LOADED"] = "個人會計插件已載入"
 L["ACCLOC_GOLD"] = "金"
 L["ACCLOC_SILVER"] = "銀"

@@ -1427,11 +1427,11 @@ function AccountantClassic_OnShow(self)
 end
 
 function AccountantClassicFrameCharacterDropDown_Init()
-	local info = { };
+	local info;
 	for i = 1, #AC_SCROLL_LIST do
 		local serverkey = AC_SCROLL_LIST[i][1];
 		local charkey = AC_SCROLL_LIST[i][2];
-		info = { };
+		info = Lib_UIDropDownMenu_CreateInfo();
 		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
 			local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
 			local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
@@ -1450,7 +1450,7 @@ function AccountantClassicFrameCharacterDropDown_Init()
 	end
 	
 	-- Added All Chars to dropdown
-	info = { };
+	info = Lib_UIDropDownMenu_CreateInfo();
 	info.text = L["ACCLOC_CHARS"];
 	info.value = #AC_SCROLL_LIST + 1;
 	info.tooltipTitle = L["ACCLOC_SHOWALLTIP"];
