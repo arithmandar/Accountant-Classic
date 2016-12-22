@@ -72,6 +72,10 @@ L["ACCLOC_DATEFORMAT_TIP"] = "在「本週」與「所有角色」頁籤所顯�
 L["ACCLOC_LDBINFOTYPE"] = "在 LDB 支援的顯示列上顯示本次的淨收入/支出而不是總是顯示總金額"
 L["ACCLOC_CROSSSERVER"]		= "顯示所有伺服器的角色資訊"
 L["ACCLOC_CROSSSERVER_TIP"]	= "啟用以顯示來自所有伺服器的所有角色的金流資訊。停用則僅會顯示目前伺服器的角色資訊。"
+L["ACCLOC_TRACKZONE"] = "追蹤每筆收入/支出的地點"
+L["ACCLOC_TRACKZONE_TIP"] = "啟用以追蹤每筆您的收入與支出的發生地點，並且在個人會計視窗中，當滑鼠移到每項金額時，顯示這些地點的詳細資訊。"
+L["ACCLOC_TRACKSUBZONE"] = "同時也追蹤子區域資訊"
+L["ACCLOC_TRACKSUBZONE_TIP"] = "啟用以追蹤子區域資訊。例如：「蘇拉瑪爾 - 秩序聖所」"
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "是否確定要將「%s」頁籤的資料歸零?"

@@ -12,6 +12,8 @@ Revision History:
   - Added option to toggle whether to show crose servers' info or not. 
     User can decide whether they want to show all characters from all realms's 
     money info or only the current server.
+  - Added NoTaint_UIDropDownMenu lib to prevent from UI taint issue
+  - Added support to track on location of each incoming / outgoing money.
 
 * v2.08.04 (Dec. 19, 2016)
 ==========================

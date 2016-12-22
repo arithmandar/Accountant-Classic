@@ -70,6 +70,10 @@ L["ACCLOC_CHARREMOVEDONE"] = "|cffffffff「%s - %s|cffffffff」角色的 Account
 L["ACCLOC_DATEFORMAT"] = "选择日期格式："
 L["ACCLOC_DATEFORMAT_TIP"] = "在「本周」与「所有角色」页签所显示的日期格式"
 L["ACCLOC_LDBINFOTYPE"] = "在 LDB 支援的显示列上显示本次的净收入/净支出而非显示总金额"
+L["ACCLOC_TRACKZONE"] = "追踪每笔收入/支出的地点"
+L["ACCLOC_TRACKZONE_TIP"] = "启用以追踪每笔您的收入与支出的发生地点，并且在 Accountant Classic 窗口中，当鼠标移到每项金额时，显示这些地点的详细信息。"
+L["ACCLOC_TRACKSUBZONE"] = "同时也追踪子区域信息"
+L["ACCLOC_TRACKSUBZONE_TIP"] = "启用以追踪子区域信息。例如：「苏拉玛 - 秩序大殿」"
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "是否确定要将「%s」页签的资料归零?"

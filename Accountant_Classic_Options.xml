@@ -22,7 +22,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="20" y="-45"/>
+							<AbsDimension x="10" y="-45"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -39,7 +39,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleButton">
 						<Offset>
-							<AbsDimension x="10" y="-25"/>
+							<AbsDimension x="20" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -73,7 +73,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleSessionOnMiniMap">
 						<Offset>
-							<AbsDimension x="-10" y="-25"/>
+							<AbsDimension x="-20" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -114,7 +114,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplay">
 						<Offset>
-							<AbsDimension x="-10" y="-25"/>
+							<AbsDimension x="0" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -169,11 +169,53 @@ $Id$
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Frame name="$parentCharacterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<CheckButton name="$parentToggleTrackZone" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleCrossServer" relativePoint="TOPLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleCrossServer">
 						<Offset>
-							<AbsDimension x="-10" y="-45"/>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_TRACKZONE);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_TRACKZONE_TIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnClick>
+						AccountantClassicOptionsTrackZone_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentToggleTrackSubZone" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleTrackZone">
+						<Offset>
+							<AbsDimension x="20" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_TRACKSUBZONE);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_TRACKSUBZONE_TIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnClick>
+						AccountantClassicOptionsTrackSubZone_Toggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentCharacterDropDown" inherits="Lib_UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleTrackSubZone" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-30" y="-45"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -227,7 +269,7 @@ $Id$
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentDateDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentDateDropDown" inherits="Lib_UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentWeek" relativePoint="TOPLEFT">
 						<Offset>

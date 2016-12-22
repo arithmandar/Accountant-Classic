@@ -72,6 +72,10 @@ L["ACCLOC_DATEFORMAT_TIP"]	= "Date format showing in \"All Chars\" and \"Week\" 
 L["ACCLOC_LDBINFOTYPE"]		= "Show current session's net income / expanse instead of total money on LDB"
 L["ACCLOC_CROSSSERVER"]		= "Show all realms' characters info"
 L["ACCLOC_CROSSSERVER_TIP"]	= "Enable to show all characters' money info from all realms. Disable to only show current realm's character info."
+L["ACCLOC_TRACKZONE"]		= "Track location of incoming / outgoing money"
+L["ACCLOC_TRACKZONE_TIP"]	= "Enable to track the location of each incoming / outgoing money and also show the breakdown info while mouse hover each of the expenditure."
+L["ACCLOC_TRACKSUBZONE"]	= "Also track subzone info"
+L["ACCLOC_TRACKSUBZONE_TIP"]	= "Enable to also track on the subzone info. For example: Suramar - Sanctum of Order"
 
 -- Misc
 L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the \"%s\" data?" -- %s would be the log mode, for example, Session, Day, Week, etc.

@@ -38,7 +38,7 @@
 ## Author: @project-author@
 ## Version: 2.08.05
 ## OptionalDeps: LibAboutPanel, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibDialog-1.0
-## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB
+## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB, Accountant_ClassicZoneDB
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-Date: @project-date-iso@
 ## X-Donate: https://pledgie.com/campaigns/13746
@@ -47,6 +47,8 @@
 ## X-Category: Information
 ## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR, esES, ptBR
 
+Libs\NoTaint_UIDropDownMenu\UIDropDownMenuTemplates.xml
+Libs\NoTaint_UIDropDownMenu\UIDropDownMenu.lua
 Libs\Libs.xml
 Locale\Locales.xml
 Accountant_Classic.xml

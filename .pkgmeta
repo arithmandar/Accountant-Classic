@@ -17,6 +17,7 @@ externals:
     Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     Libs/LibDialog-1.0: https://repos.wowace.com/wow/libdialog-1-0
     Libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
+    Libs/NoTaint_UIDropDownMenu: svn://svn.wowinterface.com/NoTaint_UIDropDownMenu_Update-1134/trunk
 
 ignore:
     - Images/PSD

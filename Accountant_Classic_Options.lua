@@ -30,18 +30,20 @@ end
 
 function AccountantClassicOptions_OnShow()
 	AccountantClassicOptionsFrameToggleButton:SetChecked(AccountantClassic_Profile["options"].showbutton);
-	AccountantClassicOptionsFrameToggleMoneyDisplay:SetChecked(AccountantClassic_Profile["options"].showmoneyinfo);
-	AccountantClassicOptionsFrameToggleDisplayInstroTips:SetChecked(AccountantClassic_Profile["options"].showintrotip);
 	AccountantClassicOptionsFrameToggleMoneyOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showmoneyonbutton);
 	AccountantClassicOptionsFrameToggleSessionOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showsessiononbutton);
+	AccountantClassicOptionsFrameToggleMoneyDisplay:SetChecked(AccountantClassic_Profile["options"].showmoneyinfo);
+	AccountantClassicOptionsFrameToggleDisplayInstroTips:SetChecked(AccountantClassic_Profile["options"].showintrotip);
 	AccountantClassicOptionsFrameToggleMoneyDisplayOnLDB:SetChecked(AccountantClassic_Profile["options"].LDBDisplaySessionInfo);
 	AccountantClassicOptionsFrameToggleCrossServer:SetChecked(AccountantClassic_Profile["options"].cross_server);
+	AccountantClassicOptionsFrameToggleTrackZone:SetChecked(AccountantClassic_Profile["options"].trackzone);
+	AccountantClassicOptionsFrameToggleTrackSubZone:SetChecked(AccountantClassic_Profile["options"].tracksubzone);
 	--AccountantSliderButtonPos:SetValue(AccountantClassic_Profile["options"].buttonpos);
 	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
 	UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
-	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameCharacterDropDown, AccountantClassicOptionsCharacterDropDown_Init);
-	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameDateDropDown, AccountantClassicOptionsDateDropDown_Init);
-	UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, AccountantClassic_Profile["options"].dateformat);
+	Lib_UIDropDownMenu_Initialize(AccountantClassicOptionsFrameCharacterDropDown, AccountantClassicOptionsCharacterDropDown_Init);
+	Lib_UIDropDownMenu_Initialize(AccountantClassicOptionsFrameDateDropDown, AccountantClassicOptionsDateDropDown_Init);
+	Lib_UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, AccountantClassic_Profile["options"].dateformat);
 end
 
 function AccountantClassicOptions_OnHide(self)
@@ -51,18 +53,18 @@ function AccountantClassicOptions_OnHide(self)
 end
 
 function AccountantClassicOptionsFrameWeek_Init()
-	local info;
-	Accountant_DayList = {WEEKDAY_SUNDAY, WEEKDAY_MONDAY, WEEKDAY_TUESDAY, WEEKDAY_WEDNESDAY, WEEKDAY_THURSDAY, WEEKDAY_FRIDAY, WEEKDAY_SATURDAY};
-	for i = 1, getn(Accountant_DayList), 1 do
-		info = { };
-		info.text = Accountant_DayList[i];
+	-- local info = Lib_UIDropDownMenu_CreateInfo();
+	local Weekdays = { WEEKDAY_SUNDAY, WEEKDAY_MONDAY, WEEKDAY_TUESDAY, WEEKDAY_WEDNESDAY, WEEKDAY_THURSDAY, WEEKDAY_FRIDAY, WEEKDAY_SATURDAY };
+	for i = 1, #Weekdays do
+		local info = UIDropDownMenu_CreateInfo();
+		info.text = Weekdays[i];
 		info.func = AccountantClassicOptionsFrameWeek_OnClick;
 		UIDropDownMenu_AddButton(info);
 	end
 end
 
 function AccountantClassicOptionsFrameWeek_OnClick(self)
-	UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, self:GetID());
+	Lib_UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, self:GetID());
 	AccountantClassic_Profile["options"].weekstart = self:GetID();
 end
 
@@ -77,49 +79,42 @@ function AccountantClassicMoneyInfoFrame_Toggle()
 end
 
 function AccountantClassicOptionsIntroTip_Toggle()
-	if (AccountantClassic_Profile["options"].showintrotip == true) then
-		AccountantClassic_Profile["options"].showintrotip = false;
-	else
-		AccountantClassic_Profile["options"].showintrotip = true;
-	end
+	AccountantClassic_Profile["options"].showintrotip = not AccountantClassic_Profile["options"].showintrotip;
 end
 
 function AccountantClassicOptionsMoneyOnMinimap_Toggle()
-	if (AccountantClassic_Profile["options"].showmoneyonbutton == true) then
-		AccountantClassic_Profile["options"].showmoneyonbutton = false;
-	else
-		AccountantClassic_Profile["options"].showmoneyonbutton = true;
-	end
+	AccountantClassic_Profile["options"].showmoneyonbutton = not AccountantClassic_Profile["options"].showmoneyonbutton;
 end
 
 function AccountantClassicOptionsSessionOnMinimap_Toggle()
-	if (AccountantClassic_Profile["options"].showsessiononbutton == true) then
-		AccountantClassic_Profile["options"].showsessiononbutton = false;
-	else
-		AccountantClassic_Profile["options"].showsessiononbutton = true;
-	end
+	AccountantClassic_Profile["options"].showsessiononbutton = not AccountantClassic_Profile["options"].showsessiononbutton;
 end
 
 function AccountantClassicLDBDisplay_Toggle()
-	if (AccountantClassic_Profile["options"].LDBDisplaySessionInfo == true) then
-		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = false;
-	else
-		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = true;
-	end
+	AccountantClassic_Profile["options"].LDBDisplaySessionInfo = not AccountantClassic_Profile["options"].LDBDisplaySessionInfo;
 end
 
 function AccountantClassicOptionsCrossServer_Toggle()
-	if (AccountantClassic_Profile["options"].cross_server == true) then
-		AccountantClassic_Profile["options"].cross_server = false;
-	else
-		AccountantClassic_Profile["options"].cross_server = true;
-	end
+	AccountantClassic_Profile["options"].cross_server = not AccountantClassic_Profile["options"].cross_server;
 	
 	AccountantClassic_PopulateCharacterList();
 
-	if AccountantClassicFrame:IsVisible() then
+	if ( AccountantClassicFrame:IsVisible() ) then
 		AccountantClassic_OnShow();
 	end
+end
+
+function AccountantClassicOptionsTrackZone_Toggle()
+	AccountantClassic_Profile["options"].trackzone = not AccountantClassic_Profile["options"].trackzone;
+	if (AccountantClassic_Profile["options"].trackzone == false) then
+		AccountantClassicOptionsFrameToggleTrackSubZone:Disable();
+	else
+		AccountantClassicOptionsFrameToggleTrackSubZone:Enable();
+	end
+end
+
+function AccountantClassicOptionsTrackSubZone_Toggle()
+	AccountantClassic_Profile["options"].tracksubzone = not AccountantClassic_Profile["options"].tracksubzone;
 end
 
 function AccountantClassicMoneyInfoFrame_ResetPosition()
@@ -129,11 +124,11 @@ function AccountantClassicMoneyInfoFrame_ResetPosition()
 end
 
 function AccountantClassicOptionsCharacterDropDown_Init()
-	local info;
+	-- local info;
 	local serverkey, server_value, charkey, char_value;
 	for serverkey, server_value in pairs(Accountant_ClassicSaveData) do
 		for charkey, char_value in pairs(Accountant_ClassicSaveData[serverkey]) do
-			info = { };
+			local info = Lib_UIDropDownMenu_CreateInfo();
 			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
 				local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
 				local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
@@ -148,7 +143,7 @@ function AccountantClassicOptionsCharacterDropDown_Init()
 			info.arg1 = serverkey;
 			info.arg2 = charkey;
 			info.func = AccountantClassicOptionsCharacterDropDown_OnClick;
-			UIDropDownMenu_AddButton(info);
+			Lib_UIDropDownMenu_AddButton(info);
 		end
 	end
 end
@@ -158,7 +153,7 @@ function AccountantClassicOptionsCharacterDropDown_OnClick(self)
 	local selected_char  = self.arg2;
 	local faction_icon = "";
 	local class_color = "";
-	UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
+	Lib_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
 
 	if (Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction) then
 		local factionstr = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction;
@@ -197,19 +192,19 @@ function AccountantClassicOptionsDateDropDown_Init()
 		"dd/mm/yy",
 		"yy/mm/dd",
 	};
-	local info;
+	-- local info;
 	for i = 1, getn(options), 1 do
-		info = { };
+		local info = Lib_UIDropDownMenu_CreateInfo();
 		info.text = options[i];
 		info.value = i;
 		info.arg1 = i;
 		info.func = AccountantClassicOptionsDateDropDown_OnClick;
-		UIDropDownMenu_AddButton(info);
+		Lib_UIDropDownMenu_AddButton(info);
 	end
 end
 
 function AccountantClassicOptionsDateDropDown_OnClick(self, arg1)
-	UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, arg1);
+	Lib_UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, arg1);
 	AccountantClassic_Profile["options"].dateformat = arg1;
 end
 
