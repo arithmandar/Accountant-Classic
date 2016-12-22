@@ -14,6 +14,9 @@ Revision History:
     money info or only the current server.
   - Added NoTaint_UIDropDownMenu lib to prevent from UI taint issue
   - Added support to track on location of each incoming / outgoing money.
+  - Enhanced logs' shifting when a new day / week / month arrives.
+  - Enhanced date info showing on Accountant Classic frame when switching to 
+    different characters
 
 * v2.08.04 (Dec. 19, 2016)
 ==========================

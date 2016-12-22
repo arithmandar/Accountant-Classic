@@ -281,7 +281,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSource" inherits="GameFontHighlight">
+				<FontString name="$parentSource" parentKey="Source" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 							<Offset>
@@ -290,7 +290,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentIn" inherits="GameFontHighlight">
+				<FontString name="$parentIn" parentKey="In" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -299,7 +299,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOut" inherits="GameFontHighlight">
+				<FontString name="$parentOut" parentKey="Out" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -308,7 +308,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalIn" inherits="GameFontHighlightSmall">
+				<FontString name="$parentTotalIn" parentKey="TotalIn" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 							<Offset>
@@ -317,7 +317,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalInValue" inherits="NumberFontNormal">
+				<FontString name="$parentTotalInValue" parentKey="TotalInValue" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -326,7 +326,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalOut" inherits="GameFontHighlightSmall">
+				<FontString name="$parentTotalOut" parentKey="TotalOut" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 							<Offset>
@@ -335,7 +335,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalOutValue" inherits="NumberFontNormal">
+				<FontString name="$parentTotalOutValue" parentKey="TotalOutValue" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -344,7 +344,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalFlow" inherits="GameFontHighlightSmall">
+				<FontString name="$parentTotalFlow" parentKey="TotalFlow" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 							<Offset>
@@ -353,7 +353,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTotalFlowValue" inherits="NumberFontNormal">
+				<FontString name="$parentTotalFlowValue" parentKey="TotalFlowValue" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
 							<Offset>
@@ -362,7 +362,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentExtraValue" inherits="GameFontNormalSmall">
+				<FontString name="$parentExtraValue" parentKey="ExtraValue" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOPLEFT">
 							<Offset>
@@ -371,7 +371,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentExtra" inherits="GameFontHighlightSmall">
+				<FontString name="$parentExtra" parentKey="Extra" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentExtraValue" relativePoint="LEFT">
 							<Offset>

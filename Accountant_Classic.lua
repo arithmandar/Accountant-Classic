@@ -195,6 +195,9 @@ local function AccountantClassic_InitZoneDB()
 end
 
 local function AccountantClassic_InitOptions()
+	local cdate = date("%d/%m/%y");
+	local cmonth = date("%m");
+
 	if (Accountant_ClassicSaveData == nil) then
 		-- we should no longer need these after v2.07.00
 		--[[
@@ -512,15 +515,15 @@ function AccountantClassic_SetLabels(self)
 	if (AccountantClassic_CurrentTab == AC_TABS) then
 		AccountantClassicFrameResetButton:Hide();
 
-		AccountantClassicFrameSource:SetText(L["ACCLOC_CHAR"]);
-		AccountantClassicFrameIn:SetText(L["ACCLOC_MONEY"]);
-		AccountantClassicFrameOut:SetText(L["ACCLOC_UPDATED"]);
-		AccountantClassicFrameTotalIn:SetText(L["ACCLOC_TOT_IN"]..":");
-		AccountantClassicFrameTotalOut:SetText(L["ACCLOC_TOT_OUT"]..":");
-		AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_SUM"]..":");
-		AccountantClassicFrameTotalInValue:SetText("");
-		AccountantClassicFrameTotalOutValue:SetText("");
-		AccountantClassicFrameTotalFlowValue:SetText("");
+		AccountantClassicFrame.Source:SetText(L["ACCLOC_CHAR"]);
+		AccountantClassicFrame.In:SetText(L["ACCLOC_MONEY"]);
+		AccountantClassicFrame.Out:SetText(L["ACCLOC_UPDATED"]);
+		AccountantClassicFrame.TotalIn:SetText(L["ACCLOC_TOT_IN"]..":");
+		AccountantClassicFrame.TotalOut:SetText(L["ACCLOC_TOT_OUT"]..":");
+		AccountantClassicFrame.TotalFlow:SetText(L["ACCLOC_SUM"]..":");
+		AccountantClassicFrame.TotalInValue:SetText("");
+		AccountantClassicFrame.TotalOutValue:SetText("");
+		AccountantClassicFrame.TotalFlowValue:SetText("");
 		for i = 1, 18, 1 do
 			_G["AccountantClassicFrameRow"..i.."Title".."_Text"]:SetText("");
 			_G["AccountantClassicFrameRow"..i.."In".."_Text"]:SetText("");
@@ -533,12 +536,12 @@ function AccountantClassic_SetLabels(self)
 	else
 		AccountantClassicFrameResetButton:Show();
 
-		AccountantClassicFrameSource:SetText(L["ACCLOC_SOURCE"]);
-		AccountantClassicFrameIn:SetText(L["ACCLOC_IN"]);
-		AccountantClassicFrameOut:SetText(L["ACCLOC_OUT"]);
-		AccountantClassicFrameTotalIn:SetText(L["ACCLOC_TOT_IN"]..":");
-		AccountantClassicFrameTotalOut:SetText(L["ACCLOC_TOT_OUT"]..":");
-		AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
+		AccountantClassicFrame.Source:SetText(L["ACCLOC_SOURCE"]);
+		AccountantClassicFrame.In:SetText(L["ACCLOC_IN"]);
+		AccountantClassicFrame.Out:SetText(L["ACCLOC_OUT"]);
+		AccountantClassicFrame.TotalIn:SetText(L["ACCLOC_TOT_IN"]..":");
+		AccountantClassicFrame.TotalOut:SetText(L["ACCLOC_TOT_OUT"]..":");
+		AccountantClassicFrame.TotalFlow:SetText(L["ACCLOC_NET"]..":");
 
 		-- Row Labels (auto generate)
 		local InPos = 1;
@@ -667,16 +670,142 @@ function AccountantClassic_OnLoad(self)
 	ACC_Print(L["ACCLOC_LOADED"]);
 end
 
+local function AccountantClassic_LogsShifting()
+	-- Since we now (2016/12/17) supported to show specifc character or all characters' incoming / 
+	--   outgoing data in each logmode, we have to deal with the date / week / month's shifting for all
+	--   characters, not just the current one.
+	-- This should be check while addon loaded, and while logs updating, 
+	--   or while Accountant Classic frame is opened
+	local cdate = date("%d/%m/%y");
+	local cmonth = date("%m");
+	local serverkey, servervalue, charkey, charvalue;
+	for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
+		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+			-- we need lastsessiondate, codes should not be necessary once every player's all characters have this option value being set
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].lastsessiondate == nil) then
+				Accountant_ClassicSaveData[serverkey][charkey]["options"].lastsessiondate = Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"];
+			end
+			-- Check to see if the day has rolled over
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"] ~= cdate) then
+				-- It's a new day! clear out the day tab
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvday"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"];
+				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"]) then
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"] = { In = 0, Out = 0 };
+					end
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].In;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].Out;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].In = 0;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].Out = 0;
+				end
+				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
+					for mode, value in pairs(AccountantClassic_Data) do
+						AccountantClassic_Data[mode]["PrvDay"].In = AccountantClassic_Data[mode]["Day"].In;
+						AccountantClassic_Data[mode]["PrvDay"].Out = AccountantClassic_Data[mode]["Day"].Out;
+						AccountantClassic_Data[mode]["Day"].In = 0;
+						AccountantClassic_Data[mode]["Day"].Out = 0;
+					end
+				end
+				-- ZoneDB handling
+				-- drop out old PrvDay's data and reset it
+				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
+					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvDay"] = { };
+					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"]) do
+						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvDay"][kt] = vt;
+					end
+					-- then we need a fresh "Day"
+					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"] = { };
+					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
+						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"][v_logtype] = { };
+					end
+				end
+
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"] = cdate;
+			end
+
+			-- Check to see if the week has rolled over
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"] ~= AccountantClassic_WeekStart()) then
+				-- It's a new week! clear out the week tab
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvdateweek"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"];
+				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"]) then
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"] = { In = 0, Out = 0 };
+					end
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].In;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].Out;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].In = 0;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].Out = 0;
+				end
+				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
+					AccountantClassic_Data[mode]["PrvWeek"].In = AccountantClassic_Data[mode]["Week"].In;
+					AccountantClassic_Data[mode]["PrvWeek"].Out = AccountantClassic_Data[mode]["Week"].Out;
+					AccountantClassic_Data[mode]["Week"].In = 0;
+					AccountantClassic_Data[mode]["Week"].Out = 0;
+				end
+				-- ZoneDB handling
+				-- drop out old PrvDay's data and reset it
+				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
+					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvWeek"] = { };
+					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"]) do
+						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvWeek"][kt] = vt;
+					end
+					-- then we need a fresh "Week"
+					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"] = { };
+					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
+						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"][v_logtype] = { };
+					end
+				end
+
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"] = AccountantClassic_WeekStart();
+			end
+
+			-- Check to see if the month has rolled over
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"] ~= cmonth) then
+				-- It's a new month! clear out the month tab
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvmonth"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"];
+				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"]) then 
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"] = { In = 0, Out = 0};
+					end
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].In;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].Out;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].In = 0;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].Out = 0;
+				end
+				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
+					AccountantClassic_Data[mode]["PrvMonth"].In = AccountantClassic_Data[mode]["Month"].In;
+					AccountantClassic_Data[mode]["PrvMonth"].Out = AccountantClassic_Data[mode]["Month"].Out;
+					AccountantClassic_Data[mode]["Month"].In = 0;
+					AccountantClassic_Data[mode]["Month"].Out = 0;
+				end
+				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
+					-- ZoneDB handling
+					-- drop out old PrvDay's data and reset it
+					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvMonth"] = { };
+					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"]) do
+						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvMonth"][kt] = vt;
+					end
+					-- then we need a fresh "Month"
+					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"] = { };
+					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
+						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"][v_logtype] = { };
+					end
+				end
+
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"] = cmonth;
+			end
+		end
+	end
+end
+
 function AccountantClassic_LoadData()
+	local cdate = date("%d/%m/%y");
+	local cmonth = date("%m");
 	for key,value in pairs(AccountantClassic_Data) do
 		for modekey,mode in pairs(AccountantClassic_LogModes) do
 			AccountantClassic_Data[key][mode] = {In=0,Out=0};
 		end
 	end
-
-	local cdate = date("%d/%m/%y");
-	local cweek = "";
-	local cmonth = date("%m");
 
 	order = 1;
 	for key, value in pairs(AccountantClassic_Data) do
@@ -735,124 +864,7 @@ function AccountantClassic_LoadData()
 	AccountantClassic_LastSessionMoney = AccountantClassic_Profile["options"].totalcash;
 	AccountantClassic_Profile["options"].totalcash = GetMoney();
 
-	-- Since we now (2016/12/17) supported to show specifc character or all characters' incoming / 
-	-- outgoing data in each logmode, we have to deal with the date / week / month's rotating for all
-	-- characters, not just the current one.
-	local serverkey, servervalue, charkey, charvalue;
-	for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
-		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-			-- we need lastsessiondate, codes should not be necessary once every player's all characters have this option value being set
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].lastsessiondate == nil) then
-				Accountant_ClassicSaveData[serverkey][charkey]["options"].lastsessiondate = Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"];
-			end
-			-- Check to see if the day has rolled over
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"] ~= cdate) then
-				-- It's a new day! clear out the day tab
-				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvday"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"];
-				Accountant_ClassicSaveData[serverkey][charkey]["options"]["date"] = cdate;
-				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"]) then
-						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"] = { In = 0, Out = 0 };
-					end
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].In;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvDay"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].Out;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].In = 0;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Day"].Out = 0;
-				end
-				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
-					for mode, value in pairs(AccountantClassic_Data) do
-						AccountantClassic_Data[mode]["PrvDay"].In = AccountantClassic_Data[mode]["Day"].In;
-						AccountantClassic_Data[mode]["PrvDay"].Out = AccountantClassic_Data[mode]["Day"].Out;
-						AccountantClassic_Data[mode]["Day"].In = 0;
-						AccountantClassic_Data[mode]["Day"].Out = 0;
-					end
-				end
-				-- ZoneDB handling
-				-- drop out old PrvDay's data and reset it
-				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
-					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvDay"] = { };
-					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"]) do
-						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvDay"][kt] = vt;
-					end
-					-- then we need a fresh "Day"
-					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"] = { };
-					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
-						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"][v_logtype] = { };
-					end
-				end
-			end
-
-			-- Check to see if the week has rolled over
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"] ~= AccountantClassic_WeekStart()) then
-				-- It's a new week! clear out the week tab
-				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvdateweek"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"];
-				Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"] = AccountantClassic_WeekStart();
-				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"]) then
-						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"] = { In = 0, Out = 0 };
-					end
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].In;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].Out;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].In = 0;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].Out = 0;
-				end
-				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
-					AccountantClassic_Data[mode]["PrvWeek"].In = AccountantClassic_Data[mode]["Week"].In;
-					AccountantClassic_Data[mode]["PrvWeek"].Out = AccountantClassic_Data[mode]["Week"].Out;
-					AccountantClassic_Data[mode]["Week"].In = 0;
-					AccountantClassic_Data[mode]["Week"].Out = 0;
-				end
-				-- ZoneDB handling
-				-- drop out old PrvDay's data and reset it
-				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
-					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvWeek"] = { };
-					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"]) do
-						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvWeek"][kt] = vt;
-					end
-					-- then we need a fresh "Week"
-					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"] = { };
-					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
-						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"][v_logtype] = { };
-					end
-				end
-			end
-
-			-- Check to see if the month has rolled over
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"] ~= cmonth) then
-				-- It's a new month! clear out the month tab
-				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvmonth"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"];
-				Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"] = cmonth;
-				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"]) then 
-						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"] = { In = 0, Out = 0};
-					end
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].In;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].Out;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].In = 0;
-					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].Out = 0;
-				end
-				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
-					AccountantClassic_Data[mode]["PrvMonth"].In = AccountantClassic_Data[mode]["Month"].In;
-					AccountantClassic_Data[mode]["PrvMonth"].Out = AccountantClassic_Data[mode]["Month"].Out;
-					AccountantClassic_Data[mode]["Month"].In = 0;
-					AccountantClassic_Data[mode]["Month"].Out = 0;
-				end
-				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
-					-- ZoneDB handling
-					-- drop out old PrvDay's data and reset it
-					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvMonth"] = { };
-					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"]) do
-						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvMonth"][kt] = vt;
-					end
-					-- then we need a fresh "Month"
-					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"] = { };
-					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
-						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"][v_logtype] = { };
-					end
-				end
-			end
-		end
-	end
+	AccountantClassic_LogsShifting();
 	
 	AccountantClassic_Profile["options"].lastsessiondate = cdate;
 end
@@ -1132,8 +1144,8 @@ function AccountantClassic_WeekStart()
 		dt = date("*t",ct);
 		thisDay = dt["wday"];
 	end
-	cdate = date(nil,ct);
-	return string.sub(cdate,0,8);
+	local wdate = date(nil,ct);
+	return string.sub(wdate,0,8);
 end
 
 function AccountantClassicScrollBar_Update()
@@ -1175,14 +1187,13 @@ function AccountantClassicScrollBar_Update()
 end
 
 function AccountantClassic_OnShow(self)
-	-- Check to see if the day has rolled over
-	--tnt
-	--cdate = date();
-	local cdate = date ("%d/%m/%y");
-	cdate = string.sub(cdate,0,8);
-	local cmonth = date ("%m")
+	local cdate = date("%d/%m/%y");
+	local cmonth = date("%m");
+	local fs = _G["AccountantClassicFrameExtra"];
+	local fsv = _G["AccountantClassicFrameExtraValue"];
+	local prvday, prvdateweek, prvmonth;
 	
-
+--[[
 	if ( AccountantClassic_Profile["options"]["date"] ~= cdate ) then
 		-- Its a new day! clear out the day tab
 		for mode,value in pairs(AccountantClassic_Data) do
@@ -1217,7 +1228,8 @@ function AccountantClassic_OnShow(self)
 		end
 	end
 	AccountantClassic_Profile["options"]["month"] = cmonth;
-
+]]
+	AccountantClassic_LogsShifting();
 	AccountantClassic_SetLabels();
 	if ( AccountantClassic_CurrentTab ~= AC_TABS ) then
 		-- for all the tabs except for character tab
@@ -1256,6 +1268,9 @@ function AccountantClassic_OnShow(self)
 					local j = AC_SELECTED_CHAR_NUM;
 					local serverkey = AC_SCROLL_LIST[j][1];
 					local charkey = AC_SCROLL_LIST[j][2];
+					prvdateweek = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvdateweek or nil;
+					prvday = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvday or nil;
+					prvmonth = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvmonth or nil;
 					
 					if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
 						mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
@@ -1296,27 +1311,67 @@ function AccountantClassic_OnShow(self)
 			colIn.Text:SetText(AccountantClassic_GetFormattedValue(mIn));
 			colOut.Text:SetText(AccountantClassic_GetFormattedValue(mOut));
 		end
-		AccountantClassicFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalIn));
-		AccountantClassicFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalOut));
+		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalIn));
+		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalOut));
 		if (TotalOut > TotalIn) then
 			diff = TotalOut - TotalIn;
-			AccountantClassicFrameTotalFlow:SetText("|cFFFF3333"..L["ACCLOC_NETLOSS"]..":");
-			AccountantClassicFrameTotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
+			AccountantClassicFrame.TotalFlow:SetText("|cFFFF3333"..L["ACCLOC_NETLOSS"]..":");
+			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
 		else
 			if (TotalOut ~= TotalIn) then
 				diff = TotalIn - TotalOut;
-				AccountantClassicFrameTotalFlow:SetText("|cFF00FF00"..L["ACCLOC_NETPROF"]..":");
-				AccountantClassicFrameTotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
+				AccountantClassicFrame.TotalFlow:SetText("|cFF00FF00"..L["ACCLOC_NETPROF"]..":");
+				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
 			else
-				AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
-				AccountantClassicFrameTotalFlowValue:SetText("");
+				AccountantClassicFrame.TotalFlow:SetText(L["ACCLOC_NET"]..":");
+				AccountantClassicFrame.TotalFlowValue:SetText("");
 			end
 		end
 		-- Set row 18 to be empty so that the total row from all characters will be clean out
 		_G["AccountantClassicFrameRow18Title"].Text:SetText("");
 		_G["AccountantClassicFrameRow18In"].Text:SetText("");
-		
 
+		-- Extra info
+		if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Week")) then
+			fs:SetText(L["ACCLOC_WEEKSTART"]..":");
+			fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1));
+		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvWeek")) then
+			if (prvdateweek) then
+				fs:SetText(L["ACCLOC_WEEKSTART"]..":");
+				fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvdateweek"], 1));
+			else
+				fs:SetText("");
+				fsv:SetText("");
+			end
+		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Month")) then
+			local m = tonumber(AccountantClassic_Profile["options"]["month"]);
+			fs:SetText("");
+			fsv:SetText(months[m]);
+		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvMonth")) then
+			if (prvmonth) then
+				local m = tonumber(prvmonth);
+				fs:SetText("");
+				fsv:SetText(months[m]);
+			else
+				fs:SetText("");
+				fsv:SetText("");
+			end
+		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Day")) then
+			fs:SetText("");
+			fsv:SetText(AccountantClassic_ParseDateStrings(cdate, 2));
+		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvDay")) then
+			if (prvday) then
+				fs:SetText("");
+				fsv:SetText(AccountantClassic_ParseDateStrings(prvday, 2));
+			else
+				fs:SetText("");
+				fsv:SetText("");
+			end
+		else
+			fs:SetText("");
+			fsv:SetText("");
+		end
+		
 	else
 		-- all characters' tab
 		-- AccountantClassicFrame.ShowAll:Hide();
@@ -1359,69 +1414,29 @@ function AccountantClassic_OnShow(self)
 		end
 		AccountantClassicScrollBar_Update();
 
-		AccountantClassicFrameTotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allin));
-		AccountantClassicFrameTotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allout));
+		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allin));
+		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allout));
 		if (allout > allin) then
 			diff = allout - allin;
-			AccountantClassicFrameTotalFlow:SetText("|cFFFF3333"..L["ACCLOC_NETLOSS"]..":");
-			AccountantClassicFrameTotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
+			AccountantClassicFrame.TotalFlow:SetText("|cFFFF3333"..L["ACCLOC_NETLOSS"]..":");
+			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
 		else
 			if allout ~= allin then
 				diff = allin - allout;
-				AccountantClassicFrameTotalFlow:SetText("|cFF00FF00"..L["ACCLOC_NETPROF"]..":");
-				AccountantClassicFrameTotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
+				AccountantClassicFrame.TotalFlow:SetText("|cFF00FF00"..L["ACCLOC_NETPROF"]..":");
+				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
 			else
-				AccountantClassicFrameTotalFlow:SetText(L["ACCLOC_NET"]..":");
-				AccountantClassicFrameTotalFlowValue:SetText("");
+				AccountantClassicFrame.TotalFlow:SetText(L["ACCLOC_NET"]..":");
+				AccountantClassicFrame.TotalFlowValue:SetText("");
 			end
 		end
 		_G["AccountantClassicFrameRow18Title"].Text:SetText(L["ACCLOC_SUM"]);
 		_G["AccountantClassicFrameRow18In"].Text:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(alltotal));
 		
+		fs:SetText("");
+		fsv:SetText("");
 	end
 	SetPortraitTexture(AccountantClassicFramePortrait, "player");
-
-	-- Extra info
-	if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Week")) then
-		AccountantClassicFrameExtra:SetText(L["ACCLOC_WEEKSTART"]..":");
-		AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1));
-	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvWeek")) then
-		if (AccountantClassic_Profile["options"]["prvdateweek"]) then
-			AccountantClassicFrameExtra:SetText(L["ACCLOC_WEEKSTART"]..":");
-			AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvdateweek"], 1));
-		else
-			AccountantClassicFrameExtra:SetText("");
-			AccountantClassicFrameExtraValue:SetText("");
-		end
-	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Month")) then
-		local m = tonumber(AccountantClassic_Profile["options"]["month"]);
-		AccountantClassicFrameExtra:SetText("");
-		AccountantClassicFrameExtraValue:SetText(months[m]);
-	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvMonth")) then
-		if (AccountantClassic_Profile["options"]["prvmonth"]) then
-			local m = tonumber(AccountantClassic_Profile["options"]["prvmonth"]);
-			AccountantClassicFrameExtra:SetText("");
-			AccountantClassicFrameExtraValue:SetText(months[m]);
-		else
-			AccountantClassicFrameExtra:SetText("");
-			AccountantClassicFrameExtraValue:SetText("");
-		end
-	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Day")) then
-		AccountantClassicFrameExtra:SetText("");
-		AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(cdate, 2));
-	elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvDay")) then
-		if (AccountantClassic_Profile["options"]["prvday"]) then
-			AccountantClassicFrameExtra:SetText("");
-			AccountantClassicFrameExtraValue:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvday"], 2));
-		else
-			AccountantClassicFrameExtra:SetText("");
-			AccountantClassicFrameExtraValue:SetText("");
-		end
-	else
-		AccountantClassicFrameExtra:SetText("");
-		AccountantClassicFrameExtraValue:SetText("");
-	end
-
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassic_CurrentTab);
 	
 end
@@ -1568,6 +1583,10 @@ end
 
 function AccountantClassic_UpdateLog()
 	local cdate = date("%d/%m/%y");
+	local cmonth = date("%m");
+
+	AccountantClassic_LogsShifting();
+
 	local zoneText = GetZoneText();
 	if ( not IsInInstance() ) then -- For the case when player is in dungeon or raid, track on subzone make less sense
 		if (AccountantClassic_Profile["options"].tracksubzone == true and GetSubZoneText() ~= "" ) then
