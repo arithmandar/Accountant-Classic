@@ -737,10 +737,12 @@ local function AccountantClassic_LogsShifting()
 					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"].Out = 0;
 				end
 				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
-					AccountantClassic_Data[mode]["PrvWeek"].In = AccountantClassic_Data[mode]["Week"].In;
-					AccountantClassic_Data[mode]["PrvWeek"].Out = AccountantClassic_Data[mode]["Week"].Out;
-					AccountantClassic_Data[mode]["Week"].In = 0;
-					AccountantClassic_Data[mode]["Week"].Out = 0;
+					for mode, value in pairs(AccountantClassic_Data) do
+						AccountantClassic_Data[mode]["PrvWeek"].In = AccountantClassic_Data[mode]["Week"].In;
+						AccountantClassic_Data[mode]["PrvWeek"].Out = AccountantClassic_Data[mode]["Week"].Out;
+						AccountantClassic_Data[mode]["Week"].In = 0;
+						AccountantClassic_Data[mode]["Week"].Out = 0;
+					end
 				end
 				-- ZoneDB handling
 				-- drop out old PrvDay's data and reset it
@@ -773,10 +775,12 @@ local function AccountantClassic_LogsShifting()
 					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"].Out = 0;
 				end
 				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
-					AccountantClassic_Data[mode]["PrvMonth"].In = AccountantClassic_Data[mode]["Month"].In;
-					AccountantClassic_Data[mode]["PrvMonth"].Out = AccountantClassic_Data[mode]["Month"].Out;
-					AccountantClassic_Data[mode]["Month"].In = 0;
-					AccountantClassic_Data[mode]["Month"].Out = 0;
+					for mode, value in pairs(AccountantClassic_Data) do
+						AccountantClassic_Data[mode]["PrvMonth"].In = AccountantClassic_Data[mode]["Month"].In;
+						AccountantClassic_Data[mode]["PrvMonth"].Out = AccountantClassic_Data[mode]["Month"].Out;
+						AccountantClassic_Data[mode]["Month"].In = 0;
+						AccountantClassic_Data[mode]["Month"].Out = 0;
+					end
 				end
 				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
 					-- ZoneDB handling
