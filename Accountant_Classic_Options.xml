@@ -242,7 +242,7 @@ $Id$
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentWeek" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentWeek" inherits="Lib_UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCharacterDropDown" relativePoint="TOPLEFT">
 						<Offset>

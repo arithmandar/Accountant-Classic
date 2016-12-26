@@ -1875,6 +1875,23 @@ function AccountantClassic_ParseDateStrings(s, typ)
 	return sdate;
 end
 
+local function orderednext(t, n)
+	local key = t[t.__next]
+	
+	if not key then return end
+	t.__next = t.__next + 1
+	return key, t.__source[key]
+end
+local function orderedpairs(t, f)
+	local keys, kn = {__source = t, __next = 1}, 1
+	
+	for k in pairs(t) do
+		keys[kn], kn = k, kn + 1
+	end
+	table.sort(keys, f)
+	return orderednext, keys
+end
+
 function AccountantClassic_LogTypeOnShow(self)
 	if (not AccountantClassic_LogModes[AccountantClassic_CurrentTab]) then
 		return;
@@ -1893,7 +1910,7 @@ function AccountantClassic_LogTypeOnShow(self)
 			local charkey = AccountantClassic_Player;
 
 			if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
-				for k_zone, v_zone in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType]) do
+				for k_zone, v_zone in orderedpairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType]) do
 					mIn = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["In"];
 					mOut = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["Out"];
 					if (cashflow == "In" and mIn > 0) then
@@ -1914,7 +1931,7 @@ function AccountantClassic_LogTypeOnShow(self)
 				local charkey = AC_SCROLL_LIST[charindex][2];
 
 				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
-					for k_zone, v_zone in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType]) do
+					for k_zone, v_zone in orderedpairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType]) do
 						mIn = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["In"];
 						mOut = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["Out"];
 						if (cashflow == "In" and mIn > 0) then

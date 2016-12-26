@@ -6,7 +6,8 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("Accountant_Classic");
 local L = LibStub("AceLocale-3.0"):GetLocale("Accountant_Classic");
 local LibDialog = LibStub("LibDialog-1.0");
 
-ACCOUNTANT_OPTIONS_TITLE = ACCLOC_OPTS;
+local ACC_WEEKDAYS = { WEEKDAY_SUNDAY, WEEKDAY_MONDAY, WEEKDAY_TUESDAY, WEEKDAY_WEDNESDAY, WEEKDAY_THURSDAY, WEEKDAY_FRIDAY, WEEKDAY_SATURDAY };
+--local ACC_WEEKSTART = ACC_WEEKDAYS[1];
 
 function AccountantClassicOptions_Toggle()
 	if(InterfaceOptionsFrame:IsVisible()) then
@@ -39,8 +40,8 @@ function AccountantClassicOptions_OnShow()
 	AccountantClassicOptionsFrameToggleTrackZone:SetChecked(AccountantClassic_Profile["options"].trackzone);
 	AccountantClassicOptionsFrameToggleTrackSubZone:SetChecked(AccountantClassic_Profile["options"].tracksubzone);
 	--AccountantSliderButtonPos:SetValue(AccountantClassic_Profile["options"].buttonpos);
-	UIDropDownMenu_Initialize(AccountantClassicOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
-	UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
+	Lib_UIDropDownMenu_Initialize(AccountantClassicOptionsFrameWeek, AccountantClassicOptionsFrameWeek_Init);
+	Lib_UIDropDownMenu_SetSelectedID(AccountantClassicOptionsFrameWeek, AccountantClassic_Profile["options"].weekstart);
 	Lib_UIDropDownMenu_Initialize(AccountantClassicOptionsFrameCharacterDropDown, AccountantClassicOptionsCharacterDropDown_Init);
 	Lib_UIDropDownMenu_Initialize(AccountantClassicOptionsFrameDateDropDown, AccountantClassicOptionsDateDropDown_Init);
 	Lib_UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, AccountantClassic_Profile["options"].dateformat);
@@ -53,13 +54,12 @@ function AccountantClassicOptions_OnHide(self)
 end
 
 function AccountantClassicOptionsFrameWeek_Init()
-	-- local info = Lib_UIDropDownMenu_CreateInfo();
-	local Weekdays = { WEEKDAY_SUNDAY, WEEKDAY_MONDAY, WEEKDAY_TUESDAY, WEEKDAY_WEDNESDAY, WEEKDAY_THURSDAY, WEEKDAY_FRIDAY, WEEKDAY_SATURDAY };
-	for i = 1, #Weekdays do
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = Weekdays[i];
+	for i = 1, #ACC_WEEKDAYS do
+		local info = Lib_UIDropDownMenu_CreateInfo();
+		info.text = ACC_WEEKDAYS[i];
 		info.func = AccountantClassicOptionsFrameWeek_OnClick;
-		UIDropDownMenu_AddButton(info);
+		info.arg1 = i;
+		Lib_UIDropDownMenu_AddButton(info, 1);
 	end
 end
 
@@ -132,7 +132,7 @@ function AccountantClassicOptionsCharacterDropDown_Init()
 			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
 				local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
 				local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
-				info.icon = faction_icon
+				info.icon = faction_icon;
 			end
 			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
 				local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
