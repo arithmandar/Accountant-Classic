@@ -1,8 +1,0 @@
-2015-06-23  James D. Callahan III  <jcallahan@curse.com>
-
-[4804cf526bbd] [6.2.0.1]
-* LibDialog-1.0.toc:
-
-Update ToC Interface to 60200.
-
-
