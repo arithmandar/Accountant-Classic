@@ -70,6 +70,12 @@ L["ACCLOC_CHARREMOVEDONE"] = "|cffffffff\"%s - %s|cffffffff\" 의 데이터가 �
 L["ACCLOC_DATEFORMAT"] = "날짜 형식 선택:"
 L["ACCLOC_DATEFORMAT_TIP"] = "날짜 형식은 총 합계 또는 주 탭에서 확인하세요."
 L["ACCLOC_LDBINFOTYPE"] = "접속한 캐릭터의 골드 수입/지출 내역을 LDB에 표시합니다."
+L["ACCLOC_CROSSSERVER"] = "모든 서버의 캐릭터 정보를 표시"
+L["ACCLOC_CROSSSERVER_TIP"] = "전체 서버의 모든 캐릭터의 소지금 정보를 표시합니다. 현재 접속중인 서버의 캐릭터 정보만 숨길 수 있습니다."
+L["ACCLOC_TRACKZONE"] = "지역에 대한 수입 및 지출 내역을 기록"
+L["ACCLOC_TRACKZONE_TIP"] = "지역에 따른 수입과 지출 내역을 기록합니다. 마우스를 가져다 대어 그 내역을 확인할 수 있습니다."
+L["ACCLOC_TRACKSUBZONE"] = "세부지역 정보까지 기록"
+L["ACCLOC_TRACKSUBZONE_TIP"] = "세부지역에 대한 수입, 지출내역을 모두 기록합니다. 예) 수라마르 - 주문 성소"
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "\"%s\" 의 데이터를 삭제합니까?"
@@ -82,8 +88,8 @@ L["ACCLOC_CENT"] = "코퍼"
 L["ACCLOC_ABOUT"] = "대하여"
 L["ACCLOC_CONFLICT"] = "충돌하는 애드온을 발견 - |cFFFF0000Accountant|r 애드온을 사용중입니다."
 L["ACCLOC_CLEANUPACCOUNTANT"] = "데이터 충돌을 해결하기 위하여 |cFF00FF00AccountantClassic_CleanUpAccountantDB()|r 함수를 수동으로 호출하였습니다. 확인 버튼을 누르면 UI를 재시작합니다."
--- L["ACCLOC_SHOWALL"] = ""
--- L["ACCLOC_SHOWALLTIP"] = ""
+L["ACCLOC_SHOWALL"] = "모든 캐릭터 표시"
+L["ACCLOC_SHOWALLTIP"] = "모든 캐릭터의 수입과 지출 내역을 표시합니다."
 
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"] = "Accountant"

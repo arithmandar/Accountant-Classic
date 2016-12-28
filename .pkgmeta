@@ -7,17 +7,28 @@ manual-changelog:
 enable-nolib-creation: yes
 
 externals:
-    Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
-    Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
-    Libs/AceConsole-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
-    Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
-    Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
-    Libs/LibAboutPanel: https://repos.curseforge.com/wow/libaboutpanel
-    Libs/LibDataBroker-1.1: https://repos.wowace.com/wow/libdatabroker-1-1
-    Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
-    Libs/LibDialog-1.0: https://repos.wowace.com/wow/libdialog-1-0
-    Libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
-    Libs/NoTaint_UIDropDownMenu: svn://svn.wowinterface.com/NoTaint_UIDropDownMenu_Update-1134/trunk
+    Libs/AceAddon-3.0: 
+        url: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+    Libs/AceDB-3.0: 
+        url: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
+    Libs/AceConsole-3.0: 
+        url: https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
+    Libs/AceLocale-3.0: 
+        url: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
+    Libs/CallbackHandler-1.0: 
+        url: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+    Libs/LibAboutPanel: 
+        url: https://repos.curseforge.com/wow/libaboutpanel
+    Libs/LibDataBroker-1.1: 
+        url: https://repos.wowace.com/wow/libdatabroker-1-1
+    Libs/LibDBIcon-1.0: 
+        url: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+    Libs/LibDialog-1.0: 
+        url: https://repos.wowace.com/wow/libdialog-1-0
+    Libs/LibStub: 
+        url: https://repos.wowace.com/wow/libstub/trunk
+    Libs/NoTaint_UIDropDownMenu: 
+        url: svn://svn.wowinterface.com/NoTaint_UIDropDownMenu_Update-1134/trunk
 
 ignore:
     - Images/PSD

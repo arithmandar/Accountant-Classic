@@ -6,11 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.08.06 (Dec. XX, 2016)
+* v2.08.06 (Dec. 29, 2016)
 ==========================
   - lib updated: NoTaint_UIDropDownMenu
   - Changed week start settings' dropdown to use NoTaint_UIDropDownMenu
   - Sorted the location - in/- out information
+  - Translation update:
+    - Korean (next96)
 
 * v2.08.05 (Dec. 25, 2016)
 ==========================

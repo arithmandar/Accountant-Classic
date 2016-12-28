@@ -85,9 +85,9 @@ L["ACCLOC_SILVER"] = "银"
 L["ACCLOC_CENT"] = "铜"
 L["ACCLOC_ABOUT"] = "关于"
 L["ACCLOC_CONFLICT"] = "侦测到冲突的插件 - |cFFFF0000Accountant|r。\n它已被停止启用，按下确定按键以重新载入游戏。"
-L["ACCLOC_CLEANUPACCOUNTANT"] = "您以手动执行了以下函式\n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r\n以清除在 "Accountant" 插件里冲突的资料。\n现在请按下确定按键以重新载入游戏。 "
--- L["ACCLOC_SHOWALL"] = ""
--- L["ACCLOC_SHOWALLTIP"] = ""
+L["ACCLOC_CLEANUPACCOUNTANT"] = "您以手动执行了以下函式\n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r\n以清除在 \"Accountant\" 插件里冲突的资料。\n现在请按下确定按键以重新载入游戏。 "
+L["ACCLOC_SHOWALL"] = "显示所有角色"
+L["ACCLOC_SHOWALLTIP"] = "显示所有角色的收入与支出加总"
 
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"] = "Accountant Classic"
