@@ -47,6 +47,8 @@ L["ACCLOC_WEEK"]		= "This Week"
 L["ACCLOC_PRVWEEK"]		= "Prv. Week"
 L["ACCLOC_MONTH"]		= "This Month"
 L["ACCLOC_PRVMON"]		= "Prv. Month"
+L["ACCLOC_YEAR"]		= "This Year"
+L["ACCLOC_PRVYEAR"]		= "Prv. Year"
 L["ACCLOC_TOTAL"]		= "Total"
 L["ACCLOC_CHARS"]		= "All Chars"
 

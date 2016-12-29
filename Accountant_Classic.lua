@@ -39,6 +39,8 @@ local AccountantClassic_CursorHasItem_old;
 
 local AccountantClassic_Version = GetAddOnMetadata("Accountant_Classic", "Version");
 --AccountantClassic_Disabled = false;
+-- NewDB
+local AC_NewDB = fales;
 local AccountantClassic_LogType = "";
 local AccountantClassic_CurrentMoney = 0;
 local AccountantClassic_LastSessionMoney = 0;
@@ -46,11 +48,13 @@ local AccountantClassic_LastMoney = 0;
 local AccountantClassic_Verbose = nil;
 local AccountantClassic_GotName = false;
 local AccountantClassic_CurrentTab = 1;
-local AccountantClassic_LogModes = {"Session", "Day", "PrvDay", "Week", "PrvWeek", "Month", "PrvMonth", "Total" };
-local AccountantClassic_LogTypes = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"};
-local AC_SCROLL_LIST = {};
+local AC_LOGMODS = {"Session", "Day", "PrvDay", "Week", "PrvWeek", "Month", "PrvMonth", "Year", "PrvYear", "Total" };
+local AC_LOGTYPES = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"};
+-- Number of Accountant Classic tabs; also the tab number of "All Character"
+local AC_TABS = #AC_LOGMODS + 1;
+local AC_CHARSCROLL_LIST = {};
 local AC_CURR_LINES = 0;
-local AC_CHAR_LINES = 17;
+local AC_CHAR_LINES = 17; -- Maximum lines for characters to be displayed. We have 18 lines of space but we are using the 18th line to present the total. 
 local AC_SELECTED_CHAR_NUM = 1;
 
 local AccountantClassic_Server = GetRealmName();
@@ -61,12 +65,8 @@ local isInLockdown = false;
 local AC_MNYSTR = nil;
 local AC_SHOWALLCHARS = false;
 
-local months = {CalendarGetMonthNames()};
--- Number of Accountant Classic tabs; also the tab number of "All Character"
-local AC_TABS = #AccountantClassic_LogModes + 1;
+local AC_MONTHS = { CalendarGetMonthNames() };
 
--- NewDB
-local AC_NewDB = fales;
 
 local AccountantClassic_Data = {
 		["TRAIN"] = 	{Title = L["ACCLOC_TRAIN"]};
@@ -89,6 +89,7 @@ local AccountantClassic_Data = {
 
 local cdate = date("%d/%m/%y");
 local cmonth = date("%m");
+local cyear = date("%Y");
 
 local function TableIndex(t,val)
     for k,v in ipairs(t) do 
@@ -112,6 +113,8 @@ local AccountantClassicDefaultOptions = {
 	month = cmonth,
 	-- prvmonth,
 	weekstart = 1, 
+	curryear = cyear;
+	-- prvyear,
 	totalcash = 0,
 	moneyinfoframe_x = 10,
 	moneyinfoframe_y = -80,
@@ -185,9 +188,11 @@ local function AccountantClassic_InitZoneDB()
 		Accountant_ClassicZoneDB[AccountantClassic_Server][AccountantClassic_Player] = { 
 			data = { },
 		};
-		for k_logmode, v_logmode in pairs(AccountantClassic_LogModes) do
+	end
+	for k_logmode, v_logmode in pairs(AC_LOGMODS) do
+		if (Accountant_ClassicZoneDB[AccountantClassic_Server][AccountantClassic_Player]["data"][v_logmode] == nil) then
 			Accountant_ClassicZoneDB[AccountantClassic_Server][AccountantClassic_Player]["data"][v_logmode] = { };
-			for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
+			for k_logtype, v_logtype in pairs(AC_LOGTYPES) do
 				Accountant_ClassicZoneDB[AccountantClassic_Server][AccountantClassic_Player]["data"][v_logmode][v_logtype] = { };
 			end
 		end
@@ -197,6 +202,7 @@ end
 local function AccountantClassic_InitOptions()
 	local cdate = date("%d/%m/%y");
 	local cmonth = date("%m");
+	local cyear = date("%Y");
 
 	if (Accountant_ClassicSaveData == nil) then
 		-- we should no longer need these after v2.07.00
@@ -314,6 +320,9 @@ local function AccountantClassic_InitOptions()
 	end
 	if (AccountantClassic_Profile["options"].tracksubzone == nil) then
 		AccountantClassic_Profile["options"].tracksubzone = true;
+	end
+	if (AccountantClassic_Profile["options"].curryear == nil) then
+		AccountantClassic_Profile["options"].curryear = cyear;
 	end
 
 	AccountantClassic_InitZoneDB();
@@ -561,33 +570,24 @@ function AccountantClassic_SetLabels(self)
 end
 
 local function AccountantClassic_SettleTabText()
-	AccountantClassicFrameTab1:SetText(L["ACCLOC_SESS"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab1, 20);
-	
-	AccountantClassicFrameTab2:SetText(L["ACCLOC_DAY"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab2, 20);
-	
-	AccountantClassicFrameTab3:SetText(L["ACCLOC_PRVDAY"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab3, 20);
-	
-	AccountantClassicFrameTab4:SetText(L["ACCLOC_WEEK"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab4, 20);
-	
-	AccountantClassicFrameTab5:SetText(L["ACCLOC_PRVWEEK"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab5, 20);
-	
-	AccountantClassicFrameTab6:SetText(L["ACCLOC_MONTH"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab6, 20);
-	
-	AccountantClassicFrameTab7:SetText(L["ACCLOC_PRVMON"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab7, 20);
+	local TabText = {
+		L["ACCLOC_SESS"],
+		L["ACCLOC_DAY"],
+		L["ACCLOC_PRVDAY"],
+		L["ACCLOC_WEEK"],
+		L["ACCLOC_PRVWEEK"],
+		L["ACCLOC_MONTH"],
+		L["ACCLOC_PRVMON"],
+		L["ACCLOC_YEAR"],
+		L["ACCLOC_PRVYEAR"],
+		L["ACCLOC_TOTAL"],
+		L["ACCLOC_CHARS"],
+	};
+	for i = 1, AC_TABS do
+		_G["AccountantClassicFrameTab"..i]:SetText(TabText[i]);
+		PanelTemplates_TabResize(_G["AccountantClassicFrameTab"..i], 25);
+	end
 
-	AccountantClassicFrameTab8:SetText(L["ACCLOC_TOTAL"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab8, 20);
-
-	AccountantClassicFrameTab9:SetText(L["ACCLOC_CHARS"]);
-	PanelTemplates_TabResize(AccountantClassicFrameTab9, 25);
-	
 	PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
@@ -597,20 +597,20 @@ function AccountantClassic_PopulateCharacterList()
 	local i = 1;
 	local serverkey, servervalue, charkey, charvalue;
 
-	if (#AC_SCROLL_LIST > 0) then
-		AC_SCROLL_LIST = {};
+	if (#AC_CHARSCROLL_LIST > 0) then
+		AC_CHARSCROLL_LIST = {};
 	end
 	if (AccountantClassic_Profile["options"].cross_server) then
 		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
 			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-				AC_SCROLL_LIST[i] = { serverkey, charkey };
+				AC_CHARSCROLL_LIST[i] = { serverkey, charkey };
 				i = i + 1;
 			end
 		end
 	else
 		serverkey = AccountantClassic_Server;
 		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-			AC_SCROLL_LIST[i] = { serverkey, charkey };
+			AC_CHARSCROLL_LIST[i] = { serverkey, charkey };
 			i = i + 1;
 		end
 	end
@@ -631,8 +631,8 @@ end
 
 local function AccountantClassicFrameCharacterDropDown_Setup()
 	Lib_UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
-	for i = 1, #AC_SCROLL_LIST do
-		if (AccountantClassic_Server == AC_SCROLL_LIST[i][1] and AccountantClassic_Player == AC_SCROLL_LIST[i][2]) then
+	for i = 1, #AC_CHARSCROLL_LIST do
+		if (AccountantClassic_Server == AC_CHARSCROLL_LIST[i][1] and AccountantClassic_Player == AC_CHARSCROLL_LIST[i][2]) then
 			AC_SELECTED_CHAR_NUM = i;
 		end
 	end
@@ -678,6 +678,7 @@ local function AccountantClassic_LogsShifting()
 	--   or while Accountant Classic frame is opened
 	local cdate = date("%d/%m/%y");
 	local cmonth = date("%m");
+	local cyear = date("%Y");
 	local serverkey, servervalue, charkey, charvalue;
 	for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
 		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
@@ -708,14 +709,14 @@ local function AccountantClassic_LogsShifting()
 				end
 				-- ZoneDB handling
 				-- drop out old PrvDay's data and reset it
-				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
+				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey] and Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"]) then
 					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvDay"] = { };
 					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"]) do
 						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvDay"][kt] = vt;
 					end
 					-- then we need a fresh "Day"
 					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"] = { };
-					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
+					for k_logtype, v_logtype in pairs(AC_LOGTYPES) do
 						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Day"][v_logtype] = { };
 					end
 				end
@@ -728,6 +729,9 @@ local function AccountantClassic_LogsShifting()
 				-- It's a new week! clear out the week tab
 				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvdateweek"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["dateweek"];
 				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"]) then
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Week"] = { In = 0, Out = 0 };
+					end
 					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"]) then
 						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvWeek"] = { In = 0, Out = 0 };
 					end
@@ -746,14 +750,14 @@ local function AccountantClassic_LogsShifting()
 				end
 				-- ZoneDB handling
 				-- drop out old PrvDay's data and reset it
-				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
+				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey] and Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"]) then
 					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvWeek"] = { };
 					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"]) do
 						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvWeek"][kt] = vt;
 					end
 					-- then we need a fresh "Week"
 					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"] = { };
-					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
+					for k_logtype, v_logtype in pairs(AC_LOGTYPES) do
 						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Week"][v_logtype] = { };
 					end
 				end
@@ -766,6 +770,9 @@ local function AccountantClassic_LogsShifting()
 				-- It's a new month! clear out the month tab
 				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvmonth"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"];
 				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"]) then 
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Month"] = { In = 0, Out = 0};
+					end
 					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"]) then 
 						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvMonth"] = { In = 0, Out = 0};
 					end
@@ -782,7 +789,7 @@ local function AccountantClassic_LogsShifting()
 						AccountantClassic_Data[mode]["Month"].Out = 0;
 					end
 				end
-				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
+				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey] and Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"]) then
 					-- ZoneDB handling
 					-- drop out old PrvDay's data and reset it
 					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvMonth"] = { };
@@ -791,12 +798,53 @@ local function AccountantClassic_LogsShifting()
 					end
 					-- then we need a fresh "Month"
 					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"] = { };
-					for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
+					for k_logtype, v_logtype in pairs(AC_LOGTYPES) do
 						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Month"][v_logtype] = { };
 					end
 				end
 
 				Accountant_ClassicSaveData[serverkey][charkey]["options"]["month"] = cmonth;
+			end
+
+			-- Check to see if the year has rolled over
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["curryear"] ~= cyear) then
+				-- It's a new year! clear out the year tab
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["prvyear"] = Accountant_ClassicSaveData[serverkey][charkey]["options"]["curryear"];
+				for mode, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Year"]) then 
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Year"] = { In = 0, Out = 0};
+					end
+					if (not Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvYear"]) then 
+						Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvYear"] = { In = 0, Out = 0};
+					end
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvYear"].In = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Year"].In;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["PrvYear"].Out = Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Year"].Out;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Year"].In = 0;
+					Accountant_ClassicSaveData[serverkey][charkey]["data"][mode]["Year"].Out = 0;
+				end
+				if (serverkey == AccountantClassic_Server and charkey == AccountantClassic_Player) then
+					for mode, value in pairs(AccountantClassic_Data) do
+						AccountantClassic_Data[mode]["PrvYear"].In = AccountantClassic_Data[mode]["Year"].In;
+						AccountantClassic_Data[mode]["PrvYear"].Out = AccountantClassic_Data[mode]["Year"].Out;
+						AccountantClassic_Data[mode]["Year"].In = 0;
+						AccountantClassic_Data[mode]["Year"].Out = 0;
+					end
+				end
+				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey] and Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Year"]) then
+					-- ZoneDB handling
+					-- drop out old PrvDay's data and reset it
+					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvYear"] = { };
+					for kt, vt in pairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Year"]) do
+						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["PrvYear"][kt] = vt;
+					end
+					-- then we need a fresh "Year"
+					Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Year"] = { };
+					for k_logtype, v_logtype in pairs(AC_LOGTYPES) do
+						Accountant_ClassicZoneDB[serverkey][charkey]["data"]["Year"][v_logtype] = { };
+					end
+				end
+
+				Accountant_ClassicSaveData[serverkey][charkey]["options"]["curryear"] = cyear;
 			end
 		end
 	end
@@ -804,9 +852,8 @@ end
 
 function AccountantClassic_LoadData()
 	local cdate = date("%d/%m/%y");
-	local cmonth = date("%m");
-	for key,value in pairs(AccountantClassic_Data) do
-		for modekey,mode in pairs(AccountantClassic_LogModes) do
+	for key, value in pairs(AccountantClassic_Data) do
+		for modekey,mode in pairs(AC_LOGMODS) do
 			AccountantClassic_Data[key][mode] = {In=0,Out=0};
 		end
 	end
@@ -824,7 +871,7 @@ function AccountantClassic_LoadData()
 				};
 			end
 		end
-		for modekey,mode in pairs(AccountantClassic_LogModes) do
+		for modekey,mode in pairs(AC_LOGMODS) do
 			if (AccountantClassic_Profile["data"][key][mode] == nil or mode == "Session") then
 				AccountantClassic_Profile["data"][key][mode] = {In=0, Out=0};
 			end
@@ -859,7 +906,7 @@ function AccountantClassic_LoadData()
 	-- ZoneDB handling
 	-- Reset session DB
 	Accountant_ClassicZoneDB[AccountantClassic_Server][AccountantClassic_Player]["data"]["Session"] = { };
-	for k_logtype, v_logtype in pairs(AccountantClassic_LogTypes) do
+	for k_logtype, v_logtype in pairs(AC_LOGTYPES) do
 		Accountant_ClassicZoneDB[AccountantClassic_Server][AccountantClassic_Player]["data"]["Session"][v_logtype] = { };
 	end
 	
@@ -1113,9 +1160,9 @@ function AccountantClassic_GetFormattedValue(amount)
 	local silver = floor((amount - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = mod(amount, COPPER_PER_SILVER);
 	
-	local TMP_GOLD_AMOUNT_TEXTURE = "%s\124TInterface\\MoneyFrame\\UI-GoldIcon:%d:%d:2:0\124t";
-	local TMP_SILVER_AMOUNT_TEXTURE = "%02d\124TInterface\\MoneyFrame\\UI-SilverIcon:%d:%d:2:0\124t";
-	local TMP_COPPER_AMOUNT_TEXTURE = "%02d\124TInterface\\MoneyFrame\\UI-CopperIcon:%d:%d:2:0\124t";
+	local TMP_GOLD_AMOUNT_TEXTURE = "%s|TInterface\\MoneyFrame\\UI-GoldIcon:%d:%d:2:0|t";
+	local TMP_SILVER_AMOUNT_TEXTURE = "%02d|TInterface\\MoneyFrame\\UI-SilverIcon:%d:%d:2:0|t";
+	local TMP_COPPER_AMOUNT_TEXTURE = "%02d|TInterface\\MoneyFrame\\UI-CopperIcon:%d:%d:2:0|t";
 	if (gold >0) then
 		return format(TMP_GOLD_AMOUNT_TEXTURE.." "..TMP_SILVER_AMOUNT_TEXTURE.." "..TMP_COPPER_AMOUNT_TEXTURE, goldDisplay, 0, 0, silver, 0, 0, copper, 0, 0);
 	elseif (silver >0) then 
@@ -1131,7 +1178,7 @@ function AccountantClassic_GetFormattedCurrency(currencyID)
 	local name, amount, icon = GetCurrencyInfo(currencyID);
 	
 	if (amount >0) then
-		local CURRENCY_TEXTURE = "%s\124T"..icon..":%d:%d:2:0\124t";
+		local CURRENCY_TEXTURE = "%s|T"..icon..":%d:%d:2:0|t";
 		return format(CURRENCY_TEXTURE.." ", BreakUpLargeNumbers(amount), 0, 0);
 	else
 		return "";
@@ -1160,8 +1207,8 @@ function AccountantClassicScrollBar_Update()
 		lineplusoffset = i + FauxScrollFrame_GetOffset(AccountantClassicScrollBar);
 		if (lineplusoffset <= AC_CURR_LINES) then
 			local player_text, factionstr, faction_icon, classToken, class_color;
-			local serverkey = AC_SCROLL_LIST[lineplusoffset][1];
-			local charkey = AC_SCROLL_LIST[lineplusoffset][2];
+			local serverkey = AC_CHARSCROLL_LIST[lineplusoffset][1];
+			local charkey = AC_CHARSCROLL_LIST[lineplusoffset][2];
 			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
 				factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
 				faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s";
@@ -1193,6 +1240,7 @@ end
 function AccountantClassic_OnShow(self)
 	local cdate = date("%d/%m/%y");
 	local cmonth = date("%m");
+	local cyear = date("%Y");
 	local fs = _G["AccountantClassicFrameExtra"];
 	local fsv = _G["AccountantClassicFrameExtraValue"];
 	local prvday, prvdateweek, prvmonth;
@@ -1243,7 +1291,7 @@ function AccountantClassic_OnShow(self)
 				_G["AccountantClassicCharacterEntry"..i]:Hide();
 			end
 		end
-		if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
+		if (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "Session")) then
 			AccountantClassicFrameCharacterDropDown:Hide();
 		else
 			AccountantClassicFrameCharacterDropDown:Show();
@@ -1251,7 +1299,7 @@ function AccountantClassic_OnShow(self)
 
 		local TotalIn = 0;
 		local TotalOut = 0;
-		local mode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
+		local mode = AC_LOGMODS[AccountantClassic_CurrentTab];
 		local colIn, colOut;
 		for key, value in pairs(AccountantClassic_Data) do
 			colIn = _G["AccountantClassicFrameRow"..AccountantClassic_Data[key].InPos.."In"];
@@ -1264,14 +1312,14 @@ function AccountantClassic_OnShow(self)
 
 			local mIn = 0;
 			local mOut = 0;
-			if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Session")) then
+			if (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "Session")) then
 				mIn = AccountantClassic_Data[key][mode].In;
 				mOut = AccountantClassic_Data[key][mode].Out;
 			else
-				if (AC_SELECTED_CHAR_NUM <= #AC_SCROLL_LIST) then
+				if (AC_SELECTED_CHAR_NUM <= #AC_CHARSCROLL_LIST) then
 					local j = AC_SELECTED_CHAR_NUM;
-					local serverkey = AC_SCROLL_LIST[j][1];
-					local charkey = AC_SCROLL_LIST[j][2];
+					local serverkey = AC_CHARSCROLL_LIST[j][1];
+					local charkey = AC_CHARSCROLL_LIST[j][2];
 					prvdateweek = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvdateweek or nil;
 					prvday = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvday or nil;
 					prvmonth = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvmonth or nil;
@@ -1282,7 +1330,7 @@ function AccountantClassic_OnShow(self)
 					if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
 						mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
 					end
-				elseif (AC_SELECTED_CHAR_NUM == #AC_SCROLL_LIST + 1) then
+				elseif (AC_SELECTED_CHAR_NUM == #AC_CHARSCROLL_LIST + 1) then
 					local serverkey, servervalue, charkey, charvalue;
 					if (AccountantClassic_Profile["options"].cross_server) then
 						for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
@@ -1336,10 +1384,10 @@ function AccountantClassic_OnShow(self)
 		_G["AccountantClassicFrameRow18In"].Text:SetText("");
 
 		-- Extra info
-		if (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Week")) then
+		if (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "Week")) then
 			fs:SetText(L["ACCLOC_WEEKSTART"]..":");
 			fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1));
-		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvWeek")) then
+		elseif (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "PrvWeek")) then
 			if (prvdateweek) then
 				fs:SetText(L["ACCLOC_WEEKSTART"]..":");
 				fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvdateweek"], 1));
@@ -1347,28 +1395,38 @@ function AccountantClassic_OnShow(self)
 				fs:SetText("");
 				fsv:SetText("");
 			end
-		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Month")) then
+		elseif (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "Month")) then
 			local m = tonumber(AccountantClassic_Profile["options"]["month"]);
 			fs:SetText("");
-			fsv:SetText(months[m]);
-		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvMonth")) then
+			fsv:SetText(AC_MONTHS[m]);
+		elseif (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "PrvMonth")) then
 			if (prvmonth) then
 				local m = tonumber(prvmonth);
 				fs:SetText("");
-				fsv:SetText(months[m]);
+				fsv:SetText(AC_MONTHS[m]);
 			else
 				fs:SetText("");
 				fsv:SetText("");
 			end
-		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "Day")) then
+		elseif (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "Day")) then
 			fs:SetText("");
 			fsv:SetText(AccountantClassic_ParseDateStrings(cdate, 2));
-		elseif (AccountantClassic_CurrentTab == TableIndex(AccountantClassic_LogModes, "PrvDay")) then
+		elseif (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "PrvDay")) then
 			if (prvday) then
 				fs:SetText("");
 				fsv:SetText(AccountantClassic_ParseDateStrings(prvday, 2));
 			else
 				fs:SetText("");
+				fsv:SetText("");
+			end
+		elseif (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "Year")) then
+			fs:SetText("");
+			fsv:SetText(AccountantClassic_Profile["options"]["curryear"]);
+		elseif (AccountantClassic_CurrentTab == TableIndex(AC_LOGMODS, "PrvYear")) then
+			fs:SetText("");
+			if (AccountantClassic_Profile["options"]["prvyear"]) then
+				fsv:SetText(AccountantClassic_Profile["options"]["prvyear"]);
+			else
 				fsv:SetText("");
 			end
 		else
@@ -1447,9 +1505,9 @@ end
 
 function AccountantClassicFrameCharacterDropDown_Init()
 	local info;
-	for i = 1, #AC_SCROLL_LIST do
-		local serverkey = AC_SCROLL_LIST[i][1];
-		local charkey = AC_SCROLL_LIST[i][2];
+	for i = 1, #AC_CHARSCROLL_LIST do
+		local serverkey = AC_CHARSCROLL_LIST[i][1];
+		local charkey = AC_CHARSCROLL_LIST[i][2];
 		info = Lib_UIDropDownMenu_CreateInfo();
 		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
 			local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
@@ -1471,7 +1529,7 @@ function AccountantClassicFrameCharacterDropDown_Init()
 	-- Added All Chars to dropdown
 	info = Lib_UIDropDownMenu_CreateInfo();
 	info.text = L["ACCLOC_CHARS"];
-	info.value = #AC_SCROLL_LIST + 1;
+	info.value = #AC_CHARSCROLL_LIST + 1;
 	info.tooltipTitle = L["ACCLOC_SHOWALLTIP"];
 	info.tooltipOnButton = true;
 	info.func = AccountantClassicFrameCharacterDropDown_OnClick;
@@ -1499,7 +1557,7 @@ function AccountantClassic_ShowUsage()
 end
 
 function AccountantClassic_ResetData()
-	local logmode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
+	local logmode = AC_LOGMODS[AccountantClassic_CurrentTab];
 	if logmode == "Total" then
 		logmode = L["ACCLOC_TOTAL"];
 	elseif logmode == "Session" then
@@ -1516,6 +1574,8 @@ function AccountantClassic_ResetData()
 		logmode = L["ACCLOC_MONTH"];
 	elseif logmode == "PrvMonth" then
 		logmode = L["ACCLOC_PRVMON"];
+	elseif logmode == "Year" then
+		logmode = L["ACCLOC_YEAR"];
 	else
 
 	end
@@ -1545,7 +1605,7 @@ function AccountantClassic_ResetData()
 end
 
 function AccountantClassic_ResetConfirmed()
-	local mode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
+	local mode = AC_LOGMODS[AccountantClassic_CurrentTab];
 	for key,value in pairs(AccountantClassic_Data) do
 		AccountantClassic_Data[key][mode].In = 0;
 		AccountantClassic_Data[key][mode].Out = 0;
@@ -1587,7 +1647,8 @@ end
 
 function AccountantClassic_UpdateLog()
 	local cdate = date("%d/%m/%y");
-	local cmonth = date("%m");
+	--local cmonth = date("%m");
+	--local cyear = date("%Y");
 
 	AccountantClassic_LogsShifting();
 
@@ -1609,8 +1670,8 @@ function AccountantClassic_UpdateLog()
 	local logtype = AccountantClassic_LogType;
 	if (logtype == "") then logtype = "OTHER"; end
 	if (diff >0) then
-		for key,logmode in pairs(AccountantClassic_LogModes) do
-			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay") then
+		for key,logmode in pairs(AC_LOGMODS) do
+			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay" or logmode == "PrvYear") then
 				-- do nothing. data in previous time period should not be touched
 			else
 				AccountantClassic_Data[logtype][logmode].In = AccountantClassic_Data[logtype][logmode].In + diff
@@ -1632,8 +1693,8 @@ function AccountantClassic_UpdateLog()
 		if AccountantClassic_Verbose then ACC_Print("Gained "..AccountantClassic_NiceCash(diff).." from "..logtype); end
 	elseif (diff < 0) then
 		diff = diff * -1;
-		for key,logmode in pairs(AccountantClassic_LogModes) do
-			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay") then
+		for key,logmode in pairs(AC_LOGMODS) do
+			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay" or logmode == "PrvYear") then
 				-- do nothing
 			else
 				AccountantClassic_Data[logtype][logmode].Out = AccountantClassic_Data[logtype][logmode].Out + diff
@@ -1893,11 +1954,11 @@ local function orderedpairs(t, f)
 end
 
 function AccountantClassic_LogTypeOnShow(self)
-	if (not AccountantClassic_LogModes[AccountantClassic_CurrentTab]) then
+	if (not AC_LOGMODS[AccountantClassic_CurrentTab]) then
 		return;
 	end
 	if (AccountantClassic_Profile["options"].trackzone == true and self.logType and self.cashflow) then
-		local logmode = AccountantClassic_LogModes[AccountantClassic_CurrentTab];
+		local logmode = AC_LOGMODS[AccountantClassic_CurrentTab];
 		local logType = self.logType;
 		local cashflow = self.cashflow;
 		local tooltipText;
@@ -1924,11 +1985,11 @@ function AccountantClassic_LogTypeOnShow(self)
 				end
 			end
 		else
-			if (AC_SELECTED_CHAR_NUM <= #AC_SCROLL_LIST) then
+			if (AC_SELECTED_CHAR_NUM <= #AC_CHARSCROLL_LIST) then
 				tooltipText = "";
 				local charindex = AC_SELECTED_CHAR_NUM;
-				local serverkey = AC_SCROLL_LIST[charindex][1];
-				local charkey = AC_SCROLL_LIST[charindex][2];
+				local serverkey = AC_CHARSCROLL_LIST[charindex][1];
+				local charkey = AC_CHARSCROLL_LIST[charindex][2];
 
 				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
 					for k_zone, v_zone in orderedpairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType]) do
@@ -1944,7 +2005,7 @@ function AccountantClassic_LogTypeOnShow(self)
 						end
 					end
 				end
-			elseif (AC_SELECTED_CHAR_NUM == #AC_SCROLL_LIST + 1) then
+			elseif (AC_SELECTED_CHAR_NUM == #AC_CHARSCROLL_LIST + 1) then
 			-- currently not supported to show all characters
 	--[[			local serverkey, servervalue, charkey, charvalue;
 				for serverkey, servervalue in pairs(Accountant_ClassicZoneDB) do

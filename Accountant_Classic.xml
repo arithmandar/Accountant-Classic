@@ -720,7 +720,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab8" inherits="AccountantClassicTabTemplate" id="8" text="Total">
+			<Button name="$parentTab8" inherits="AccountantClassicTabTemplate" id="8" text="Year">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab6" relativePoint="RIGHT">
 						<Offset>
@@ -729,7 +729,25 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab9" inherits="AccountantClassicTabTemplate" id="9" text="All Chars">
+			<Button name="$parentTab9" inherits="AccountantClassicTabTemplate" id="9" text="Prv. Year">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab10" inherits="AccountantClassicTabTemplate" id="10" text="Total">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab11" inherits="AccountantClassicTabTemplate" id="11" text="All Chars">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>

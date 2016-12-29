@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.07 (Dec. 30, 2016)
+==========================
+  - Added yearly tracking to embrace the coming new year
+
 * v2.08.06 (Dec. 29, 2016)
 ==========================
   - lib updated: NoTaint_UIDropDownMenu
