@@ -103,6 +103,10 @@ local AccountantClassicDefaultOptions = {
 	showintrotip = true,
 	showmoneyonbutton = true,
 	showsessiononbutton = true,
+	LDBDisplaySessionInfo = false,
+	cross_server = true,
+	trackzone = true,
+	tracksubzone = true,
 	buttonpos = 150, 
 	version = AccountantClassic_Version, 
 	date = cdate, -- to be used as "today"
@@ -113,16 +117,14 @@ local AccountantClassicDefaultOptions = {
 	month = cmonth,
 	-- prvmonth,
 	weekstart = 1, 
-	curryear = cyear;
+	curryear = cyear,
 	-- prvyear,
 	totalcash = 0,
 	moneyinfoframe_x = 10,
 	moneyinfoframe_y = -80,
 	faction = AccountantClassic_Faction,
 	class = AccountantClassic_Class,
-	dateformat = 1;
-	LDBDisplaySessionInfo = false;
-	cross_server = true;
+	dateformat = 1,
 };
 
 -- Code by Grayhoof (SCT)
@@ -137,6 +139,16 @@ local function AccountantClassic_CloneTable(tablein)	-- Return a copy of the tab
 		ka, va = next(tablein, ka);	-- Get next index
 	end
 	return new_table;
+end
+
+-- function to check if user has all the options parameter, 
+-- if not (due to some might be newly added), then add it with default value
+local function AccountantClassic_UpdateOptions(player_options)
+	for k, v in pairs(AccountantClassicDefaultOptions) do
+		if (player_options[k] == nil) then
+			player_options[k] = v;
+		end
+	end
 end
 
 -- Cleaning up the database record which brough in from "Accountant"
@@ -269,61 +281,7 @@ local function AccountantClassic_InitOptions()
 
 	AccountantClassic_Profile = Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player];
 
-	if (AccountantClassic_Profile["options"].showmoneyinfo == nil) then
-		AccountantClassic_Profile["options"].showmoneyinfo = true;
-	end
-	if (AccountantClassic_Profile["options"].showintrotip == nil) then
-		AccountantClassic_Profile["options"].showintrotip = false;
-	end
-	if (AccountantClassic_Profile["options"].showmoneyonbutton == nil) then
-		AccountantClassic_Profile["options"].showmoneyonbutton = true;
-	end
-	if (AccountantClassic_Profile["options"].showsessiononbutton == nil) then
-		AccountantClassic_Profile["options"].showsessiononbutton = true;
-	end
-	if (AccountantClassic_Profile["options"]["weekstart"] == nil) then
-		AccountantClassic_Profile["options"]["weekstart"] = 1;
-	end
-	if (AccountantClassic_Profile["options"]["dateweek"] == nil) then
-		AccountantClassic_Profile["options"]["dateweek"] = AccountantClassic_WeekStart();
-	end
-	if (AccountantClassic_Profile["options"]["date"] == nil) then
-		AccountantClassic_Profile["options"]["date"] = cdate;
-	end
-	if (AccountantClassic_Profile["options"]["month"] == nil) then
-		AccountantClassic_Profile["options"]["month"] = cmonth;
-	end
-	if (AccountantClassic_Profile["options"].moneyinfoframe_x == nil) then
-		AccountantClassic_Profile["options"].moneyinfoframe_x = 10;
-		AccountantClassic_Profile["options"].moneyinfoframe_y = -80;
-	end
-	if (AccountantClassic_Profile["options"].faction == nil) then
-		AccountantClassic_Profile["options"].faction = AccountantClassic_Faction;
-	end
-	if (AccountantClassic_Profile["options"].class == nil) then
-		AccountantClassic_Profile["options"].class = AccountantClassic_Class;
-	end
-	if (AccountantClassic_Profile["options"].dateformat == nil) then
-		AccountantClassic_Profile["options"].dateformat = 1;
-	end
-	if (AccountantClassic_Profile["options"].LDBDisplaySessionInfo == nil) then
-		AccountantClassic_Profile["options"].LDBDisplaySessionInfo = false;
-	end
-	if (AccountantClassic_Profile["options"].lastsessiondate == nil) then
-		AccountantClassic_Profile["options"].lastsessiondate = cdate;
-	end
-	if (AccountantClassic_Profile["options"].cross_server == nil) then
-		AccountantClassic_Profile["options"].cross_server = true;
-	end
-	if (AccountantClassic_Profile["options"].trackzone == nil) then
-		AccountantClassic_Profile["options"].trackzone = true;
-	end
-	if (AccountantClassic_Profile["options"].tracksubzone == nil) then
-		AccountantClassic_Profile["options"].tracksubzone = true;
-	end
-	if (AccountantClassic_Profile["options"].curryear == nil) then
-		AccountantClassic_Profile["options"].curryear = cyear;
-	end
+	AccountantClassic_UpdateOptions(AccountantClassic_Profile["options"]);
 
 	AccountantClassic_InitZoneDB();
 end
@@ -591,6 +549,8 @@ local function AccountantClassic_SettleTabText()
 	PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
+	-- Hide tab9 - Prv.Year until year 2018 is coming
+	AccountantClassicFrameTab9:Hide();
 end
 
 function AccountantClassic_PopulateCharacterList()

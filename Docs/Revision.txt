@@ -9,6 +9,7 @@ Revision History:
 * v2.08.07 (Dec. 30, 2016)
 ==========================
   - Added yearly tracking to embrace the coming new year
+  - Enhanced option parameter's checking
 
 * v2.08.06 (Dec. 29, 2016)
 ==========================
