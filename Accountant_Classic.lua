@@ -413,7 +413,7 @@ function addon:OnInitialize()
 	};
 
 	self.db = LibStub("AceDB-3.0"):New("Accountant_ClassicDB", defaults, true);
-	db = self.db.profile;
+	--db = self.db.profile;
 	if not self.db then
 		self:Print("Error: Database not loaded correctly.  Please exit out of WoW and delete the Accountant Classic database file Accountant_Classic.lua) found in: \\World of Warcraft\\WTF\\Account\\<Account Name>>\\SavedVariables\\")
 		return
@@ -1913,6 +1913,7 @@ local function orderedpairs(t, f)
 	return orderednext, keys
 end
 
+local AC_MAXTOOLTIPLINES = 50;
 function AccountantClassic_LogTypeOnShow(self)
 	if (not AC_LOGMODS[AccountantClassic_CurrentTab]) then
 		return;
@@ -1952,16 +1953,27 @@ function AccountantClassic_LogTypeOnShow(self)
 				local charkey = AC_CHARSCROLL_LIST[charindex][2];
 
 				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
+					local i, j = 1, 1;
 					for k_zone, v_zone in orderedpairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType]) do
 						mIn = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["In"];
 						mOut = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["Out"];
 						if (cashflow == "In" and mIn > 0) then
 							tooltipText = tooltipText..k_zone..": ";
 							tooltipText = tooltipText..AccountantClassic_NiceCash(mIn).."\n";
+							i = i + 1;
+							if (i == AC_MAXTOOLTIPLINES) then 
+								tooltipText = tooltipText.."...";
+								break; 
+							end
 						end
 						if (cashflow == "Out" and mOut > 0) then
 							tooltipText = tooltipText..k_zone..": ";
 							tooltipText = tooltipText..AccountantClassic_NiceCash(mOut).."\n";
+							j = j + 1;
+							if (j == AC_MAXTOOLTIPLINES) then 
+								tooltipText = tooltipText.."...";
+								break; 
+							end
 						end
 					end
 				end

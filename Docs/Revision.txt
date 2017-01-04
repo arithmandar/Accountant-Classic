@@ -6,6 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.08 (Jan. XX, 2017)
+==========================
+  - Added maximum lines' limitation to tooltip when hover to money gained / 
+    expended and the zone breakdown is showing. Currently set it to show 50 
+    lines at most.
+  - Removed external libs and set them to be hard-embedded.
+
 * v2.08.07 (Dec. 30, 2016)
 ==========================
   - Added yearly tracking to embrace the coming new year
