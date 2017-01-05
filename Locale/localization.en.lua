@@ -78,6 +78,7 @@ L["ACCLOC_TRACKZONE"]		= "Track location of incoming / outgoing money"
 L["ACCLOC_TRACKZONE_TIP"]	= "Enable to track the location of each incoming / outgoing money and also show the breakdown info while mouse hover each of the expenditure."
 L["ACCLOC_TRACKSUBZONE"]	= "Also track subzone info"
 L["ACCLOC_TRACKSUBZONE_TIP"]	= "Enable to also track on the subzone info. For example: Suramar - Sanctum of Order"
+L["ACCLOC_BREAKUPNUMBERS"]	= "Converts a number into a localized string, grouping digits as required."
 
 -- Misc
 L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the \"%s\" data?" -- %s would be the log mode, for example, Session, Day, Week, etc.

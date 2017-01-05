@@ -18,11 +18,28 @@ $Id$
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentToggleBreakupNumbers" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
 							<AbsDimension x="10" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_BREAKUPNUMBERS);
+					</OnLoad>
+					<OnClick>
+						AccountantClassic_BreakupNumbersToggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleBreakupNumbers">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

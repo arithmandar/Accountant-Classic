@@ -12,6 +12,7 @@ Revision History:
     expended and the zone breakdown is showing. Currently set it to show 50 
     lines at most.
   - Removed external libs and set them to be hard-embedded.
+  - Added option to toggle the numbers' displaying format.
 
 * v2.08.07 (Dec. 30, 2016)
 ==========================

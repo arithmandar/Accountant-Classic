@@ -107,6 +107,7 @@ local AccountantClassicDefaultOptions = {
 	cross_server = true,
 	trackzone = true,
 	tracksubzone = true,
+	breakupnumbers = true,
 	buttonpos = 150, 
 	version = AccountantClassic_Version, 
 	date = cdate, -- to be used as "today"
@@ -1115,9 +1116,9 @@ end
 
 -- code adopted from SellTrash and MoneyFrame.lua
 function AccountantClassic_GetFormattedValue(amount)
-	local gold = floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
-	local goldDisplay = BreakUpLargeNumbers(gold);
-	local silver = floor((amount - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
+	local gold = math.floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
+	local goldDisplay = AccountantClassic_Profile["options"].breakupnumbers and BreakUpLargeNumbers(gold) or gold;
+	local silver = math.floor((amount - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = mod(amount, COPPER_PER_SILVER);
 	
 	local TMP_GOLD_AMOUNT_TEXTURE = "%s|TInterface\\MoneyFrame\\UI-GoldIcon:%d:%d:2:0|t";
@@ -1139,7 +1140,8 @@ function AccountantClassic_GetFormattedCurrency(currencyID)
 	
 	if (amount >0) then
 		local CURRENCY_TEXTURE = "%s|T"..icon..":%d:%d:2:0|t";
-		return format(CURRENCY_TEXTURE.." ", BreakUpLargeNumbers(amount), 0, 0);
+		amount = AccountantClassic_Profile["options"].breakupnumbers and BreakUpLargeNumbers(amount) or amount;
+		return format(CURRENCY_TEXTURE.." ", amount, 0, 0);
 	else
 		return "";
 	end

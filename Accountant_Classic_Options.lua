@@ -30,6 +30,7 @@ function AccountantClassicOptions_OnLoad(self)
 end
 
 function AccountantClassicOptions_OnShow()
+	AccountantClassicOptionsFrameToggleBreakupNumbers:SetChecked(AccountantClassic_Profile["options"].breakupnumbers);
 	AccountantClassicOptionsFrameToggleButton:SetChecked(AccountantClassic_Profile["options"].showbutton);
 	AccountantClassicOptionsFrameToggleMoneyOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showmoneyonbutton);
 	AccountantClassicOptionsFrameToggleSessionOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showsessiononbutton);
@@ -75,6 +76,13 @@ function AccountantClassicMoneyInfoFrame_Toggle()
 	else
 		AccountantClassicMoneyInfoFrame:Show();
 		AccountantClassic_Profile["options"].showmoneyinfo = true;
+	end
+end
+
+function AccountantClassic_BreakupNumbersToggle()
+	AccountantClassic_Profile["options"].breakupnumbers = not AccountantClassic_Profile["options"].breakupnumbers;
+	if ( AccountantClassicFrame:IsVisible() ) then
+		AccountantClassic_OnShow();
 	end
 end
 
