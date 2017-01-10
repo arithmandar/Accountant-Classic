@@ -27,12 +27,20 @@ local LibStub = _G.LibStub
 local pairs = _G.pairs
 local tonumber = _G.tonumber
 local table = _G.table
+local tinsert, tsort = table.insert, table.sort
 local string = _G.string
+local format, gsub, strfind, strsub = string.format, string.gsub, string.find, string.sub
+local floor, fmod = math.floor, math.fmod
 
 local LibDialog = LibStub("LibDialog-1.0");
 local addon = LibStub("AceAddon-3.0"):NewAddon("Accountant_Classic", "AceConsole-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Accountant_Classic");
-local ACbutton = LibStub("LibDBIcon-1.0")
+local ACbutton = LibStub("LibDBIcon-1.0");
+-- Minimap button with LibDBIcon-1.0
+local LDB = LibStub("LibDataBroker-1.1"):NewDataObject("Accountant_Classic");
+if ( TitanPanelButton_UpdateButton ) then
+	TitanPanelButton_UpdateButton("Accountant_Classic");
+end
 
 local AccountantClassic_RepairAllItems_old;
 local AccountantClassic_CursorHasItem_old;
@@ -67,7 +75,6 @@ local AC_SHOWALLCHARS = false;
 
 local AC_MONTHS = { CalendarGetMonthNames() };
 
-
 local AccountantClassic_Data = {
 		["TRAIN"] = 	{Title = L["ACCLOC_TRAIN"]};
 		["TAXI"] = 	{Title = L["ACCLOC_TAXI"]};
@@ -90,12 +97,6 @@ local AccountantClassic_Data = {
 local cdate = date("%d/%m/%y");
 local cmonth = date("%m");
 local cyear = date("%Y");
-
-local function TableIndex(t,val)
-    for k,v in ipairs(t) do 
-        if v == val then return k end
-    end
-end
 
 local AccountantClassicDefaultOptions = {
 	showbutton = true, 
@@ -127,6 +128,12 @@ local AccountantClassicDefaultOptions = {
 	class = AccountantClassic_Class,
 	dateformat = 1,
 };
+
+local function TableIndex(t,val)
+    for k,v in ipairs(t) do 
+        if v == val then return k end
+    end
+end
 
 -- Code by Grayhoof (SCT)
 local function AccountantClassic_CloneTable(tablein)	-- Return a copy of the table tablein
@@ -188,6 +195,23 @@ function AccountantClassic_CleanUpAccountantDB()
 		hide_on_escape = true,
 	});
 	LibDialog:Spawn("ACCOUNTANT_CONFLICT_CLEANUP");
+end
+
+local function AccountantClassic_DetectConflict()
+	DisableAddOn("Accountant");
+
+	LibDialog:Register("ACCOUNTANT_CONFLICT", {
+		text = L["ACCLOC_CONFLICT"],
+		buttons = {
+			{
+				text = OKAY,
+				on_click = ReloadUI,
+			},
+		},
+		show_while_dead = false,
+		hide_on_escape = true,
+	});
+	LibDialog:Spawn("ACCOUNTANT_CONFLICT");
 end
 
 local function AccountantClassic_InitZoneDB()
@@ -355,8 +379,9 @@ local AccountantClassic_Events = {
 	"PLAYER_REGEN_DISABLED",
 };	
 
+--[[
 -- Minimap button with LibDBIcon-1.0
-local Accountant_ClassicMiniMapLDB = LibStub("LibDataBroker-1.1"):NewDataObject("Accountant_Classic", {
+local LDB = LibStub("LibDataBroker-1.1"):NewDataObject("Accountant_Classic", {
 	type = "data source",
 	text = L["ACCLOC_TITLE"],
 	label = L["ACCLOC_TITLE"],
@@ -383,15 +408,9 @@ local Accountant_ClassicMiniMapLDB = LibStub("LibDataBroker-1.1"):NewDataObject(
 		end
 	end,
 })
-if ( TitanPanelButton_UpdateButton ) then
-	TitanPanelButton_UpdateButton("Accountant_Classic");
-end
-
-if myAddOnsList then
-	myAddOnsList.Accountant = {name = L["ACCLOC_TITLE"], description = L["ACCLOC_DESC"], version = AccountantClassic_Version, frame = "AccountantClassicFrame", optionsframe = "AccountantClassicOptionsFrame"};
-end
-
-function Accountant_Classic_GetButtonText()
+]]
+--[[
+local function Accountant_Classic_GetButtonText()
 	local str = AccountantClassic_GetFormattedValue(GetMoney());
 	if (str) then
 		return str;
@@ -399,8 +418,35 @@ function Accountant_Classic_GetButtonText()
 		return L["ACCLOC_TITLE"];
 	end
 end
+]]
 
 function addon:OnInitialize()
+	LDB.type = "data source";
+	LDB.text = L["ACCLOC_TITLE"];
+	LDB.label = L["ACCLOC_TITLE"];
+	LDB.icon = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantClassicButton-Up";
+	LDB.OnClick = (function(self, button)
+		if button == "LeftButton" then
+			AccountantClassic_ButtonOnClick();
+		elseif button == "RightButton" then
+			AccountantClassicOptions_Toggle();
+		end
+	end);
+	LDB.OnTooltipShow = (function(tooltip)
+		if not tooltip or not tooltip.AddLine then return end
+		local title = "|cffffffff"..L["ACCLOC_TITLE"];
+		if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showmoneyonbutton) then
+			title = title.." - "..AccountantClassic_GetFormattedValue(GetMoney());
+		end
+		tooltip:AddLine(title);
+		if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showsessiononbutton == true) then
+			tooltip:AddLine(AccountantClassic_ShowSessionToolTip());
+		end
+		if (Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].showintrotip == true) then
+			tooltip:AddLine(L["ACCLOC_TIP"]);
+		end
+	end);
+
 	local defaults = {
 		global = { },
 		profile = {
@@ -419,7 +465,7 @@ function addon:OnInitialize()
 		self:Print("Error: Database not loaded correctly.  Please exit out of WoW and delete the Accountant Classic database file Accountant_Classic.lua) found in: \\World of Warcraft\\WTF\\Account\\<Account Name>>\\SavedVariables\\")
 		return
 	end
-	ACbutton:Register("Accountant_Classic", Accountant_ClassicMiniMapLDB, self.db.profile.minimap);
+	ACbutton:Register("Accountant_Classic", LDB, self.db.profile.minimap);
 	self:RegisterChatCommand("accountantbutton", AccountantClassic_ButtonToggle);
 	self:RegisterChatCommand("accountant", Accountant_Slash);
 	self:RegisterChatCommand("acc", Accountant_Slash);
@@ -454,31 +500,14 @@ function AccountantClassic_ButtonOnClick()
 	end
 end
 
-function AccountantClassic_DetectConflict()
-	DisableAddOn("Accountant");
-
-	LibDialog:Register("ACCOUNTANT_CONFLICT", {
-		text = L["ACCLOC_CONFLICT"],
-		buttons = {
-			{
-				text = OKAY,
-				on_click = ReloadUI,
-			},
-		},
-		show_while_dead = false,
-		hide_on_escape = true,
-	});
-	LibDialog:Spawn("ACCOUNTANT_CONFLICT");
-end
-
 function AccountantClassic_RegisterEvents(self)
         for key, value in pairs( AccountantClassic_Events ) do
             self:RegisterEvent( value );
         end
-	self:RegisterForDrag("LeftButton");
+	--self:RegisterForDrag("LeftButton");
 end
 
-function AccountantClassic_SetLabels(self)
+local function AccountantClassic_SetLabels(self)
 	-- if current tab is All Chars tab
 	if (AccountantClassic_CurrentTab == AC_TABS) then
 		AccountantClassicFrameResetButton:Hide();
@@ -590,6 +619,45 @@ function AccountantClassic_PopulateCharacterList()
 	end
 end
 
+local function AccountantClassicFrameCharacterDropDown_OnClick(self)
+	Lib_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
+	AC_SELECTED_CHAR_NUM = self.value;
+	AccountantClassic_OnShow();
+end
+
+local function AccountantClassicFrameCharacterDropDown_Init()
+	local info;
+	for i = 1, #AC_CHARSCROLL_LIST do
+		local serverkey = AC_CHARSCROLL_LIST[i][1];
+		local charkey = AC_CHARSCROLL_LIST[i][2];
+		info = Lib_UIDropDownMenu_CreateInfo();
+		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
+			local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
+			local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
+			info.icon = faction_icon
+		end
+		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
+			local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
+			info.colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"];
+		end
+		info.text = serverkey.." - "..charkey;
+		info.value = i;
+		info.arg1 = serverkey;
+		info.arg2 = charkey;
+		info.func = AccountantClassicFrameCharacterDropDown_OnClick;
+		Lib_UIDropDownMenu_AddButton(info);
+	end
+	
+	-- Added All Chars to dropdown
+	info = Lib_UIDropDownMenu_CreateInfo();
+	info.text = L["ACCLOC_CHARS"];
+	info.value = #AC_CHARSCROLL_LIST + 1;
+	info.tooltipTitle = L["ACCLOC_SHOWALLTIP"];
+	info.tooltipOnButton = true;
+	info.func = AccountantClassicFrameCharacterDropDown_OnClick;
+	Lib_UIDropDownMenu_AddButton(info);
+end
+
 local function AccountantClassicFrameCharacterDropDown_Setup()
 	Lib_UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
 	for i = 1, #AC_CHARSCROLL_LIST do
@@ -599,36 +667,6 @@ local function AccountantClassicFrameCharacterDropDown_Setup()
 	end
 	Lib_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, AC_SELECTED_CHAR_NUM);
 	Lib_UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200);
-end
-
-function AccountantClassic_OnLoad(self)
-	-- Setup
-	AccountantClassic_LoadData();
-	AccountantClassic_SetLabels();
-
-	-- Cash
-	AccountantClassic_CurrentMoney = GetMoney();
-	-- Check if there is any un-recorded money in or out
-	if (AccountantClassic_LastSessionMoney ~= AccountantClassic_CurrentMoney) then
-		AccountantClassic_LogType = "OTHER";
-		AccountantClassic_LastMoney = AccountantClassic_LastSessionMoney;
-		AccountantClassic_UpdateLog();
-	end
-	AccountantClassic_LastMoney = AccountantClassic_CurrentMoney;
-	
-	-- hooks
-	AccountantClassic_RepairAllItems_old = RepairAllItems;
-	RepairAllItems = AccountantClassic_RepairAllItems;
---	AccountantClassic_CursorHasItem_old = CursorHasItem;
---	CursorHasItem = AccountantClassic_CursorHasItem;
-
-	-- tabs
-	AccountantClassic_SettleTabText();
-
-	AccountantClassic_PopulateCharacterList();
-	AccountantClassicFrameCharacterDropDown_Setup();
-
-	ACC_Print(L["ACCLOC_LOADED"]);
 end
 
 local function AccountantClassic_LogsShifting()
@@ -811,7 +849,7 @@ local function AccountantClassic_LogsShifting()
 	end
 end
 
-function AccountantClassic_LoadData()
+local function AccountantClassic_LoadData()
 	local cdate = date("%d/%m/%y");
 	for key, value in pairs(AccountantClassic_Data) do
 		for modekey,mode in pairs(AC_LOGMODS) do
@@ -881,13 +919,43 @@ function AccountantClassic_LoadData()
 	AccountantClassic_Profile["options"].lastsessiondate = cdate;
 end
 
+function AccountantClassic_OnLoad(self)
+	-- Setup
+	AccountantClassic_LoadData();
+	AccountantClassic_SetLabels();
+
+	-- Cash
+	AccountantClassic_CurrentMoney = GetMoney();
+	-- Check if there is any un-recorded money in or out
+	if (AccountantClassic_LastSessionMoney ~= AccountantClassic_CurrentMoney) then
+		AccountantClassic_LogType = "OTHER";
+		AccountantClassic_LastMoney = AccountantClassic_LastSessionMoney;
+		AccountantClassic_UpdateLog();
+	end
+	AccountantClassic_LastMoney = AccountantClassic_CurrentMoney;
+	
+	-- hooks
+	AccountantClassic_RepairAllItems_old = RepairAllItems;
+	RepairAllItems = AccountantClassic_RepairAllItems;
+--	AccountantClassic_CursorHasItem_old = CursorHasItem;
+--	CursorHasItem = AccountantClassic_CursorHasItem;
+
+	-- tabs
+	AccountantClassic_SettleTabText();
+
+	AccountantClassic_PopulateCharacterList();
+	AccountantClassicFrameCharacterDropDown_Setup();
+
+	ACC_Print(L["ACCLOC_LOADED"]);
+end
+
 function Accountant_Slash(msg)
 	if msg == nil or msg == "" then
 		msg = "log";
 	end
 	local args = {n=0}
-	local function helper(word) table.insert(args, word) end
-	string.gsub(msg, "[_%w]+", helper);
+	local function helper(word) tinsert(args, word) end
+	gsub(msg, "[_%w]+", helper);
 	if args[1] == 'log'  then
 		ShowUIPanel(AccountantClassicFrame);
 	elseif args[1] == 'verbose' then
@@ -903,6 +971,60 @@ function Accountant_Slash(msg)
 	else
 		AccountantClassic_ShowUsage();
 	end
+end
+
+-- codes by Tntdruid
+local function AccountantClassic_DetectAhMail()
+	local numItems, totalItems = GetInboxNumItems();
+	for x = 1, totalItems do    
+		-- invoiceType, itemName, playerName, bid, buyout, deposit, consignment = GetInboxInvoiceInfo(index);
+		--    invoiceType : String - type of invoice ("buyer", "seller", or "seller_temp_invoice").
+		local invoiceType = GetInboxInvoiceInfo(x);
+		if (invoiceType == "seller") then
+			return true;
+		end
+	end
+end
+
+local function AccountantClassic_OnShareMoney(arg1)
+	local gold, silver, copper, money, oldMode;
+
+-- Parse the message for money gained.
+	_, _, gold = strfind(arg1, "(%d+)" .. GOLD_AMOUNT)
+	_, _, silver = strfind(arg1, "(%d+)" .. SILVER_AMOUNT)
+	_, _, copper = strfind(arg1, "(%d+)" .. COPPER_AMOUNT)
+	if (gold) then
+		gold = tonumber(gold);
+	else
+		gold = 0;
+	end
+	if (silver) then
+		silver = tonumber(silver);
+	else
+		silver = 0;
+	end
+	if (copper) then
+		copper = tonumber(copper);
+	else
+		copper = 0;
+	end
+
+	money = copper + silver * 100 + gold * 10000
+
+	oldMode = AccountantClassic_LogType;
+	if (not AccountantClassic_LastMoney) then
+		AccountantClassic_LastMoney = 0;
+	end
+
+-- This will force a money update with calculated amount.
+	AccountantClassic_LastMoney = AccountantClassic_LastMoney - money;
+	AccountantClassic_LogType = "LOOT";
+	AccountantClassic_UpdateLog();
+	AccountantClassic_LogType = oldMode;
+
+-- This will suppress the incoming PLAYER_MONEY event.
+	AccountantClassic_LastMoney = AccountantClassic_LastMoney + money;
+
 end
 
 function AccountantClassic_OnEvent(self, event, ...)
@@ -1021,68 +1143,14 @@ function AccountantClassic_OnEvent(self, event, ...)
 	
 	if (Accountant_ClassicSaveData) then
 		if (not Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].LDBDisplaySessionInfo) then
-			Accountant_ClassicMiniMapLDB.text = AccountantClassic_GetFormattedValue(GetMoney());
+			LDB.text = AccountantClassic_GetFormattedValue(GetMoney());
 		else
-			Accountant_ClassicMiniMapLDB.text = AccountantClassic_ShowSessionNetMoney();
+			LDB.text = AccountantClassic_ShowSessionNetMoney();
 		end
 	end
 end
 
--- codes by Tntdruid
-function AccountantClassic_DetectAhMail()
-	local numItems, totalItems = GetInboxNumItems();
-	for x = 1, totalItems do    
-		-- invoiceType, itemName, playerName, bid, buyout, deposit, consignment = GetInboxInvoiceInfo(index);
-		--    invoiceType : String - type of invoice ("buyer", "seller", or "seller_temp_invoice").
-		local invoiceType = GetInboxInvoiceInfo(x);
-		if (invoiceType == "seller") then
-			return true;
-		end
-	end
-end
-
-function AccountantClassic_OnShareMoney(arg1)
-	local gold, silver, copper, money, oldMode;
-
--- Parse the message for money gained.
-	_, _, gold = string.find(arg1, "(%d+)" .. GOLD_AMOUNT)
-	_, _, silver = string.find(arg1, "(%d+)" .. SILVER_AMOUNT)
-	_, _, copper = string.find(arg1, "(%d+)" .. COPPER_AMOUNT)
-	if (gold) then
-		gold = tonumber(gold);
-	else
-		gold = 0;
-	end
-	if (silver) then
-		silver = tonumber(silver);
-	else
-		silver = 0;
-	end
-	if (copper) then
-		copper = tonumber(copper);
-	else
-		copper = 0;
-	end
-
-	money = copper + silver * 100 + gold * 10000
-
-	oldMode = AccountantClassic_LogType;
-	if (not AccountantClassic_LastMoney) then
-		AccountantClassic_LastMoney = 0;
-	end
-
--- This will force a money update with calculated amount.
-	AccountantClassic_LastMoney = AccountantClassic_LastMoney - money;
-	AccountantClassic_LogType = "LOOT";
-	AccountantClassic_UpdateLog();
-	AccountantClassic_LogType = oldMode;
-
--- This will suppress the incoming PLAYER_MONEY event.
-	AccountantClassic_LastMoney = AccountantClassic_LastMoney + money;
-
-end
-
-function AccountantClassic_NiceCash(amount)
+local function AccountantClassic_NiceCash(amount)
 	local agold = 10000;
 	local asilver = 100;
 	local outstr = "";
@@ -1091,12 +1159,12 @@ function AccountantClassic_NiceCash(amount)
 	local cent = 0;
 
 	if amount >= agold then
-		gold = math.floor(amount / agold);
+		gold = floor(amount / agold);
 		outstr = "|cFFFFFF00" .. gold .. L["ACCLOC_GOLD"];
 	end
 	amount = amount - (gold * agold);
 	if amount >= asilver then
-		silver = math.floor(amount / asilver);
+		silver = floor(amount / asilver);
 		if silver < 10 then
 			silver = " "..silver;
 		end
@@ -1116,10 +1184,10 @@ end
 
 -- code adopted from SellTrash and MoneyFrame.lua
 function AccountantClassic_GetFormattedValue(amount)
-	local gold = math.floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
+	local gold = floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
 	local goldDisplay = AccountantClassic_Profile["options"].breakupnumbers and BreakUpLargeNumbers(gold) or gold;
-	local silver = math.floor((amount - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
-	local copper = mod(amount, COPPER_PER_SILVER);
+	local silver = floor((amount - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
+	local copper = fmod(amount, COPPER_PER_SILVER);
 	
 	local TMP_GOLD_AMOUNT_TEXTURE = "%s|TInterface\\MoneyFrame\\UI-GoldIcon:%d:%d:2:0|t";
 	local TMP_SILVER_AMOUNT_TEXTURE = "%02d|TInterface\\MoneyFrame\\UI-SilverIcon:%d:%d:2:0|t";
@@ -1135,7 +1203,7 @@ function AccountantClassic_GetFormattedValue(amount)
 	end
 end
 
-function AccountantClassic_GetFormattedCurrency(currencyID)
+local function AccountantClassic_GetFormattedCurrency(currencyID)
 	local name, amount, icon = GetCurrencyInfo(currencyID);
 	
 	if (amount >0) then
@@ -1158,7 +1226,7 @@ function AccountantClassic_WeekStart()
 		thisDay = dt["wday"];
 	end
 	local wdate = date(nil,ct);
-	return string.sub(wdate,0,8);
+	return strsub(wdate,0,8);
 end
 
 function AccountantClassicScrollBar_Update()
@@ -1465,57 +1533,25 @@ function AccountantClassic_OnShow(self)
 	
 end
 
-function AccountantClassicFrameCharacterDropDown_Init()
-	local info;
-	for i = 1, #AC_CHARSCROLL_LIST do
-		local serverkey = AC_CHARSCROLL_LIST[i][1];
-		local charkey = AC_CHARSCROLL_LIST[i][2];
-		info = Lib_UIDropDownMenu_CreateInfo();
-		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
-			local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
-			local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
-			info.icon = faction_icon
-		end
-		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
-			local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
-			info.colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"];
-		end
-		info.text = serverkey.." - "..charkey;
-		info.value = i;
-		info.arg1 = serverkey;
-		info.arg2 = charkey;
-		info.func = AccountantClassicFrameCharacterDropDown_OnClick;
-		Lib_UIDropDownMenu_AddButton(info);
-	end
-	
-	-- Added All Chars to dropdown
-	info = Lib_UIDropDownMenu_CreateInfo();
-	info.text = L["ACCLOC_CHARS"];
-	info.value = #AC_CHARSCROLL_LIST + 1;
-	info.tooltipTitle = L["ACCLOC_SHOWALLTIP"];
-	info.tooltipOnButton = true;
-	info.func = AccountantClassicFrameCharacterDropDown_OnClick;
-	Lib_UIDropDownMenu_AddButton(info);
-end
-
-function AccountantClassicFrameCharacterDropDown_OnClick(self)
-	Lib_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
-	AC_SELECTED_CHAR_NUM = self.value;
-	AccountantClassic_OnShow();
-end
-
-function AccountantClassic_OnHide()
-	if MYADDONS_ACTIVE_OPTIONSFRAME == self then
-		ShowUIPanel(myAddOnsFrame);
-	end
-end
-
 function ACC_Print(msg)
 	DEFAULT_CHAT_FRAME:AddMessage(msg);
 end
 
 function AccountantClassic_ShowUsage()
 	ACC_Print("/accountant log\n");
+end
+
+local function AccountantClassic_ResetConfirmed()
+	local mode = AC_LOGMODS[AccountantClassic_CurrentTab];
+	for key,value in pairs(AccountantClassic_Data) do
+		AccountantClassic_Data[key][mode].In = 0;
+		AccountantClassic_Data[key][mode].Out = 0;
+		AccountantClassic_Profile["data"][key][mode].In = 0;
+		AccountantClassic_Profile["data"][key][mode].Out = 0;
+	end
+	if AccountantClassicFrame:IsVisible() then
+		AccountantClassic_OnShow();
+	end
 end
 
 function AccountantClassic_ResetData()
@@ -1564,19 +1600,6 @@ function AccountantClassic_ResetData()
 	});
 	LibDialog:Spawn("ACCOUNTANT_RESET");
 	
-end
-
-function AccountantClassic_ResetConfirmed()
-	local mode = AC_LOGMODS[AccountantClassic_CurrentTab];
-	for key,value in pairs(AccountantClassic_Data) do
-		AccountantClassic_Data[key][mode].In = 0;
-		AccountantClassic_Data[key][mode].Out = 0;
-		AccountantClassic_Profile["data"][key][mode].In = 0;
-		AccountantClassic_Profile["data"][key][mode].Out = 0;
-	end
-	if AccountantClassicFrame:IsVisible() then
-		AccountantClassic_OnShow();
-	end
 end
 
 function AccountantClassic_CharacterRemovalConfirmed(server, character)
@@ -1725,58 +1748,6 @@ function AccountantClassic_BackpackTokenFrame_Update()
 	return tokenstr;
 end
 
-function AccountantClassicMoneyInfoFrame_Update()
-	local frametxt = "|cFFFFFFFF"..AccountantClassic_GetFormattedValue(GetMoney());
-	if (frametxt ~= AC_MNYSTR) then
-		AccountantClassicMoneyInfoText:SetText(frametxt);
-		--AccountantClassicMoneyInfoText:SetText(AccountantClassic_BackpackTokenFrame_Update());
-		AC_MNYSTR = frametxt;
-	end
-end
-
-function AccountantClassicMoneyInfoFrame_HandleMouseDown(self, buttonName)    
-	-- Prevent activation when in combat
-	if (isInLockdown) then
-		return;
-	end
-	-- Handle left button clicks
-	if (buttonName == "LeftButton") then
-		AccountantClassicMoneyInfoFrame:StartMoving();
-		GameTooltip:Hide();
-	elseif (buttonName == "RightButton") then
-		AccountantClassic_ButtonOnClick();
-		GameTooltip_Hide();
-	end
-end
-
-function AccountantClassicMoneyInfoFrame_HandleMouseUp(self, button)
-	AccountantClassicMoneyInfoFrame:StopMovingOrSizing();
---[[	local x, y;
-
-	_, _, _, x, y = AccountantClassicMoneyInfoFrame:GetPoint();
-	AccountantClassic_Profile["options"].moneyinfoframe_x = x;
-	AccountantClassic_Profile["options"].moneyinfoframe_y = y;
-]]
-end
-
-function AccountantClassicMoneyInfoFrame_Init()
---	local offsetx = AccountantClassic_Profile["options"].moneyinfoframe_x;
---	local offsety = AccountantClassic_Profile["options"].moneyinfoframe_y;
-
-	if(AccountantClassic_Profile["options"].showmoneyinfo == nil) then
-		AccountantClassic_Profile["options"].showmoneyinfo = true;
-	end
-	if(AccountantClassic_Profile["options"].showmoneyinfo == true) then
-		AccountantClassicMoneyInfoFrame:Show();
---[[		if (offsetx  and offsety ) then
-			AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", offsetx, offsety);
-		end
-]]
-	else
-		AccountantClassicMoneyInfoFrame:Hide();
-	end
-end
-
 function AccountantClassic_ShowSessionNetMoney()
 	local amoney_str = "";
 
@@ -1840,6 +1811,58 @@ function AccountantClassic_ShowSessionToolTip()
 	end
 end
 
+function AccountantClassicMoneyInfoFrame_Update()
+	local frametxt = "|cFFFFFFFF"..AccountantClassic_GetFormattedValue(GetMoney());
+	if (frametxt ~= AC_MNYSTR) then
+		AccountantClassicMoneyInfoText:SetText(frametxt);
+		--AccountantClassicMoneyInfoText:SetText(AccountantClassic_BackpackTokenFrame_Update());
+		AC_MNYSTR = frametxt;
+	end
+end
+
+function AccountantClassicMoneyInfoFrame_HandleMouseDown(self, buttonName)    
+	-- Prevent activation when in combat
+	if (isInLockdown) then
+		return;
+	end
+	-- Handle left button clicks
+	if (buttonName == "LeftButton") then
+		AccountantClassicMoneyInfoFrame:StartMoving();
+		GameTooltip:Hide();
+	elseif (buttonName == "RightButton") then
+		AccountantClassic_ButtonOnClick();
+		GameTooltip_Hide();
+	end
+end
+
+function AccountantClassicMoneyInfoFrame_HandleMouseUp(self, button)
+	AccountantClassicMoneyInfoFrame:StopMovingOrSizing();
+--[[	local x, y;
+
+	_, _, _, x, y = AccountantClassicMoneyInfoFrame:GetPoint();
+	AccountantClassic_Profile["options"].moneyinfoframe_x = x;
+	AccountantClassic_Profile["options"].moneyinfoframe_y = y;
+]]
+end
+
+function AccountantClassicMoneyInfoFrame_Init()
+--	local offsetx = AccountantClassic_Profile["options"].moneyinfoframe_x;
+--	local offsety = AccountantClassic_Profile["options"].moneyinfoframe_y;
+
+	if(AccountantClassic_Profile["options"].showmoneyinfo == nil) then
+		AccountantClassic_Profile["options"].showmoneyinfo = true;
+	end
+	if(AccountantClassic_Profile["options"].showmoneyinfo == true) then
+		AccountantClassicMoneyInfoFrame:Show();
+--[[		if (offsetx  and offsety ) then
+			AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", offsetx, offsety);
+		end
+]]
+	else
+		AccountantClassicMoneyInfoFrame:Hide();
+	end
+end
+
 function AccountantClassicMoneyInfoFrame_OnEnter(self)
 	if (isInLockdown) then
 		return;
@@ -1874,13 +1897,13 @@ function AccountantClassic_ParseDateStrings(s, typ)
 	local sdate = s;
 	
 	if (typ == 1) then -- mm/dd/yy, currently used in dateweek (WeekStart)
-		mm = string.sub(sdate, 1, 2);
-		dd = string.sub(sdate, 4, 5);
+		mm = strsub(sdate, 1, 2);
+		dd = strsub(sdate, 4, 5);
 	else
-		dd = string.sub(sdate, 1, 2);
-		mm = string.sub(sdate, 4, 5);
+		dd = strsub(sdate, 1, 2);
+		mm = strsub(sdate, 4, 5);
 	end
-	yy = string.sub(sdate, 7, 8);
+	yy = strsub(sdate, 7, 8);
 
 --[[ /////////////////////////
 	[1] = "mm/dd/yy";
@@ -1905,13 +1928,14 @@ local function orderednext(t, n)
 	t.__next = t.__next + 1
 	return key, t.__source[key]
 end
+
 local function orderedpairs(t, f)
 	local keys, kn = {__source = t, __next = 1}, 1
 	
 	for k in pairs(t) do
 		keys[kn], kn = k, kn + 1
 	end
-	table.sort(keys, f)
+	tsort(keys, f)
 	return orderednext, keys
 end
 

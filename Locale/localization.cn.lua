@@ -1,4 +1,4 @@
--- $Id$ 
+﻿-- $Id$ 
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "zhCN", false)
 

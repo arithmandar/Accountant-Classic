@@ -770,9 +770,6 @@
 			<OnShow>
 				AccountantClassic_OnShow(self);
 			</OnShow>
-			<OnHide>
-				AccountantClassic_OnHide(self);
-			</OnHide>
 			<OnEvent>
 				AccountantClassic_OnEvent(self, event, ...);
 			</OnEvent>
