@@ -6,6 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.09 (Jan. 12, 2017)
+==========================
+  - Fixed issue in displaying all characters' info
+  - Translation update:
+    - Korean (next96)
+
+
 * v2.08.08 (Jan. 11, 2017)
 ==========================
   - Added maximum lines' limitation to tooltip when hover to money gained / 
