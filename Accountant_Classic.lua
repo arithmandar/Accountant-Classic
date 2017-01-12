@@ -1249,16 +1249,16 @@ function AccountantClassicScrollBar_Update()
 				if(classToken) then 
 					f.Title.Text:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
 				else
-					_f.Title.Text:SetText(format(faction_icon, serverkey, charkey));
+					f.Title.Text:SetText(format(faction_icon, serverkey, charkey));
 				end
 			else
-				_f.Title.Text:SetText(charkey);
+				f.Title.Text:SetText(charkey);
 			end
 			if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
 				f.In.Text:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
 				f.Out.Text:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["lastsessiondate"], 2));
 			else
-				_f.In.Text:SetText("Unknown");
+				f.In.Text:SetText("Unknown");
 			end
 			f:Show();
 		elseif (f) then
