@@ -81,6 +81,8 @@ L["ACCLOC_TRACKSUBZONE_TIP"]	= "Enable to also track on the subzone info. For ex
 L["ACCLOC_BREAKUPNUMBERS"]	= "Converts a number into a localized string, grouping digits as required."
 L["ACCLOC_FRAMESCALE"]		= "Accountant Classic Frame's Scale"
 L["ACCLOC_FRAMEALPHA"]		= "Accountant Classic Frame's Transparency"
+L["ACCLOC_INFOSCALE"]		= "Accountant Classic Floating Info's Scale"
+L["ACCLOC_INFOALPHA"]		= "Accountant Classic Floating Info's Transparency"
 
 -- Misc
 L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the \"%s\" data?" -- %s would be the log mode, for example, Session, Day, Week, etc.

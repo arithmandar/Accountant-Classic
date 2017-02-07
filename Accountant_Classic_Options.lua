@@ -47,7 +47,9 @@ function AccountantClassicOptions_OnShow()
 	Lib_UIDropDownMenu_Initialize(AccountantClassicOptionsFrameDateDropDown, AccountantClassicOptionsDateDropDown_Init);
 	Lib_UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, AccountantClassic_Profile["options"].dateformat);
 	AccountantClassicOptionsFrameSliderFrameScale:SetValue(AccountantClassic_Profile["options"].scale);
-AccountantClassicOptionsFrameSliderFrameAlpha:SetValue(AccountantClassic_Profile["options"].alpha);
+	AccountantClassicOptionsFrameSliderFrameAlpha:SetValue(AccountantClassic_Profile["options"].alpha);
+	AccountantClassicOptionsFrameSliderInfoScale:SetValue(AccountantClassic_Profile["options"].infoscale);
+	AccountantClassicOptionsFrameSliderInfoAlpha:SetValue(AccountantClassic_Profile["options"].infoalpha);
 end
 
 function AccountantClassicOptions_OnHide(self)
@@ -250,4 +252,16 @@ function AccountantClassicOptions_SliderFrameAlphaOnValueChanged(self)
 	AccountantClassicOptions_UpdateSlider(self, ACCLOC_FRAMEALPHA);
 	AccountantClassic_Profile["options"].alpha = self:GetValue();
 	AccountantClassicFrame:SetAlpha(AccountantClassic_Profile["options"].alpha); 
+end
+
+function AccountantClassicOptions_SliderInfoScaleOnValueChanged(self)
+	AccountantClassicOptions_UpdateSlider(self, ACCLOC_INFOSCALE);
+	AccountantClassic_Profile["options"].infoscale = self:GetValue();
+	AccountantClassicMoneyInfoFrame:SetScale(AccountantClassic_Profile["options"].infoscale); 
+end
+
+function AccountantClassicOptions_SliderInfoAlphaOnValueChanged(self)
+	AccountantClassicOptions_UpdateSlider(self, ACCLOC_INFOALPHA);
+	AccountantClassic_Profile["options"].infoalpha = self:GetValue();
+	AccountantClassicMoneyInfoFrame:SetAlpha(AccountantClassic_Profile["options"].infoalpha); 
 end

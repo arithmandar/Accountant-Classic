@@ -79,6 +79,10 @@ L["ACCLOC_TRACKZONE_TIP"] = "啟用以追蹤每筆您的收入與支出的發生
 L["ACCLOC_TRACKSUBZONE"] = "同時也追蹤子區域資訊"
 L["ACCLOC_TRACKSUBZONE_TIP"] = "啟用以追蹤子區域資訊。例如：「蘇拉瑪爾 - 秩序聖所」"
 L["ACCLOC_BREAKUPNUMBERS"] = "將數字加上本地化千分號"
+L["ACCLOC_FRAMESCALE"]		= "個人會計視窗大小"
+L["ACCLOC_FRAMEALPHA"]		= "個人會計視窗透明度"
+L["ACCLOC_INFOSCALE"]		= "個人會計浮動資訊大小"
+L["ACCLOC_INFOALPHA"]		= "個人會計浮動資訊透明度"
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "是否確定要將「%s」頁籤的資料歸零?"

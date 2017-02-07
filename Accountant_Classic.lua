@@ -129,6 +129,8 @@ local AccountantClassicDefaultOptions = {
 	dateformat = 1,
 	scale = 1,
 	alpha = 1,
+	infoscale = 1,
+	infoalpha = 1,
 };
 
 local function TableIndex(t,val)
@@ -927,6 +929,8 @@ function AccountantClassic_OnLoad(self)
 	AccountantClassic_SetLabels();
 	AccountantClassicFrame:SetScale(AccountantClassic_Profile["options"].scale); 
 	AccountantClassicFrame:SetAlpha(AccountantClassic_Profile["options"].alpha); 
+	AccountantClassicMoneyInfoFrame:SetScale(AccountantClassic_Profile["options"].infoscale); 
+	AccountantClassicMoneyInfoFrame:SetAlpha(AccountantClassic_Profile["options"].infoalpha); 
 
 	-- Cash
 	AccountantClassic_CurrentMoney = GetMoney();

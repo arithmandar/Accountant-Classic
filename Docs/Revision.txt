@@ -9,7 +9,8 @@ Revision History:
 * v2.08.10 (Feb. XX, 2017)
 ==========================
 - Updated Key Bindings' category and display names
-- Support to adjust Accountant Classic frame's scale and transparency
+- Supported to adjust Accountant Classic frame's scale and transparency
+- Supported to adjust floating info's scale and transparency
 - Fixed the loot amount is incorrectly parsed and calculated.
 - Fixed the loot amount from party / raid member is incorrectly parsed and calculated.
 

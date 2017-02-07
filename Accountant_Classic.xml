@@ -14,7 +14,7 @@
 	<!-- Floating current money info -->
 	<Frame name="AccountantClassicMoneyInfoFrame" movable="true" enableMouse="true" parent="UIParent"> 
 		<Size>
-			<AbsDimension x="160" y="28" />
+			<AbsDimension x="160" y="21" />
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent">
@@ -23,34 +23,16 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Frames>	
-			<Frame name="AccountantClassicMoneyInfoTextFrame">
-				<Size>
-					<AbsDimension x="160" y="21" />
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="3" y="-3" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString name="AccountantClassicMoneyInfoText" inherits="GameFontNormal" Text="Current Money">
-							<Anchors>
-								<Anchor point="TOPLEFT" />
-								<Anchor point="BOTTOMRIGHT" />
-							</Anchors>
-<!--							<FontHeight>
-								<AbsValue val="11" />
-							</FontHeight>-->
-<!--							<Color r="1" g="1" b="1" a="1" />-->
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="AccountantClassicMoneyInfoText" inherits="GameFontNormal" Text="Current Money">
+<!--					<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>-->
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnMouseDown>
 				AccountantClassicMoneyInfoFrame_HandleMouseDown(self, button);
