@@ -52,8 +52,8 @@ L["ACCLOC_CHARS"] = "Todos Personagens"
 -- Options
 L["ACCLOC_OPTS"] = "Opções do Accountant Classic"
 L["ACCLOC_MINIBUT"] = "Mostrar botão no Minimapa"
-L["ACCLOC_MINIBUTMONEY"] = "Mostrar dinheiro no tooltip do botão, no minimapa."
-L["ACCLOC_MINIBUTSESSINF"] = "Mostrar informações da sessão no tooltip do botão, no minimapa."
+L["ACCLOC_MINIBUTMONEY_TIP"] = "Mostrar dinheiro no tooltip do botão, no minimapa."
+L["ACCLOC_MINIBUTSESSINF_TIP"] = "Mostrar informações da sessão no tooltip do botão, no minimapa."
 L["ACCLOC_ONSCRMONEY"] = "Mostrar dinheiro na tela"
 L["ACCLOC_RSTPOSITION"] = "Resetar posição"
 L["ACCLOC_RSTMNYFRM_TIP"] = "Resetar a posição do quadro de dinheiro na tela."
@@ -68,7 +68,7 @@ L["ACCLOC_CHARREMOVETEXT"] = "O personagem selecionado será removido.\nTem cert
 L["ACCLOC_CHARREMOVEDONE"] = "|cffffffff\"%s - %s|cffffffff\" Dados do personagem foram removidos do Accountant Classic."
 L["ACCLOC_DATEFORMAT"] = "Selecione o formato da data:"
 -- L["ACCLOC_DATEFORMAT_TIP"] = ""
--- L["ACCLOC_LDBINFOTYPE"] = ""
+-- L["ACCLOC_LDBINFOTYPE_TIP"] = ""
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "Você tem certeza que deseja resetar os dados de \"%s\"?"

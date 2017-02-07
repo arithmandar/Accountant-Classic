@@ -55,8 +55,8 @@ L["ACCLOC_CHARS"] = "Persos"
 -- Options
 L["ACCLOC_OPTS"] = "Accountant Classic Options"
 L["ACCLOC_MINIBUT"] = "Afficher le Bouton de la Minimap"
-L["ACCLOC_MINIBUTMONEY"] = "Afficher l'argent dans le tooltip du bouton de la minimap"
-L["ACCLOC_MINIBUTSESSINF"] = "Afficher les dépenses et revenus de la session dans le tooltip du bouton de la minimap"
+L["ACCLOC_MINIBUTMONEY_TIP"] = "Afficher l'argent dans le tooltip du bouton de la minimap"
+L["ACCLOC_MINIBUTSESSINF_TIP"] = "Afficher les dépenses et revenus de la session dans le tooltip du bouton de la minimap"
 L["ACCLOC_ONSCRMONEY"] = "Afficher l'argent à l'écran"
 L["ACCLOC_RSTPOSITION"] = "Réinitialiser la position"
 L["ACCLOC_RSTMNYFRM_TIP"] = "Réinitialise la position de l'affichage de l'argent"
@@ -71,7 +71,7 @@ L["ACCLOC_CHARREMOVETEXT"] = "Le personnage sélectionné va être supprimé.\n�
 L["ACCLOC_CHARREMOVEDONE"] = "|cffffffffLes données Accoutant Classic du joueur \"%s - %s|cffffffff\" ont été supprimées"
 L["ACCLOC_DATEFORMAT"] = "Sélectionnez le format de la date"
 L["ACCLOC_DATEFORMAT_TIP"] = "Format de date affiché dans les onglets \"Persos\" et \"Semaine\""
--- L["ACCLOC_LDBINFOTYPE"] = ""
+-- L["ACCLOC_LDBINFOTYPE_TIP"] = ""
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "Êtes-vous certain de vouloir réinitialiser les données \"%s\" ?"

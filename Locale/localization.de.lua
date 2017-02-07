@@ -53,8 +53,8 @@ L["ACCLOC_CHARS"] = "Alle Chars"
 -- Options
 L["ACCLOC_OPTS"] = "Accountant-Classic-Optionen"
 L["ACCLOC_MINIBUT"] = "Minikartenbutton zeigen"
-L["ACCLOC_MINIBUTMONEY"] = "Gold im Tooltip des Minikartenbuttons anzeigen"
-L["ACCLOC_MINIBUTSESSINF"] = "Sitzungsinformationen im Tooltip des Minikartenbuttons anzeigen"
+L["ACCLOC_MINIBUTMONEY_TIP"] = "Gold im Tooltip des Minikartenbuttons anzeigen"
+L["ACCLOC_MINIBUTSESSINF_TIP"] = "Sitzungsinformationen im Tooltip des Minikartenbuttons anzeigen"
 L["ACCLOC_ONSCRMONEY"] = "Geld am Bildschirm zeigen"
 L["ACCLOC_RSTPOSITION"] = "Position zurücksetzen"
 L["ACCLOC_RSTMNYFRM_TIP"] = "Position des Geldfensters zurücksetzen"
@@ -69,7 +69,7 @@ L["ACCLOC_CHARREMOVETEXT"] = "Der ausgewählte Charakter ist kurz davor, gelösc
 L["ACCLOC_CHARREMOVEDONE"] = "|cffffffffDie Accountant-Classic-Daten für den Charakter \"%s - %s|cffffffff\" wurden gelöscht."
 L["ACCLOC_DATEFORMAT"] = "Wähle das Datumsformat aus:"
 L["ACCLOC_DATEFORMAT_TIP"] = "Datumsformat in den Reitern 'Alle Chars' und 'Woche'."
--- L["ACCLOC_LDBINFOTYPE"] = ""
+-- L["ACCLOC_LDBINFOTYPE_TIP"] = ""
 
 -- Misc
 L["ACCLOC_RESET_CONF"] = "Bist du sicher, dass Du die Daten \"%s\" zurücksetzen willst?"

@@ -18,28 +18,11 @@ $Id$
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentToggleBreakupNumbers" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
 							<AbsDimension x="10" y="-45"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText(ACCLOC_BREAKUPNUMBERS);
-					</OnLoad>
-					<OnClick>
-						AccountantClassic_BreakupNumbersToggle();
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentToggleButton" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleBreakupNumbers">
-						<Offset>
-							<AbsDimension x="0" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -67,13 +50,20 @@ $Id$
 					<OnClick>
 						AccountantClassicOptionsMoneyOnMinimap_Toggle();
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_MINIBUTMONEY_TIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentToggleSessionOnMiniMap" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyOnMiniMap">
 						<Offset>
-							<AbsDimension x="0" y="-25"/>
+							<AbsDimension x="300" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -84,13 +74,61 @@ $Id$
 					<OnClick>
 						AccountantClassicOptionsSessionOnMinimap_Toggle();
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_MINIBUTSESSINF_TIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentToggleBreakupNumbers" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyOnMiniMap">
+						<Offset>
+							<AbsDimension x="-20" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_BREAKUPNUMBERS);
+					</OnLoad>
+					<OnClick>
+						AccountantClassic_BreakupNumbersToggle();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentToggleMoneyDisplayOnLDB" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleBreakupNumbers">
+						<Offset>
+							<AbsDimension x="300" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ACCLOC_LDBINFOTYPE);
+					</OnLoad>
+					<OnClick>
+						AccountantClassicLDBDisplay_Toggle();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(ACCLOC_LDBINFOTYPE_TIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentToggleMoneyDisplay" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleSessionOnMiniMap">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleBreakupNumbers">
 						<Offset>
-							<AbsDimension x="-20" y="-25"/>
+							<AbsDimension x="0" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -127,26 +165,9 @@ $Id$
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<CheckButton name="$parentToggleMoneyDisplayOnLDB" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplay">
-						<Offset>
-							<AbsDimension x="0" y="-25"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText(ACCLOC_LDBINFOTYPE);
-					</OnLoad>
-					<OnClick>
-						AccountantClassicLDBDisplay_Toggle();
-					</OnClick>
-				</Scripts>
-			</CheckButton>
 			<CheckButton name="$parentToggleDisplayInstroTips" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplayOnLDB">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplay">
 						<Offset>
 							<AbsDimension x="0" y="-25"/>
 						</Offset>
@@ -169,7 +190,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleDisplayInstroTips">
 						<Offset>
-							<AbsDimension x="0" y="-25"/>
+							<AbsDimension x="300" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -188,7 +209,7 @@ $Id$
 			</CheckButton>
 			<CheckButton name="$parentToggleTrackZone" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleCrossServer">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleDisplayInstroTips">
 						<Offset>
 							<AbsDimension x="0" y="-25"/>
 						</Offset>
