@@ -85,6 +85,11 @@ L["ACCLOC_CLEANUPACCOUNTANT"] = "Du hast die Funktion |cFF00FF00AccountantClassi
 L["ACCLOC_SHOWALL"] = "Alle Charaktere zeigen"
 L["ACCLOC_SHOWALLTIP"] = "Zeigt Einnahmen und Ausgaben aller Charaktere"
 
+-- Amount string for CHAT_MESSAGE_MONEY search
+L["GOLD"]			= "(%d+) Gold"
+L["SILVER"]			= "(%d+) Silber"
+L["COPPER"]			= "(%d+) Kupfer"
+
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"] = "Accountant Classic"
 L["BINDING_NAME_ACCOUNTANTTOG"] = "Accountant Classic anzeigen/ausblenden"

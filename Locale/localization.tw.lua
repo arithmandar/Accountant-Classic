@@ -94,9 +94,14 @@ L["ACCLOC_CLEANUPACCOUNTANT"] = "您以手動執行了以下函式\n|cFF00FF00Ac
 L["ACCLOC_SHOWALL"] = "顯示所有角色"
 L["ACCLOC_SHOWALLTIP"] = "顯示所有角色的收入與支出加總"
 
+-- Amount string for CHAT_MESSAGE_MONEY search
+L["GOLD"]			= "(%d+)金幣"
+L["SILVER"]			= "(%d+)銀幣"
+L["COPPER"]			= "(%d+)銅幣"
+
 -- Key Bindings headers
-L["BINDING_HEADER_ACCOUNTANT"] = "個人會計"
-L["BINDING_NAME_ACCOUNTANTTOG"] = "切換個人會計"
+L["BINDING_HEADER_ACCOUNTANT_CLASSIC_TITLE"] = "個人會計按鍵設定"
+L["BINDING_NAME_ACCOUNTANT_CLASSIC_TOGGLE"] = "開啟個人會計"
 --@end-do-not-package@
 --@localization(locale="zhTW", format="lua_additive_table")@
 

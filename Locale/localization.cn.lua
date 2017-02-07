@@ -93,8 +93,13 @@ L["ACCLOC_CLEANUPACCOUNTANT"] = "您以手动执行了以下函式\n|cFF00FF00Ac
 L["ACCLOC_SHOWALL"] = "显示所有角色"
 L["ACCLOC_SHOWALLTIP"] = "显示所有角色的收入与支出加总"
 
+-- Amount string for CHAT_MESSAGE_MONEY search
+L["GOLD"]			= "(%d+)金币"
+L["SILVER"]			= "(%d+)银币"
+L["COPPER"]			= "(%d+)铜币"
+
 -- Key Bindings headers
-L["BINDING_HEADER_ACCOUNTANT"] = "Accountant Classic"
-L["BINDING_NAME_ACCOUNTANTTOG"] = "呼叫 Accountant Classic"
+L["BINDING_HEADER_ACCOUNTANT_CLASSIC_TITLE"] = "Accountant Classic 按键设定"
+L["BINDING_NAME_ACCOUNTANT_CLASSIC_TOGGLE"] = "呼叫 Accountant Classic"
 --@end-do-not-package@
 --@localization(locale="zhCN", format="lua_additive_table")@

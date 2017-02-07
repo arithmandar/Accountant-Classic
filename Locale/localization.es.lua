@@ -85,6 +85,11 @@ L["ACCLOC_ABOUT"] = "Acerca de"
 -- L["ACCLOC_SHOWALL"] = ""
 -- L["ACCLOC_SHOWALLTIP"] = ""
 
+-- Amount string for CHAT_MESSAGE_MONEY search
+L["GOLD"]			= "(%d+) oro"
+L["SILVER"]			= "(%d+) plata"
+L["COPPER"]			= "(%d+) cobre"
+
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"] = "Accountant"
 L["BINDING_NAME_ACCOUNTANTTOG"] = "Mostrar / Ocultar Accountant"

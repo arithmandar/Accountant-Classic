@@ -127,6 +127,8 @@ local AccountantClassicDefaultOptions = {
 	faction = AccountantClassic_Faction,
 	class = AccountantClassic_Class,
 	dateformat = 1,
+	scale = 1,
+	alpha = 1,
 };
 
 local function TableIndex(t,val)
@@ -923,6 +925,8 @@ function AccountantClassic_OnLoad(self)
 	-- Setup
 	AccountantClassic_LoadData();
 	AccountantClassic_SetLabels();
+	AccountantClassicFrame:SetScale(AccountantClassic_Profile["options"].scale); 
+	AccountantClassicFrame:SetAlpha(AccountantClassic_Profile["options"].alpha); 
 
 	-- Cash
 	AccountantClassic_CurrentMoney = GetMoney();
@@ -987,12 +991,17 @@ local function AccountantClassic_DetectAhMail()
 end
 
 local function AccountantClassic_OnShareMoney(arg1)
-	local gold, silver, copper, money, oldMode;
+	local oldType = AccountantClassic_LogType;
+	if (oldType == "LOOT") then
+		return;
+	end
 
--- Parse the message for money gained.
-	_, _, gold = strfind(arg1, "(%d+)" .. GOLD_AMOUNT)
-	_, _, silver = strfind(arg1, "(%d+)" .. SILVER_AMOUNT)
-	_, _, copper = strfind(arg1, "(%d+)" .. COPPER_AMOUNT)
+	local gold, silver, copper, money;
+
+	-- Parse the message for money gained.
+	_, _, gold = strfind(arg1, L["GOLD"])
+	_, _, silver = strfind(arg1, L["SILVER"])
+	_, _, copper = strfind(arg1, L["COPPER"])
 	if (gold) then
 		gold = tonumber(gold);
 	else
@@ -1011,7 +1020,6 @@ local function AccountantClassic_OnShareMoney(arg1)
 
 	money = copper + silver * 100 + gold * 10000
 
-	oldMode = AccountantClassic_LogType;
 	if (not AccountantClassic_LastMoney) then
 		AccountantClassic_LastMoney = 0;
 	end
@@ -1020,7 +1028,7 @@ local function AccountantClassic_OnShareMoney(arg1)
 	AccountantClassic_LastMoney = AccountantClassic_LastMoney - money;
 	AccountantClassic_LogType = "LOOT";
 	AccountantClassic_UpdateLog();
-	AccountantClassic_LogType = oldMode;
+	AccountantClassic_LogType = oldType;
 
 -- This will suppress the incoming PLAYER_MONEY event.
 	AccountantClassic_LastMoney = AccountantClassic_LastMoney + money;
@@ -1029,7 +1037,7 @@ end
 
 function AccountantClassic_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
-	local oldmode = AccountantClassic_LogType;
+	local oldType = AccountantClassic_LogType;
 
 	if (event == "ADDON_LOADED" and arg1 == "Accountant_Classic") then
 		AccountantClassic_InitOptions();
@@ -1125,11 +1133,11 @@ function AccountantClassic_OnEvent(self, event, ...)
 		AccountantClassic_LogType = "TRAIN";
 	elseif event == "AUCTION_HOUSE_SHOW" then
 		AccountantClassic_LogType = "AH";
-	elseif event == "PLAYER_MONEY" then
-		AccountantClassic_UpdateLog();
 	-- This event is supposed to be fired before PLAYER_MONEY.
 	elseif event == "CHAT_MSG_MONEY" then
 		AccountantClassic_OnShareMoney(arg1);
+	elseif event == "PLAYER_MONEY" then
+		AccountantClassic_UpdateLog();
 	end
 
 	-- for combat lockdown
@@ -1139,7 +1147,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 		isInLockdown = false;
 	end
 	
-	if AccountantClassic_Verbose and AccountantClassic_LogType ~= oldmode then ACC_Print("Accountant mode changed to '"..AccountantClassic_LogType.."'"); end
+	if AccountantClassic_Verbose and AccountantClassic_LogType ~= oldType then ACC_Print("Accountant mode changed to '"..AccountantClassic_LogType.."'"); end
 	
 	if (Accountant_ClassicSaveData) then
 		if (not Accountant_ClassicSaveData[AccountantClassic_Server][AccountantClassic_Player]["options"].LDBDisplaySessionInfo) then

@@ -317,6 +317,58 @@ $Id$
 					</OnLeave>
 				</Scripts>
 			</Frame>
+			<Slider name="$parentSliderFrameScale" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="360" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWeek" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="115" y="-55"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:EnableMouseWheel(true);
+						AccountantClassicOptions_SetupSlider(self, ACCLOC_FRAMESCALE, 0.50, 1.75, 0.02);
+						AccountantClassicOptionsFrameSliderFrameScaleLow:SetText("0.50");
+						AccountantClassicOptionsFrameSliderFrameScaleHigh:SetText("1.75");
+					</OnLoad>
+					<OnValueChanged>
+						AccountantClassicOptions_SliderFrameScaleOnValueChanged(self);
+					</OnValueChanged>
+					<OnMouseWheel>
+						AccountantClassicOptions_OnMouseWheel(self, delta);
+					</OnMouseWheel>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentSliderFrameAlpha" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="360" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSliderFrameScale" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:EnableMouseWheel(true);
+						AccountantClassicOptions_SetupSlider(self, ACCLOC_FRAMEALPHA, 0.1, 1.0, 0.1);
+						AccountantClassicOptionsFrameSliderFrameAlphaLow:SetText("0.1");
+						AccountantClassicOptionsFrameSliderFrameAlphaHigh:SetText("1.0");
+					</OnLoad>
+					<OnValueChanged>
+						AccountantClassicOptions_SliderFrameAlphaOnValueChanged(self);
+					</OnValueChanged>
+					<OnMouseWheel>
+						AccountantClassicOptions_OnMouseWheel(self, delta);
+					</OnMouseWheel>
+				</Scripts>
+			</Slider>
 <!--			<Button name="AccountantClassicOptionsFrameDone" inherits="OptionsButtonTemplate" text="ACCLOC_DONE">
 				<Anchors>
 					<Anchor point="BOTTOM">

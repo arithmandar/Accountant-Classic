@@ -91,6 +91,11 @@ L["ACCLOC_CLEANUPACCOUNTANT"] = "데이터 충돌을 해결하기 위하여 |cFF
 L["ACCLOC_SHOWALL"] = "모든 캐릭터 표시"
 L["ACCLOC_SHOWALLTIP"] = "모든 캐릭터의 수입과 지출 내역을 표시합니다."
 
+-- Amount string for CHAT_MESSAGE_MONEY search
+L["GOLD"]			= "(%d+) 골드"
+L["SILVER"]			= "(%d+) 실버"
+L["COPPER"]			= "(%d+) 코퍼"
+
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"] = "Accountant"
 L["BINDING_NAME_ACCOUNTANTTOG"] = "Toggle Accountant"

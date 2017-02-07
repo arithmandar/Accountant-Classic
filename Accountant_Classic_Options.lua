@@ -46,6 +46,8 @@ function AccountantClassicOptions_OnShow()
 	Lib_UIDropDownMenu_Initialize(AccountantClassicOptionsFrameCharacterDropDown, AccountantClassicOptionsCharacterDropDown_Init);
 	Lib_UIDropDownMenu_Initialize(AccountantClassicOptionsFrameDateDropDown, AccountantClassicOptionsDateDropDown_Init);
 	Lib_UIDropDownMenu_SetSelectedValue(AccountantClassicOptionsFrameDateDropDown, AccountantClassic_Profile["options"].dateformat);
+	AccountantClassicOptionsFrameSliderFrameScale:SetValue(AccountantClassic_Profile["options"].scale);
+AccountantClassicOptionsFrameSliderFrameAlpha:SetValue(AccountantClassic_Profile["options"].alpha);
 end
 
 function AccountantClassicOptions_OnHide(self)
@@ -216,4 +218,36 @@ function AccountantClassicOptionsDateDropDown_OnClick(self, arg1)
 	AccountantClassic_Profile["options"].dateformat = arg1;
 end
 
+function AccountantClassicOptions_SetupSlider(self, text, mymin, mymax, step)
+	self:SetMinMaxValues(mymin, mymax);
+	self:SetValueStep(step);
+end
 
+local function round(num, idp)
+   local mult = 10 ^ (idp or 0);
+   return math.floor(num * mult + 0.5) / mult;
+end
+
+local function AccountantClassicOptions_UpdateSlider(self, text)
+	_G[self:GetName().."Text"]:SetText("|cffffd200"..text.." ("..round(self:GetValue(), 3)..")");
+end
+
+function AccountantClassicOptions_OnMouseWheel(self, delta)
+	if (delta > 0) then
+		self:SetValue(self:GetValue() + self:GetValueStep())
+	else
+		self:SetValue(self:GetValue() - self:GetValueStep())
+	end
+end
+
+function AccountantClassicOptions_SliderFrameScaleOnValueChanged(self)
+	AccountantClassicOptions_UpdateSlider(self, ACCLOC_FRAMESCALE);
+	AccountantClassic_Profile["options"].scale = self:GetValue();
+	AccountantClassicFrame:SetScale(AccountantClassic_Profile["options"].scale); 
+end
+
+function AccountantClassicOptions_SliderFrameAlphaOnValueChanged(self)
+	AccountantClassicOptions_UpdateSlider(self, ACCLOC_FRAMEALPHA);
+	AccountantClassic_Profile["options"].alpha = self:GetValue();
+	AccountantClassicFrame:SetAlpha(AccountantClassic_Profile["options"].alpha); 
+end

@@ -2,7 +2,7 @@
 $Id$
 -->
 <Bindings>
-	<Binding name="ACCOUNTANTTOG" header="ACCOUNTANT">
+	<Binding name="ACCOUNTANT_CLASSIC_TOGGLE" header="ACCOUNTANT_CLASSIC_TITLE" category="ADDONS">
 		AccountantClassic_ButtonOnClick();
 	</Binding>
 </Bindings>

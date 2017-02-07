@@ -79,6 +79,8 @@ L["ACCLOC_TRACKZONE_TIP"]	= "Enable to track the location of each incoming / out
 L["ACCLOC_TRACKSUBZONE"]	= "Also track subzone info"
 L["ACCLOC_TRACKSUBZONE_TIP"]	= "Enable to also track on the subzone info. For example: Suramar - Sanctum of Order"
 L["ACCLOC_BREAKUPNUMBERS"]	= "Converts a number into a localized string, grouping digits as required."
+L["ACCLOC_FRAMESCALE"]		= "Accountant Classic Frame's Scale"
+L["ACCLOC_FRAMEALPHA"]		= "Accountant Classic Frame's Transparency"
 
 -- Misc
 L["ACCLOC_RESET_CONF"]		= "Are you sure you want to reset the \"%s\" data?" -- %s would be the log mode, for example, Session, Day, Week, etc.
@@ -94,7 +96,12 @@ L["ACCLOC_CLEANUPACCOUNTANT"] 	= "You have manually called the function \n|cFF00
 L["ACCLOC_SHOWALL"]		= "Show All Characters"
 L["ACCLOC_SHOWALLTIP"]		= "Show all characters' incoming and outgoing data."
 
+-- Amount string for CHAT_MESSAGE_MONEY search
+L["GOLD"]			= "(%d+) Gold"
+L["SILVER"]			= "(%d+) Silver"
+L["COPPER"]			= "(%d+) Copper"
+
 -- Key Bindings headers
-L["BINDING_HEADER_ACCOUNTANT"]	= "Accountant Classic"
-L["BINDING_NAME_ACCOUNTANTTOG"]	= "Toggle Accountant Classic"
+L["BINDING_HEADER_ACCOUNTANT_CLASSIC_TITLE"]	= "Accountant Classic Bindings"
+L["BINDING_NAME_ACCOUNTANT_CLASSIC_TOGGLE"]	= "Toggle Accountant Classic"
 

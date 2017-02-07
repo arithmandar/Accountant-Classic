@@ -85,8 +85,13 @@ L["ACCLOC_ABOUT"] = "Об Аддоне"
 -- L["ACCLOC_SHOWALL"] = ""
 -- L["ACCLOC_SHOWALLTIP"] = ""
 
+-- Amount string for CHAT_MESSAGE_MONEY search
+L["GOLD"]			= "(%d+) |4золотая:золотые:золотых;"
+L["SILVER"]			= "(%d+) |4серебряная:серебряные:серебряных;"
+L["COPPER"]			= "(%d+) |4медная монета:медные монеты:медных монет;"
+
 -- Key Bindings headers
-L["BINDING_HEADER_ACCOUNTANT"] = "Accountant"
-L["BINDING_NAME_ACCOUNTANTTOG"] = "Переключить Accountant"
+L["BINDING_HEADER_ACCOUNTANT_CLASSIC_TITLE"] = "Accountant Classic"
+L["BINDING_NAME_ACCOUNTANT_CLASSIC_TOGGLE"] = "Переключить Accountant Classic"
 --@end-do-not-package@
 --@localization(locale="ruRU", format="lua_additive_table")@

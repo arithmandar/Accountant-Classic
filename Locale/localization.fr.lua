@@ -87,6 +87,11 @@ L["ACCLOC_CLEANUPACCOUNTANT"] = "Vous avez manuellement appelé la fonction\n|cF
 -- L["ACCLOC_SHOWALL"] = ""
 -- L["ACCLOC_SHOWALLTIP"] = ""
 
+-- Amount string for CHAT_MESSAGE_MONEY search
+L["GOLD"]			= "(%d+) Or"
+L["SILVER"]			= "(%d+) Argent"
+L["COPPER"]			= "(%d+) Cuivre"
+
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT"] = "Accountant Classic"
 L["BINDING_NAME_ACCOUNTANTTOG"] = "Afficher Accountant Classic"
