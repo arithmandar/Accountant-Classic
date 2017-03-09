@@ -6,6 +6,9 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.12 (Mar. xx, 2017)
+==========================
+
 * v2.08.11 (Mar. 09, 2017)
 ==========================
   - Slightly enhanced on screen info frame's width
