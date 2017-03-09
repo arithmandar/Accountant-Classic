@@ -1829,6 +1829,8 @@ function AccountantClassicMoneyInfoFrame_Update()
 		AccountantClassicMoneyInfoText:SetText(frametxt);
 		--AccountantClassicMoneyInfoText:SetText(AccountantClassic_BackpackTokenFrame_Update());
 		AC_MNYSTR = frametxt;
+		local width = AccountantClassicMoneyInfoText:GetStringWidth();
+		AccountantClassicMoneyInfoFrame:SetWidth(width);
 	end
 end
 
