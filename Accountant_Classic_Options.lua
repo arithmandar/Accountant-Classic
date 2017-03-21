@@ -30,10 +30,10 @@ function AccountantClassicOptions_OnLoad(self)
 end
 
 function AccountantClassicOptions_OnShow()
-	AccountantClassicOptionsFrameToggleBreakupNumbers:SetChecked(AccountantClassic_Profile["options"].breakupnumbers);
 	AccountantClassicOptionsFrameToggleButton:SetChecked(AccountantClassic_Profile["options"].showbutton);
 	AccountantClassicOptionsFrameToggleMoneyOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showmoneyonbutton);
 	AccountantClassicOptionsFrameToggleSessionOnMiniMap:SetChecked(AccountantClassic_Profile["options"].showsessiononbutton);
+	AccountantClassicOptionsFrameToggleBreakupNumbers:SetChecked(AccountantClassic_Profile["options"].breakupnumbers);
 	AccountantClassicOptionsFrameToggleMoneyDisplay:SetChecked(AccountantClassic_Profile["options"].showmoneyinfo);
 	AccountantClassicOptionsFrameToggleDisplayInstroTips:SetChecked(AccountantClassic_Profile["options"].showintrotip);
 	AccountantClassicOptionsFrameToggleMoneyDisplayOnLDB:SetChecked(AccountantClassic_Profile["options"].LDBDisplaySessionInfo);
@@ -50,6 +50,20 @@ function AccountantClassicOptions_OnShow()
 	AccountantClassicOptionsFrameSliderFrameAlpha:SetValue(AccountantClassic_Profile["options"].alpha);
 	AccountantClassicOptionsFrameSliderInfoScale:SetValue(AccountantClassic_Profile["options"].infoscale);
 	AccountantClassicOptionsFrameSliderInfoAlpha:SetValue(AccountantClassic_Profile["options"].infoalpha);
+
+	if (AccountantClassic_Profile["options"].showbutton) then
+		AccountantClassicOptionsFrameToggleMoneyOnMiniMap:Enable();
+		AccountantClassicOptionsFrameToggleSessionOnMiniMap:Enable();
+	else
+		AccountantClassicOptionsFrameToggleMoneyOnMiniMap:Disable();
+		AccountantClassicOptionsFrameToggleSessionOnMiniMap:Disable();
+	end
+	
+	if (AccountantClassic_Profile["options"].trackzone) then
+		AccountantClassicOptionsFrameToggleTrackSubZone:Enable();
+	else
+		AccountantClassicOptionsFrameToggleTrackSubZone:Disable();
+	end
 end
 
 function AccountantClassicOptions_OnHide(self)

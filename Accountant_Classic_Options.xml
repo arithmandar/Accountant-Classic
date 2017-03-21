@@ -104,7 +104,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleBreakupNumbers">
 						<Offset>
-							<AbsDimension x="300" y="0"/>
+							<AbsDimension x="0" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -126,7 +126,7 @@ $Id$
 			</CheckButton>
 			<CheckButton name="$parentToggleMoneyDisplay" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleBreakupNumbers">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleMoneyDisplayOnLDB">
 						<Offset>
 							<AbsDimension x="0" y="-25"/>
 						</Offset>
@@ -190,7 +190,7 @@ $Id$
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentToggleDisplayInstroTips">
 						<Offset>
-							<AbsDimension x="300" y="0"/>
+							<AbsDimension x="0" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -209,7 +209,7 @@ $Id$
 			</CheckButton>
 			<CheckButton name="$parentToggleTrackZone" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentToggleDisplayInstroTips">
+					<Anchor point="TOPLEFT" relativeTo="$parentToggleCrossServer">
 						<Offset>
 							<AbsDimension x="0" y="-25"/>
 						</Offset>
