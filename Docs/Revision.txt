@@ -6,8 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.08.13 (Mar. xx, 2017)
+* v2.08.13 (Mar. 22, 2017)
 ==========================
+- Lib update:
+  - NoTaint_UIDropDownMenu
 
 * v2.08.12 (Mar. 21, 2017)
 ==========================
