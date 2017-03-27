@@ -266,12 +266,12 @@ function Lib_UIDropDownMenu_AddSeparator(info, level)
 	info.tSizeY = 8;
 	info.tFitDropDownSizeX = true;
 	info.iconInfo = { tCoordLeft = info.tCoordLeft,
-							tCoordRight = info.tCoordRight,
-							tCoordTop = info.tCoordTop,
-							tCoordBottom = info.tCoordBottom,
-							tSizeX = info.tSizeX,
-							tSizeY = info.tSizeY,
-							tFitDropDownSizeX = info.tFitDropDownSizeX };
+			tCoordRight = info.tCoordRight,
+			tCoordTop = info.tCoordTop,
+			tCoordBottom = info.tCoordBottom,
+			tSizeX = info.tSizeX,
+			tSizeY = info.tSizeY,
+			tFitDropDownSizeX = info.tFitDropDownSizeX };
 
 	Lib_UIDropDownMenu_AddButton(info, level);
 end
