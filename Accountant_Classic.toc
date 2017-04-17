@@ -25,7 +25,11 @@
 #@end-non-debug@
 #@debug@
 ## Title: Accountant Classic
+## Title-deDE: Accountant Classic
+## Title-frFR: Accountant Classic
 ## Title-koKR: |cFF00FF00[가계부]|rAccountant Classic 애드온
+## Title-ptBR: Accountant Classic
+## Title-zhCN: |cFF00FF00[信息]|rAccountant Classic
 ## Title-zhTW: |cFF00FF00[資訊]|r個人會計
 ## Notes: A basic tool to track your monetary incomings and outgoings within WoW.
 ## Notes-deDE: Ein einfaches Hilfsprogramm, um deine Ein- und Ausgaben in WoW zu überwachen.
@@ -36,7 +40,7 @@
 ## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
 #@end-debug@
 ## Author: @project-author@
-## Version: 2.08.14
+## Version: @project-version@
 ## OptionalDeps: LibAboutPanel, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibDialog-1.0, NoTaint_UIDropDownMenu
 ## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB, Accountant_ClassicZoneDB
 ## X-Credits: Sabaki, Shadow, Rophy

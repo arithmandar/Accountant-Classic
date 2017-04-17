@@ -6,14 +6,18 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.15 (Apr. 17, 2017)
+==========================
+  - Library update: NoTaint_UIDropDownMenu
+
 * v2.08.14 (Mar. 27, 2017)
 ==========================
   - Toc update to support WoW 7.2
 
 * v2.08.13 (Mar. 22, 2017)
 ==========================
-- Lib update:
-  - NoTaint_UIDropDownMenu
+  - Lib update:
+    - NoTaint_UIDropDownMenu
 
 * v2.08.12 (Mar. 21, 2017)
 ==========================
