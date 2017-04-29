@@ -945,8 +945,8 @@ function AccountantClassic_OnLoad(self)
 	-- hooks
 	AccountantClassic_RepairAllItems_old = RepairAllItems;
 	RepairAllItems = AccountantClassic_RepairAllItems;
---	AccountantClassic_CursorHasItem_old = CursorHasItem;
---	CursorHasItem = AccountantClassic_CursorHasItem;
+	AccountantClassic_CursorHasItem_old = CursorHasItem;
+	CursorHasItem = AccountantClassic_CursorHasItem;
 
 	-- tabs
 	AccountantClassic_SettleTabText();

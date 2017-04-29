@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.16 (Apr. 29, 2017)
+==========================
+  - Fixed the repair single item's cost won't get categorized properly
+
 * v2.08.15 (Apr. 17, 2017)
 ==========================
   - Library update: NoTaint_UIDropDownMenu
