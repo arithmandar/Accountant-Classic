@@ -33,7 +33,7 @@ local format, gsub, strfind, strsub = string.format, string.gsub, string.find, s
 local floor, fmod = math.floor, math.fmod
 
 local LibDialog = LibStub("LibDialog-1.0");
-local addon = LibStub("AceAddon-3.0"):NewAddon("Accountant_Classic", "AceConsole-3.0")
+local addon = LibStub("AceAddon-3.0"):NewAddon("Accountant_Classic", "AceConsole-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Accountant_Classic");
 local ACbutton = LibStub("LibDBIcon-1.0");
 -- Minimap button with LibDBIcon-1.0
@@ -42,8 +42,8 @@ if ( TitanPanelButton_UpdateButton ) then
 	TitanPanelButton_UpdateButton("Accountant_Classic");
 end
 
-local AccountantClassic_RepairAllItems_old;
-local AccountantClassic_CursorHasItem_old;
+--local AccountantClassic_RepairAllItems_old;
+--local AccountantClassic_CursorHasItem_old;
 
 local AccountantClassic_Version = GetAddOnMetadata("Accountant_Classic", "Version");
 --AccountantClassic_Disabled = false;
@@ -474,6 +474,11 @@ function addon:OnInitialize()
 	self:RegisterChatCommand("accountant", Accountant_Slash);
 	self:RegisterChatCommand("acc", Accountant_Slash);
 	AccountantClassicFrame:SetClampedToScreen(true);
+end
+
+function addon:OnEnable()
+	self:SecureHook("RepairAllItems")
+	self:SecureHook("CursorHasItem")
 end
 
 function addon:Toggle()
@@ -943,10 +948,10 @@ function AccountantClassic_OnLoad(self)
 	AccountantClassic_LastMoney = AccountantClassic_CurrentMoney;
 	
 	-- hooks
-	AccountantClassic_RepairAllItems_old = RepairAllItems;
-	RepairAllItems = AccountantClassic_RepairAllItems;
-	AccountantClassic_CursorHasItem_old = CursorHasItem;
-	CursorHasItem = AccountantClassic_CursorHasItem;
+	--AccountantClassic_RepairAllItems_old = RepairAllItems;
+	--RepairAllItems = AccountantClassic_RepairAllItems;
+	--AccountantClassic_CursorHasItem_old = CursorHasItem;
+	--CursorHasItem = AccountantClassic_CursorHasItem;
 
 	-- tabs
 	AccountantClassic_SettleTabText();
@@ -1731,7 +1736,7 @@ function AccountantClassicTab_OnClick(self)
 end
 
 -- hooks
-
+--[[
 function AccountantClassic_RepairAllItems(guildBankRepair)
 	if (not guildBankRepair) then
 		AccountantClassic_LogType = "REPAIRS";
@@ -1745,6 +1750,18 @@ function AccountantClassic_CursorHasItem()
 	end
 	local toret = AccountantClassic_CursorHasItem_old();
 	return toret;
+end
+]]
+function addon:RepairAllItems(guildBankRepair)
+	if (not guildBankRepair) then
+		AccountantClassic_LogType = "REPAIRS";
+	end
+end
+
+function addon:CursorHasItem()
+	if InRepairMode() then
+		AccountantClassic_LogType = "REPAIRS";
+	end
 end
 
 function AccountantClassic_BackpackTokenFrame_Update()

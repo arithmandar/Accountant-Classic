@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.18 (Apr. 30, 2017)
+==========================
+  - Fixed CursorHasItem's hooking resulting in TargetUnit throwing error.
+    Now using AceHook to hook the repairing functions.
+
 * v2.08.17 (Apr. 30, 2017)
 ==========================
   - Translation update:
