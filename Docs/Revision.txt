@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.08.17 (Apr. 30, 2017)
+==========================
+  - Translation update:
+    - Russian (Blizzatron)
+    
 * v2.08.16 (Apr. 29, 2017)
 ==========================
   - Fixed the repair single item's cost won't get categorized properly

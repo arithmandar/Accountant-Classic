@@ -39,7 +39,7 @@
 ## Notes-zhCN: |cff00CC33追踪每个角色的所有收入与支出状况，并可显示当日小计、当周小计、以及自有记录起的总计。并可显示所有角色的总金额。|r
 ## Notes-zhTW: |cff00CC33追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。|r
 #@end-debug@
-## Author: @project-author@
+## Author: arith
 ## Version: @project-version@
 ## OptionalDeps: LibAboutPanel, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibDialog-1.0, NoTaint_UIDropDownMenu
 ## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB, Accountant_ClassicZoneDB
@@ -49,7 +49,7 @@
 ## X-Website: http://mods.curse.com/addons/wow/accountant-classic
 ## X-License: GPLv2
 ## X-Category: Information
-## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR, esES, ptBR
+## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR, esES, ptBR, ruRU
 
 Libs\Libs.xml
 Locale\Locales.xml
