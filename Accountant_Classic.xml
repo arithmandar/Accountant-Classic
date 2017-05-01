@@ -609,7 +609,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						AccountantClassicOptions_Toggle();
+						Accountant_Classic:OpenOptions();
 					</OnClick>
 				</Scripts>
 			</Button>

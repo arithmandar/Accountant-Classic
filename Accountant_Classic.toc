@@ -53,5 +53,6 @@
 
 Libs\Libs.xml
 Locale\Locales.xml
+Core\Constants.lua
 Accountant_Classic.xml
-Accountant_Classic_Options.xml
+Core\Config.lua

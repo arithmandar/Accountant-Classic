@@ -6,6 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.00 (May xx, 2017)
+==========================
+  - Migrate option panel to use Ace libraries.
+    (Some of the previous setting might get lost and will need to be re-configured)
+  - Added to support LDB's display between total money, session net profit, 
+    day net profit, week net profit and month net profit
+
 * v2.08.18 (Apr. 30, 2017)
 ==========================
   - Fixed CursorHasItem's hooking resulting in TargetUnit throwing error.
