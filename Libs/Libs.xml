@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-<!--@no-lib-strip@-->
 	<Include file="NoTaint_UIDropDownMenu\UIDropDownMenuTemplates.xml"/>
 	<Script file="NoTaint_UIDropDownMenu\UIDropDownMenu.lua"/>
+<!--@no-lib-strip@-->
 	<Script file="LibStub\LibStub.lua"/>
 	<Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 	<Include file="LibAboutPanel\lib.xml"/>

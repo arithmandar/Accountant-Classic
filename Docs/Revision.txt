@@ -12,6 +12,9 @@ Revision History:
     (Some of the previous setting might get lost and will need to be re-configured)
   - Added to support LDB's display between total money, session net profit, 
     day net profit, week net profit and month net profit
+  - Translation update:
+    - Russian (Blizzatron)
+    - German (pas06)
 
 * v2.08.18 (Apr. 30, 2017)
 ==========================
