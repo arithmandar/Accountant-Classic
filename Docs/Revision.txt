@@ -6,7 +6,7 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.09.00 (May xx, 2017)
+* v2.09.00 (May 05, 2017)
 ==========================
   - Migrate option panel to use Ace libraries.
     (Some of the previous setting might get lost and will need to be re-configured)
