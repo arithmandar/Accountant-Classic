@@ -890,9 +890,9 @@ local function AccountantClassic_OnShareMoney(arg1)
 	local gold, silver, copper, money;
 
 	-- Parse the message for money gained.
-	_, _, gold = strfind(arg1, L["g "])
-	_, _, silver = strfind(arg1, L["s "])
-	_, _, copper = strfind(arg1, L["c"])
+	_, _, gold = strfind(arg1, L["(%d+) Gold"])
+	_, _, silver = strfind(arg1, L["(%d+) Silver"])
+	_, _, copper = strfind(arg1, L["(%d+) Copper"])
 	if (gold) then
 		gold = tonumber(gold);
 	else
@@ -1055,7 +1055,7 @@ local function AccountantClassic_NiceCash(amount)
 
 	if amount >= agold then
 		gold = floor(amount / agold);
-		outstr = "|cFFFFFF00" .. gold .. L["(%d+) Gold"];
+		outstr = "|cFFFFFF00" .. gold .. L["g "];
 	end
 	amount = amount - (gold * agold);
 	if amount >= asilver then
@@ -1063,7 +1063,7 @@ local function AccountantClassic_NiceCash(amount)
 		if silver < 10 then
 			silver = " "..silver;
 		end
-		outstr = outstr .. "|cFFDDDDDD" .. silver .. L["(%d+) Silver"];
+		outstr = outstr .. "|cFFDDDDDD" .. silver .. L["s "];
 	end
 	amount = amount - (silver * asilver);
 	if amount > 0 then
@@ -1071,7 +1071,7 @@ local function AccountantClassic_NiceCash(amount)
 		if cent < 10 then
 			cent = " "..cent;
 		end
-		outstr = outstr .. "|cFFFF6600" .. cent .. L["(%d+) Copper"];
+		outstr = outstr .. "|cFFFF6600" .. cent .. L["c"];
 	end
 	outstr = outstr.."|r";
 	return outstr;
