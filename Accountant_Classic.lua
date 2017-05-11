@@ -549,7 +549,7 @@ local function AccountantClassicFrameCharacterDropDown_Init()
 	Lib_UIDropDownMenu_AddButton(info);
 end
 
-local function AccountantClassicFrameCharacterDropDown_Setup()
+function AccountantClassicFrameCharacterDropDown_Setup()
 	Lib_UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
 	for i = 1, #AC_CHARSCROLL_LIST do
 		if (AC_SERVER == AC_CHARSCROLL_LIST[i][1] and AC_PLAYER == AC_CHARSCROLL_LIST[i][2]) then
@@ -839,7 +839,7 @@ function AccountantClassic_OnLoad(self)
 	AccountantClassic_SettleTabText();
 
 	addon:PopulateCharacterList();
-	AccountantClassicFrameCharacterDropDown_Setup();
+	--AccountantClassicFrameCharacterDropDown_Setup();
 
 	--ACC_Print(L["Accountant Classic loaded."]);
 end

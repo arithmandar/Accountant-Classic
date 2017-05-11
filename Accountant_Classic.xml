@@ -386,6 +386,11 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnShow>
+						AccountantClassicFrameCharacterDropDown_Setup()
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<ScrollFrame name="AccountantClassicScrollBar" inherits="FauxScrollFrameTemplate">
 				<Size>
