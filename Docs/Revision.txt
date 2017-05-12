@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.02 (May 12, 2017)
+==========================
+  - Fixed issue in localization files
+
 * v2.09.01 (May 12, 2017)
 ==========================
   - Enhanced character list to prevent from conflicting with WardrobeSort

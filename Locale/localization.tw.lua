@@ -119,5 +119,5 @@ L["(%d+) Copper"]= "(%d+)銅幣"
 L["BINDING_HEADER_ACCOUNTANT_CLASSIC_TITLE"] = "個人會計按鍵設定"
 L["BINDING_NAME_ACCOUNTANT_CLASSIC_TOGGLE"] = "開啟個人會計"
 --@end-do-not-package@
---@localization(locale="zhTW", format="lua_additive_table")@
+--@localization(locale="zhTW", format="lua_additive_table", handle-unlocalized="ignore")@
 
