@@ -6,9 +6,13 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.09.01 (May xx, 2017)
+* v2.09.01 (May 12, 2017)
 ==========================
   - Enhanced character list to prevent from conflicting with WardrobeSort
+  - Lib update:
+    - NoTaint_UIDropDown
+  - Translation update:
+    - German (pas06)
 
 * v2.09.00 (May 05, 2017)
 ==========================
