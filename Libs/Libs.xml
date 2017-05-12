@@ -2,8 +2,6 @@
 ..\FrameXML\UI.xsd">
 
 	<Include file="NoTaint_UIDropDownMenu\UIDropDownMenu.xml"/>
-<!--	<Include file="NoTaint_UIDropDownMenu\UIDropDownMenuTemplates.xml"/>
-	<Script file="NoTaint_UIDropDownMenu\UIDropDownMenu.lua"/>-->
 <!--@no-lib-strip@-->
 	<Script file="LibStub\LibStub.lua"/>
 	<Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
