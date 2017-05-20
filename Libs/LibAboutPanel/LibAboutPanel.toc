@@ -1,21 +1,17 @@
 ﻿## Title: Lib: AboutPanel
-## X-Curse-Packaged-Version: 1.6.2
-## X-Curse-Project-Name: LibAboutPanel
-## X-Curse-Project-ID: libaboutpanel
-## X-Curse-Repository-ID: wow/libaboutpanel/mainline
 
 ## Notes: Adds an about panel to interface options.
 
 ## Author: Ackis
-## X-Email: ackis AT shaw DOT ca
+## X-Email: ackis AT gmail DOT com
 ## X-Author-Faction: Horde
 ## X-Author-Server: Hyjal US
 ## X-Donate: http://www.curseforge.com/projects/libaboutpanel/#w_donations
 
-## Interface: 50400
-## Version: 1.6.2
+## Interface: 70200
+## Version: @project-version@
 ## X-Revision: @project-revision@
-## X-Date: 2014-02-24T20:41:20Z
+## X-Date: @file-date-iso@
 
 ## X-Category: Libraries
 ## X-Localizations: enUS, deDE, esES, esMX
