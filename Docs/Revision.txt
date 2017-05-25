@@ -6,6 +6,12 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.04 (May 25, 2017)
+==========================
+  - Lib update:
+    - Replace NoTaint_UIDropDownMenu with LibUIDropDownMenu
+  - Enhanced dropdown menu's behavior when panel tab changed
+
 * v2.09.03 (May 20, 2017)
 ==========================
   - Lib update:

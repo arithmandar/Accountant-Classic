@@ -47,8 +47,8 @@ externals:
         url: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     Libs/LibStub: 
         url: https://repos.wowace.com/wow/libstub/trunk
-#    Libs/NoTaint_UIDropDownMenu: 
-#        url: svn://svn.wowinterface.com/NoTaint_UIDropDownMenu_Update-1134/trunk
+    Libs/LibUIDropDownMenu: 
+        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
 # Git
     Libs/LibAboutPanel: 
         url: https://repos.curseforge.com/wow/libaboutpanel

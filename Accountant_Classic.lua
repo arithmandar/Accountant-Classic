@@ -511,7 +511,7 @@ function addon:PopulateCharacterList()
 end
 
 local function AccountantClassicFrameCharacterDropDown_OnClick(self)
-	Lib_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
+	L_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
 	AC_SELECTED_CHAR_NUM = self.value;
 	AccountantClassic_OnShow();
 end
@@ -521,7 +521,7 @@ local function AccountantClassicFrameCharacterDropDown_Init()
 	for i = 1, #AC_CHARSCROLL_LIST do
 		local serverkey = AC_CHARSCROLL_LIST[i][1];
 		local charkey = AC_CHARSCROLL_LIST[i][2];
-		info = Lib_UIDropDownMenu_CreateInfo();
+		info = L_UIDropDownMenu_CreateInfo();
 		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
 			local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
 			local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
@@ -536,28 +536,28 @@ local function AccountantClassicFrameCharacterDropDown_Init()
 		info.arg1 = serverkey;
 		info.arg2 = charkey;
 		info.func = AccountantClassicFrameCharacterDropDown_OnClick;
-		Lib_UIDropDownMenu_AddButton(info);
+		L_UIDropDownMenu_AddButton(info);
 	end
 	
 	-- Added All Chars to dropdown
-	info = Lib_UIDropDownMenu_CreateInfo();
+	info = L_UIDropDownMenu_CreateInfo();
 	info.text = L["All Chars"];
 	info.value = #AC_CHARSCROLL_LIST + 1;
 	info.tooltipTitle = L["Show all characters' incoming and outgoing data."];
 	info.tooltipOnButton = true;
 	info.func = AccountantClassicFrameCharacterDropDown_OnClick;
-	Lib_UIDropDownMenu_AddButton(info);
+	L_UIDropDownMenu_AddButton(info);
 end
 
 function AccountantClassicFrameCharacterDropDown_Setup()
-	Lib_UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
+	L_UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
 	for i = 1, #AC_CHARSCROLL_LIST do
 		if (AC_SERVER == AC_CHARSCROLL_LIST[i][1] and AC_PLAYER == AC_CHARSCROLL_LIST[i][2]) then
 			AC_SELECTED_CHAR_NUM = i;
 		end
 	end
-	Lib_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, AC_SELECTED_CHAR_NUM);
-	Lib_UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200);
+	L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, AC_SELECTED_CHAR_NUM);
+	L_UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200);
 end
 
 local function AccountantClassic_LogsShifting()

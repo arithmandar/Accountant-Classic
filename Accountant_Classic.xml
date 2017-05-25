@@ -7,6 +7,7 @@
 	<Button name="AccountantClassicTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
+				L_CloseDropDownMenus();
 				AccountantClassicTab_OnClick(self);
 			</OnClick>
 		</Scripts>
@@ -365,7 +366,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentCharacterDropDown" inherits="Lib_UIDropDownMenuTemplate" hidden="true">
+			<Frame name="$parentCharacterDropDown" inherits="L_UIDropDownMenuTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
 						<Offset>
