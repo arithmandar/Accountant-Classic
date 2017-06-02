@@ -19,7 +19,7 @@ $Id$
 	Everyone who commented and voted for the mod on curse-gaming.com
   Thiou for the French loc, Snj & JokerGermany for the German loc
   ---------------------------------------------------------------------
-  v2.4 - v2.8:
+  v2.4 - v2.9:
      Updated by: Arith
      Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5.22
 ]]
@@ -41,10 +41,12 @@ local FOLDER_NAME, private = ...
 local LibStub = _G.LibStub
 
 local addon = LibStub("AceAddon-3.0"):NewAddon(private.addon_name, "AceConsole-3.0", "AceHook-3.0")
-addon.constants = private.constants;
-addon.constants.addon_name = private.addon_name;
-addon.Name = FOLDER_NAME;
-_G.Accountant_Classic = addon;
+addon.constants = private.constants
+addon.constants.addon_name = private.addon_name
+addon.Name = FOLDER_NAME
+_G.Accountant_Classic = addon
+
+local MoneyFrame
 
 local LibDialog = LibStub("LibDialog-1.0");
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name);
@@ -73,14 +75,12 @@ local AC_CURR_LINES = 0
 local AC_CHAR_LINES = private.constants.maxCharLines -- Maximum lines for characters to be displayed. We have 18 lines of space but we are using the 18th line to present the total. 
 local AC_SELECTED_CHAR_NUM = 1;
 local AccountantClassic_Verbose = nil;
-local AccountantClassic_GotName = false;
+--local AccountantClassic_GotName = false;
 
 local AC_SERVER = GetRealmName();
 local AC_PLAYER = UnitName("player");
 local AccountantClassic_Faction = UnitFactionGroup("player");
 local _, AccountantClassic_Class = UnitClass("player");
-local isInLockdown = false;
-local AC_MNYSTR = nil;
 local AC_SHOWALLCHARS = false;
 
 local AC_DATA = private.constants.onlineData
@@ -218,7 +218,7 @@ local function AccountantClassic_InitZoneDB()
 	end
 end
 
-local function AccountantClassic_InitOptions()
+local function initOptions()
 	local cdate = date("%d/%m/%y");
 	local cmonth = date("%m");
 	local cyear = date("%Y");
@@ -293,49 +293,6 @@ local function AccountantClassic_InitOptions()
 	AccountantClassic_InitZoneDB();
 end
 
-function addon:OnInitialize()
-	self.db = AceDB:New("Accountant_ClassicDB", private.constants.defaults, true);
-	profile = self.db.profile
-	if not self.db then
-		self:Print("Error: Database not loaded correctly.  Please exit out of WoW and delete the Accountant Classic database file Accountant_Classic.lua) found in: \\World of Warcraft\\WTF\\Account\\<Account Name>>\\SavedVariables\\")
-		return
-	end
-
-	LDB.type = "data source";
-	LDB.text = L["Accountant Classic"];
-	LDB.label = L["Accountant Classic"];
-	LDB.icon = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantClassicButton-Up";
-	LDB.OnClick = (function(self, button)
-		if button == "LeftButton" then
-			AccountantClassic_ButtonOnClick();
-		elseif button == "RightButton" then
-			addon:OpenOptions();
-		end
-	end);
-	LDB.OnTooltipShow = (function(tooltip)
-		if not tooltip or not tooltip.AddLine then return end
-		local title = "|cffffffff"..L["Accountant Classic"];
-		if (profile.showmoneyonbutton) then
-			title = title.." - "..AccountantClassic_GetFormattedValue(GetMoney());
-		end
-		tooltip:AddLine(title);
-		if (profile.showsessiononbutton == true) then
-			tooltip:AddLine(AccountantClassic_ShowSessionToolTip());
-		end
-		if (profile.showintrotip == true) then
-			tooltip:AddLine(L["Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button."]);
-		end
-	end);
-
-	ACbutton:Register(private.addon_name, LDB, profile.minimap);
-	self:RegisterChatCommand("accountantbutton", AccountantClassic_ButtonToggle);
-	self:RegisterChatCommand("accountant", Accountant_Slash);
-	self:RegisterChatCommand("acc", Accountant_Slash);
-	AccountantClassicFrame:SetClampedToScreen(true);
-	
-	addon:SetupOptions()
-end
-
 local function copyOptions()
 	local oprofile = Accountant_ClassicSaveData[AC_SERVER][AC_PLAYER]["options"]
 	local db = addon.db.profile
@@ -360,47 +317,15 @@ local function copyOptions()
 	db.oprofileCopied = true
 end
 
-function addon:OnEnable()
-	copyOptions()
-
-	self:SecureHook("RepairAllItems")
-	self:SecureHook("CursorHasItem")
-end
-
-function addon:Toggle()
-	self.db.profile.minimap.hide = not self.db.profile.minimap.hide
-	if self.db.profile.minimap.hide then
-		ACbutton:Hide(private.addon_name)
-	else
-		ACbutton:Show(private.addon_name)
-	end
-end
-
-function addon:Refresh()
-	if (profile.showmoneyinfo) then
-		AccountantClassicMoneyInfoFrame:Show()
-	else
-		AccountantClassicMoneyInfoFrame:Hide()
-	end
-	AccountantClassic_OnShow()
-	AccountantClassicFrame:SetScale(profile.scale); 
-	AccountantClassicFrame:SetAlpha(profile.alpha); 
-	AccountantClassicMoneyInfoFrame:SetScale(profile.infoscale); 
-	AccountantClassicMoneyInfoFrame:SetAlpha(profile.infoalpha); 
-	
-	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType])
-end
-
-function AccountantClassic_ButtonToggle()
-	addon:Toggle()
-end
-
-function AccountantClassic_ButtonOnClick()
-	if AccountantClassicFrame:IsVisible() then
-		AccountantClassicFrame:Hide();
-	else
-		AccountantClassicFrame:Show();
-	end
+local function arrangeAccountantClassicFrame()
+	local f = _G["AccountantClassicFrame"]
+	if not f then return end
+	f:SetScale(profile.scale)
+	f:SetAlpha(profile.alpha)
+	local point, relativeTo, relativePoint, ofsx, ofsy = unpack(profile.AcFramePoint)
+	f:ClearAllPoints()
+	f:SetParent("UIParent")
+	f:SetPoint(point or "TOPLEFT", nil, relativePoint or "TOPLEFT", ofsx or 0, ofsy or -104)
 end
 
 function AccountantClassic_RegisterEvents(self)
@@ -410,7 +335,7 @@ function AccountantClassic_RegisterEvents(self)
 	--self:RegisterForDrag("LeftButton");
 end
 
-local function AccountantClassic_SetLabels(self)
+local function setLabels()
 	-- if current tab is All Chars tab
 	if (AC_CURRTAB == AC_TABS) then
 		AccountantClassicFrameResetButton:Hide();
@@ -460,7 +385,7 @@ local function AccountantClassic_SetLabels(self)
 	end
 end
 
-local function AccountantClassic_SettleTabText()
+local function settleTabText()
 	local TabText = private.constants.tabText
 	for i = 1, AC_TABS do
 		_G["AccountantClassicFrameTab"..i]:SetText(TabText[i]);
@@ -740,7 +665,7 @@ local function AccountantClassic_LogsShifting()
 	end
 end
 
-local function AccountantClassic_LoadData()
+local function loadData()
 	local cdate = date("%d/%m/%y");
 	for key, value in pairs(AC_DATA) do
 		for modekey,mode in pairs(private.constants.logmodes) do
@@ -810,24 +735,106 @@ local function AccountantClassic_LoadData()
 	AccountantClassic_Profile["options"].lastsessiondate = cdate;
 end
 
+local function updateLog()
+	local cdate = date("%d/%m/%y");
+	--local cmonth = date("%m");
+	--local cyear = date("%Y");
+
+	AccountantClassic_LogsShifting();
+
+	local zoneText = GetZoneText();
+	if ( not IsInInstance() ) then -- For the case when player is in dungeon or raid, track on subzone make less sense
+		if (profile.tracksubzone == true and GetSubZoneText() ~= "" ) then
+			zoneText = format("%s - %s", GetZoneText(), GetSubZoneText());
+		end
+	end
+	
+	AC_CURRMONEY = GetMoney();
+	AccountantClassic_Profile["options"].totalcash = AC_CURRMONEY;
+	diff = AC_CURRMONEY - AC_LASTMONEY;
+	AC_LASTMONEY = AC_CURRMONEY;
+	if (diff == 0 or diff == nil) then
+		return;
+	end
+
+	local logtype = AC_LOGTYPE;
+	if (logtype == "") then logtype = "OTHER"; end
+	if (diff >0) then
+		for key,logmode in pairs(private.constants.logmodes) do
+			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay" or logmode == "PrvYear") then
+				-- do nothing. data in previous time period should not be touched
+			else
+				AC_DATA[logtype][logmode].In = AC_DATA[logtype][logmode].In + diff
+				AccountantClassic_Profile["data"][logtype][logmode].In = AC_DATA[logtype][logmode].In;
+				if (AC_NewDB) then
+					if (logmode == "Day") then
+						Accountant_Classic_NewDB[AC_SERVER][AC_PLAYER]["data"][cdate][logtype].In = AC_DATA[logtype][logmode].In;
+					end
+				end
+				-- ZoneDB
+				if (profile.trackzone == true) then
+					if (Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText] == nil) then
+						Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText] = { In = 0, Out = 0 };
+					end
+					Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText].In = Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText].In + diff;
+				end
+			end
+		end
+		if AccountantClassic_Verbose then ACC_Print("Gained "..AccountantClassic_NiceCash(diff).." from "..logtype); end
+	elseif (diff < 0) then
+		diff = diff * -1;
+		for key,logmode in pairs(private.constants.logmodes) do
+			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay" or logmode == "PrvYear") then
+				-- do nothing
+			else
+				AC_DATA[logtype][logmode].Out = AC_DATA[logtype][logmode].Out + diff
+				AccountantClassic_Profile["data"][logtype][logmode].Out = AC_DATA[logtype][logmode].Out;
+				if (AC_NewDB) then
+					if (logmode == "Day") then
+						Accountant_Classic_NewDB[AC_SERVER][AC_PLAYER]["data"][cdate][logtype].Out = AC_DATA[logtype][logmode].Out;
+					end
+				end
+				-- ZoneDB
+				if (profile.trackzone == true) then
+					if (Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText] == nil) then
+						Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText] = { In = 0, Out = 0 };
+					end
+					Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText].Out = Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText].Out + diff;
+				end
+			end
+		end
+		if AccountantClassic_Verbose then ACC_Print("Lost "..AccountantClassic_NiceCash(diff).." from "..logtype); end
+	end
+
+	-- special case mode resets
+	if AC_LOGTYPE == "REPAIRS" then
+		AC_LOGTYPE = "MERCH";
+	end
+
+	if AccountantClassicFrame:IsVisible() then
+		AccountantClassic_OnShow();
+	end
+end
+
+--[[
 function AccountantClassic_OnLoad(self)
 	-- Setup
-	AccountantClassic_LoadData();
-	AccountantClassic_SetLabels();
-	AccountantClassicFrame:SetScale(profile.scale); 
-	AccountantClassicFrame:SetAlpha(profile.alpha); 
-	AccountantClassicMoneyInfoFrame:SetScale(profile.infoscale); 
-	AccountantClassicMoneyInfoFrame:SetAlpha(profile.infoalpha); 
+	--loadData();
+	--setLabels();
+	--AccountantClassicFrame:SetScale(profile.scale); 
+	--AccountantClassicFrame:SetAlpha(profile.alpha); 
+	--AccountantClassicMoneyInfoFrame:SetScale(profile.infoscale); 
+	--AccountantClassicMoneyInfoFrame:SetAlpha(profile.infoalpha); 
 
 	-- Cash
-	AC_CURRMONEY = GetMoney();
+--	AC_CURRMONEY = GetMoney();
 	-- Check if there is any un-recorded money in or out
-	if (AC_LASTSESSMONEY ~= AC_CURRMONEY) then
-		AC_LOGTYPE = "OTHER";
-		AC_LASTMONEY = AC_LASTSESSMONEY;
-		AccountantClassic_UpdateLog();
-	end
-	AC_LASTMONEY = AC_CURRMONEY;
+--	if (AC_LASTSESSMONEY ~= AC_CURRMONEY) then
+--		AC_LOGTYPE = "OTHER";
+--		AC_LASTMONEY = AC_LASTSESSMONEY;
+--		updateLog();
+--	end
+--	AC_LASTMONEY = AC_CURRMONEY;
 	
 	-- hooks
 	--AccountantClassic_RepairAllItems_old = RepairAllItems;
@@ -836,13 +843,13 @@ function AccountantClassic_OnLoad(self)
 	--CursorHasItem = AccountantClassic_CursorHasItem;
 
 	-- tabs
-	AccountantClassic_SettleTabText();
+	--settleTabText();
 
-	addon:PopulateCharacterList();
+	--addon:PopulateCharacterList();
 	--AccountantClassicFrameCharacterDropDown_Setup();
 
 	--ACC_Print(L["Accountant Classic loaded."]);
-end
+end]]
 
 function Accountant_Slash(msg)
 	if msg == nil or msg == "" then
@@ -918,7 +925,7 @@ local function AccountantClassic_OnShareMoney(arg1)
 -- This will force a money update with calculated amount.
 	AC_LASTMONEY = AC_LASTMONEY - money;
 	AC_LOGTYPE = "LOOT";
-	AccountantClassic_UpdateLog();
+	updateLog();
 	AC_LOGTYPE = oldType;
 
 -- This will suppress the incoming PLAYER_MONEY event.
@@ -926,10 +933,129 @@ local function AccountantClassic_OnShareMoney(arg1)
 
 end
 
+local function AccountantClassic_NiceCash(amount)
+	local agold = 10000;
+	local asilver = 100;
+	local outstr = "";
+	local gold = 0;
+	local silver = 0;
+	local cent = 0;
+
+	if amount >= agold then
+		gold = floor(amount / agold);
+		outstr = "|cFFFFFF00" .. gold .. L["g "];
+	end
+	amount = amount - (gold * agold);
+	if amount >= asilver then
+		silver = floor(amount / asilver);
+		if silver < 10 then
+			silver = " "..silver;
+		end
+		outstr = outstr .. "|cFFDDDDDD" .. silver .. L["s "];
+	end
+	amount = amount - (silver * asilver);
+	if amount > 0 then
+		cent = amount;
+		if cent < 10 then
+			cent = " "..cent;
+		end
+		outstr = outstr .. "|cFFFF6600" .. cent .. L["c"];
+	end
+	outstr = outstr.."|r";
+	return outstr;
+end
+
+-- code adopted from SellTrash and MoneyFrame.lua
+function addon:GetFormattedValue(amount)
+	local gold = floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
+	local goldDisplay = profile.breakupnumbers and BreakUpLargeNumbers(gold) or gold;
+	local silver = floor((amount - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
+	local copper = fmod(amount, COPPER_PER_SILVER);
+	
+	local TMP_GOLD_AMOUNT_TEXTURE = "%s|TInterface\\MoneyFrame\\UI-GoldIcon:%d:%d:2:0|t";
+	local TMP_SILVER_AMOUNT_TEXTURE = "%02d|TInterface\\MoneyFrame\\UI-SilverIcon:%d:%d:2:0|t";
+	local TMP_COPPER_AMOUNT_TEXTURE = "%02d|TInterface\\MoneyFrame\\UI-CopperIcon:%d:%d:2:0|t";
+	if (gold >0) then
+		return format(TMP_GOLD_AMOUNT_TEXTURE.." "..TMP_SILVER_AMOUNT_TEXTURE.." "..TMP_COPPER_AMOUNT_TEXTURE, goldDisplay, 0, 0, silver, 0, 0, copper, 0, 0);
+	elseif (silver >0) then 
+		return format(SILVER_AMOUNT_TEXTURE.." "..TMP_COPPER_AMOUNT_TEXTURE, silver, 0, 0, copper, 0, 0);
+	elseif (copper >0) then
+		return format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
+	else
+		return "";
+	end
+end
+
+local function AccountantClassic_GetFormattedCurrency(currencyID)
+	local name, amount, icon = GetCurrencyInfo(currencyID);
+	
+	if (amount >0) then
+		local CURRENCY_TEXTURE = "%s|T"..icon..":%d:%d:2:0|t";
+		amount = profile.breakupnumbers and BreakUpLargeNumbers(amount) or amount;
+		return format(CURRENCY_TEXTURE.." ", amount, 0, 0);
+	else
+		return "";
+	end
+end
+
+function addon:WeekStart()
+	local oneday = 86400;
+	local ct = time();
+	local dt = date("*t",ct);
+	local thisDay = dt["wday"];
+	--while thisDay ~= AccountantClassic_Profile["options"].weekstart do
+	while thisDay ~= addon.db.profile.weekstart do
+		ct = ct - oneday;
+		dt = date("*t",ct);
+		thisDay = dt["wday"];
+	end
+	local wdate = date(nil,ct);
+	return strsub(wdate,0,8);
+end
+
+function AccountantClassicScrollBar_Update()
+	local lineplusoffset;
+	FauxScrollFrame_Update(AccountantClassicScrollBar, AC_CURR_LINES, AC_CHAR_LINES, 19);
+	for i = 1, AC_CHAR_LINES do
+		local f = _G["AccountantClassicCharacterEntry"..i];
+		lineplusoffset = i + FauxScrollFrame_GetOffset(AccountantClassicScrollBar);
+		if (lineplusoffset <= AC_CURR_LINES) then
+			local player_text, factionstr, faction_icon, classToken, class_color;
+			local serverkey = AC_CHARSCROLL_LIST[lineplusoffset][1];
+			local charkey = AC_CHARSCROLL_LIST[lineplusoffset][2];
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
+				factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
+				faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s";
+				if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
+					classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
+					class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
+				end
+				if(classToken) then 
+					f.Title.Text:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
+				else
+					f.Title.Text:SetText(format(faction_icon, serverkey, charkey));
+				end
+			else
+				f.Title.Text:SetText(charkey);
+			end
+			if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
+				f.In.Text:SetText("|cFFFFFFFF"..addon:GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
+				f.Out.Text:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["lastsessiondate"], 2));
+			else
+				f.In.Text:SetText("Unknown");
+			end
+			f:Show();
+		elseif (f) then
+			f:Hide();
+		end
+	end
+end
+
 function AccountantClassic_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	local oldType = AC_LOGTYPE;
 
+	--[[
 	if (event == "ADDON_LOADED" and arg1 == private.addon_name) then
 		AccountantClassic_InitOptions();
 	end
@@ -942,12 +1068,11 @@ function AccountantClassic_OnEvent(self, event, ...)
 		if ( playerName ~= UNKNOWNBEING and playerName ~= UNKNOWNOBJECT and playerName ~= nil ) then
 			AccountantClassic_GotName = true;
 			AccountantClassic_OnLoad();
-			--AccountantClassicOptions_OnLoad();
-			AccountantClassicMoneyInfoFrame_Init();
+			--AccountantClassicMoneyInfoFrame_Init();
 
 		end
 		return;
-	end
+	end]]
 
 	if ( 
 	event == "GARRISON_MISSION_FINISHED" or 
@@ -1028,139 +1153,14 @@ function AccountantClassic_OnEvent(self, event, ...)
 	elseif event == "CHAT_MSG_MONEY" then
 		AccountantClassic_OnShareMoney(arg1);
 	elseif event == "PLAYER_MONEY" then
-		AccountantClassic_UpdateLog();
+		updateLog();
 	end
 
-	-- for combat lockdown
-	if (event == "PLAYER_REGEN_DISABLED") then
-		isInLockdown = true;
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		isInLockdown = false;
-	end
-	
 	if AccountantClassic_Verbose and AC_LOGTYPE ~= oldType then ACC_Print("Accountant mode changed to '"..AC_LOGTYPE.."'"); end
 	
-	if (Accountant_ClassicSaveData) then
+	--[[if (Accountant_ClassicSaveData) then
 		LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType])
-	end
-end
-
-local function AccountantClassic_NiceCash(amount)
-	local agold = 10000;
-	local asilver = 100;
-	local outstr = "";
-	local gold = 0;
-	local silver = 0;
-	local cent = 0;
-
-	if amount >= agold then
-		gold = floor(amount / agold);
-		outstr = "|cFFFFFF00" .. gold .. L["g "];
-	end
-	amount = amount - (gold * agold);
-	if amount >= asilver then
-		silver = floor(amount / asilver);
-		if silver < 10 then
-			silver = " "..silver;
-		end
-		outstr = outstr .. "|cFFDDDDDD" .. silver .. L["s "];
-	end
-	amount = amount - (silver * asilver);
-	if amount > 0 then
-		cent = amount;
-		if cent < 10 then
-			cent = " "..cent;
-		end
-		outstr = outstr .. "|cFFFF6600" .. cent .. L["c"];
-	end
-	outstr = outstr.."|r";
-	return outstr;
-end
-
--- code adopted from SellTrash and MoneyFrame.lua
-function AccountantClassic_GetFormattedValue(amount)
-	local gold = floor(amount / (COPPER_PER_SILVER * SILVER_PER_GOLD));
-	local goldDisplay = profile.breakupnumbers and BreakUpLargeNumbers(gold) or gold;
-	local silver = floor((amount - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
-	local copper = fmod(amount, COPPER_PER_SILVER);
-	
-	local TMP_GOLD_AMOUNT_TEXTURE = "%s|TInterface\\MoneyFrame\\UI-GoldIcon:%d:%d:2:0|t";
-	local TMP_SILVER_AMOUNT_TEXTURE = "%02d|TInterface\\MoneyFrame\\UI-SilverIcon:%d:%d:2:0|t";
-	local TMP_COPPER_AMOUNT_TEXTURE = "%02d|TInterface\\MoneyFrame\\UI-CopperIcon:%d:%d:2:0|t";
-	if (gold >0) then
-		return format(TMP_GOLD_AMOUNT_TEXTURE.." "..TMP_SILVER_AMOUNT_TEXTURE.." "..TMP_COPPER_AMOUNT_TEXTURE, goldDisplay, 0, 0, silver, 0, 0, copper, 0, 0);
-	elseif (silver >0) then 
-		return format(SILVER_AMOUNT_TEXTURE.." "..TMP_COPPER_AMOUNT_TEXTURE, silver, 0, 0, copper, 0, 0);
-	elseif (copper >0) then
-		return format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
-	else
-		return "";
-	end
-end
-
-local function AccountantClassic_GetFormattedCurrency(currencyID)
-	local name, amount, icon = GetCurrencyInfo(currencyID);
-	
-	if (amount >0) then
-		local CURRENCY_TEXTURE = "%s|T"..icon..":%d:%d:2:0|t";
-		amount = profile.breakupnumbers and BreakUpLargeNumbers(amount) or amount;
-		return format(CURRENCY_TEXTURE.." ", amount, 0, 0);
-	else
-		return "";
-	end
-end
-
-function addon:WeekStart()
-	local oneday = 86400;
-	local ct = time();
-	local dt = date("*t",ct);
-	local thisDay = dt["wday"];
-	--while thisDay ~= AccountantClassic_Profile["options"].weekstart do
-	while thisDay ~= addon.db.profile.weekstart do
-		ct = ct - oneday;
-		dt = date("*t",ct);
-		thisDay = dt["wday"];
-	end
-	local wdate = date(nil,ct);
-	return strsub(wdate,0,8);
-end
-
-function AccountantClassicScrollBar_Update()
-	local lineplusoffset;
-	FauxScrollFrame_Update(AccountantClassicScrollBar, AC_CURR_LINES, AC_CHAR_LINES, 19);
-	for i = 1, AC_CHAR_LINES do
-		local f = _G["AccountantClassicCharacterEntry"..i];
-		lineplusoffset = i + FauxScrollFrame_GetOffset(AccountantClassicScrollBar);
-		if (lineplusoffset <= AC_CURR_LINES) then
-			local player_text, factionstr, faction_icon, classToken, class_color;
-			local serverkey = AC_CHARSCROLL_LIST[lineplusoffset][1];
-			local charkey = AC_CHARSCROLL_LIST[lineplusoffset][2];
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
-				factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
-				faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s";
-				if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
-					classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
-					class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
-				end
-				if(classToken) then 
-					f.Title.Text:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
-				else
-					f.Title.Text:SetText(format(faction_icon, serverkey, charkey));
-				end
-			else
-				f.Title.Text:SetText(charkey);
-			end
-			if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-				f.In.Text:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
-				f.Out.Text:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["lastsessiondate"], 2));
-			else
-				f.In.Text:SetText("Unknown");
-			end
-			f:Show();
-		elseif (f) then
-			f:Hide();
-		end
-	end
+	end]]
 end
 
 function AccountantClassic_OnShow(self)
@@ -1208,7 +1208,7 @@ function AccountantClassic_OnShow(self)
 	AccountantClassic_Profile["options"]["month"] = cmonth;
 ]]
 	AccountantClassic_LogsShifting();
-	AccountantClassic_SetLabels();
+	setLabels();
 	if ( AC_CURRTAB ~= AC_TABS ) then
 		-- for all the tabs except for character tab
 		AccountantClassicScrollBar:Hide();
@@ -1286,20 +1286,20 @@ function AccountantClassic_OnShow(self)
 			TotalIn = TotalIn + mIn;
 			TotalOut = TotalOut + mOut;
 
-			colIn.Text:SetText(AccountantClassic_GetFormattedValue(mIn));
-			colOut.Text:SetText(AccountantClassic_GetFormattedValue(mOut));
+			colIn.Text:SetText(addon:GetFormattedValue(mIn));
+			colOut.Text:SetText(addon:GetFormattedValue(mOut));
 		end
-		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalIn));
-		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(TotalOut));
+		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(TotalIn));
+		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(TotalOut));
 		if (TotalOut > TotalIn) then
 			diff = TotalOut - TotalIn;
 			AccountantClassicFrame.TotalFlow:SetText("|cFFFF3333"..L["Net Loss"]..":");
-			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
+			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..addon:GetFormattedValue(diff));
 		else
 			if (TotalOut ~= TotalIn) then
 				diff = TotalIn - TotalOut;
 				AccountantClassicFrame.TotalFlow:SetText("|cFF00FF00"..L["Net Profit"]..":");
-				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
+				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..addon:GetFormattedValue(diff));
 			else
 				AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":");
 				AccountantClassicFrame.TotalFlowValue:SetText("");
@@ -1402,30 +1402,43 @@ function AccountantClassic_OnShow(self)
 		end
 		AccountantClassicScrollBar_Update();
 
-		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allin));
-		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(allout));
+		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(allin));
+		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(allout));
 		if (allout > allin) then
 			diff = allout - allin;
 			AccountantClassicFrame.TotalFlow:SetText("|cFFFF3333"..L["Net Loss"]..":");
-			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..AccountantClassic_GetFormattedValue(diff));
+			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..addon:GetFormattedValue(diff));
 		else
 			if allout ~= allin then
 				diff = allin - allout;
 				AccountantClassicFrame.TotalFlow:SetText("|cFF00FF00"..L["Net Profit"]..":");
-				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..AccountantClassic_GetFormattedValue(diff));
+				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..addon:GetFormattedValue(diff));
 			else
 				AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":");
 				AccountantClassicFrame.TotalFlowValue:SetText("");
 			end
 		end
 		_G["AccountantClassicFrameRow18Title"].Text:SetText(L["Sum Total"]);
-		_G["AccountantClassicFrameRow18In"].Text:SetText("|cFFFFFFFF"..AccountantClassic_GetFormattedValue(alltotal));
+		_G["AccountantClassicFrameRow18In"].Text:SetText("|cFFFFFFFF"..addon:GetFormattedValue(alltotal));
 		
 		fs:SetText("");
 		fsv:SetText("");
 	end
 	SetPortraitTexture(AccountantClassicFramePortrait, "player");
 	PanelTemplates_SetTab(AccountantClassicFrame, AC_CURRTAB);
+end
+
+function AccountantClassic_OnMouseDown(self, button)
+	-- Handle left button clicks
+	if (button == "LeftButton") then
+		self:StartMoving();
+	end
+end
+
+function AccountantClassic_OnMouseUp(self, button)
+	self:StopMovingOrSizing();
+	local a, b, c, d, e = self:GetPoint()
+	profile.AcFramePoint = { a, b, c, d, e }
 end
 
 function ACC_Print(msg)
@@ -1525,87 +1538,6 @@ function addon:CharacterRemovalProceed(server, character)
 	end
 end
 
-function AccountantClassic_UpdateLog()
-	local cdate = date("%d/%m/%y");
-	--local cmonth = date("%m");
-	--local cyear = date("%Y");
-
-	AccountantClassic_LogsShifting();
-
-	local zoneText = GetZoneText();
-	if ( not IsInInstance() ) then -- For the case when player is in dungeon or raid, track on subzone make less sense
-		if (profile.tracksubzone == true and GetSubZoneText() ~= "" ) then
-			zoneText = format("%s - %s", GetZoneText(), GetSubZoneText());
-		end
-	end
-	
-	AC_CURRMONEY = GetMoney();
-	AccountantClassic_Profile["options"].totalcash = AC_CURRMONEY;
-	diff = AC_CURRMONEY - AC_LASTMONEY;
-	AC_LASTMONEY = AC_CURRMONEY;
-	if (diff == 0 or diff == nil) then
-		return;
-	end
-
-	local logtype = AC_LOGTYPE;
-	if (logtype == "") then logtype = "OTHER"; end
-	if (diff >0) then
-		for key,logmode in pairs(private.constants.logmodes) do
-			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay" or logmode == "PrvYear") then
-				-- do nothing. data in previous time period should not be touched
-			else
-				AC_DATA[logtype][logmode].In = AC_DATA[logtype][logmode].In + diff
-				AccountantClassic_Profile["data"][logtype][logmode].In = AC_DATA[logtype][logmode].In;
-				if (AC_NewDB) then
-					if (logmode == "Day") then
-						Accountant_Classic_NewDB[AC_SERVER][AC_PLAYER]["data"][cdate][logtype].In = AC_DATA[logtype][logmode].In;
-					end
-				end
-				-- ZoneDB
-				if (profile.trackzone == true) then
-					if (Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText] == nil) then
-						Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText] = { In = 0, Out = 0 };
-					end
-					Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText].In = Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText].In + diff;
-				end
-			end
-		end
-		if AccountantClassic_Verbose then ACC_Print("Gained "..AccountantClassic_NiceCash(diff).." from "..logtype); end
-	elseif (diff < 0) then
-		diff = diff * -1;
-		for key,logmode in pairs(private.constants.logmodes) do
-			if (logmode == "PrvWeek" or logmode == "PrvMonth" or logmode == "PrvDay" or logmode == "PrvYear") then
-				-- do nothing
-			else
-				AC_DATA[logtype][logmode].Out = AC_DATA[logtype][logmode].Out + diff
-				AccountantClassic_Profile["data"][logtype][logmode].Out = AC_DATA[logtype][logmode].Out;
-				if (AC_NewDB) then
-					if (logmode == "Day") then
-						Accountant_Classic_NewDB[AC_SERVER][AC_PLAYER]["data"][cdate][logtype].Out = AC_DATA[logtype][logmode].Out;
-					end
-				end
-				-- ZoneDB
-				if (profile.trackzone == true) then
-					if (Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText] == nil) then
-						Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText] = { In = 0, Out = 0 };
-					end
-					Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText].Out = Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][logmode][logtype][zoneText].Out + diff;
-				end
-			end
-		end
-		if AccountantClassic_Verbose then ACC_Print("Lost "..AccountantClassic_NiceCash(diff).." from "..logtype); end
-	end
-
-	-- special case mode resets
-	if AC_LOGTYPE == "REPAIRS" then
-		AC_LOGTYPE = "MERCH";
-	end
-
-	if AccountantClassicFrame:IsVisible() then
-		AccountantClassic_OnShow();
-	end
-end
-
 function AccountantClassicTab_OnClick(self)
 	PanelTemplates_SetTab(AccountantClassicFrame, self:GetID());
 	AC_CURRTAB = self:GetID();
@@ -1671,18 +1603,18 @@ function addon:ShowNetMoney(logmode)
 		if (TotalOut > TotalIn) then
 			diff = TotalOut-TotalIn;
 			amoney_str = amoney_str.."|cFFFF3333"..L["Net Loss"]..": ";
-			amoney_str = amoney_str..AccountantClassic_GetFormattedValue(diff);
+			amoney_str = amoney_str..addon:GetFormattedValue(diff);
 		else
 			diff = TotalIn-TotalOut;
 			if (diff == 0) then
-				amoney_str = AccountantClassic_GetFormattedValue(GetMoney());
+				amoney_str = addon:GetFormattedValue(GetMoney());
 			else
 				amoney_str = amoney_str.."|cFF00FF00"..L["Net Profit"]..": ";
-				amoney_str = amoney_str..AccountantClassic_GetFormattedValue(diff);
+				amoney_str = amoney_str..addon:GetFormattedValue(diff);
 			end
 		end
 	else
-		amoney_str = AccountantClassic_GetFormattedValue(GetMoney());
+		amoney_str = addon:GetFormattedValue(GetMoney());
 	end
 	
 	if (amoney_str) then
@@ -1690,7 +1622,7 @@ function addon:ShowNetMoney(logmode)
 	end
 end
 
-function AccountantClassic_ShowSessionToolTip()
+function addon:ShowSessionToolTip()
 	local amoney_str = "";
 
 	local TotalIn = 0;
@@ -1699,17 +1631,17 @@ function AccountantClassic_ShowSessionToolTip()
 		TotalIn = TotalIn + AC_DATA[key]["Session"].In;
 		TotalOut = TotalOut + AC_DATA[key]["Session"].Out;
 	end
-	amoney_str = "|cFFFFFFFF"..L["Total Incomings"]..": "..AccountantClassic_GetFormattedValue(TotalIn).."\n";
-	amoney_str = amoney_str.."|cFFFFFFFF"..L["Total Outgoings"]..": "..AccountantClassic_GetFormattedValue(TotalOut).."\n";
+	amoney_str = "|cFFFFFFFF"..L["Total Incomings"]..": "..addon:GetFormattedValue(TotalIn).."\n";
+	amoney_str = amoney_str.."|cFFFFFFFF"..L["Total Outgoings"]..": "..addon:GetFormattedValue(TotalOut).."\n";
 	if TotalOut > TotalIn then
 		diff = TotalOut-TotalIn;
 		amoney_str = amoney_str.."|cFFFF3333"..L["Net Loss"]..": ";
-		amoney_str = amoney_str..AccountantClassic_GetFormattedValue(diff);
+		amoney_str = amoney_str..addon:GetFormattedValue(diff);
 	else
 		if TotalOut ~= TotalIn then
 			diff = TotalIn-TotalOut;
 			amoney_str = amoney_str.."|cFF00FF00"..L["Net Profit"]..": ";
-			amoney_str = amoney_str..AccountantClassic_GetFormattedValue(diff);
+			amoney_str = amoney_str..addon:GetFormattedValue(diff);
 		else
 			-- do nothing
 		end
@@ -1718,79 +1650,6 @@ function AccountantClassic_ShowSessionToolTip()
 	if (amoney_str) then
 		return amoney_str;
 	end
-end
-
-function AccountantClassicMoneyInfoFrame_Update()
-	local frametxt = "|cFFFFFFFF"..AccountantClassic_GetFormattedValue(GetMoney());
-	if (frametxt ~= AC_MNYSTR) then
-		AccountantClassicMoneyInfoText:SetText(frametxt);
-		--AccountantClassicMoneyInfoText:SetText(addon:BackpackTokenFrame_Update());
-		AC_MNYSTR = frametxt;
-		local width = AccountantClassicMoneyInfoText:GetStringWidth();
-		AccountantClassicMoneyInfoFrame:SetWidth(width);
-	end
-end
-
-function AccountantClassicMoneyInfoFrame_HandleMouseDown(self, buttonName)    
-	-- Prevent activation when in combat
-	if (isInLockdown) then
-		return;
-	end
-	-- Handle left button clicks
-	if (buttonName == "LeftButton") then
-		AccountantClassicMoneyInfoFrame:StartMoving();
-		GameTooltip:Hide();
-	elseif (buttonName == "RightButton") then
-		AccountantClassic_ButtonOnClick();
-		GameTooltip_Hide();
-	end
-end
-
-function AccountantClassicMoneyInfoFrame_HandleMouseUp(self, button)
-	AccountantClassicMoneyInfoFrame:StopMovingOrSizing();
---[[	local x, y;
-
-	_, _, _, x, y = AccountantClassicMoneyInfoFrame:GetPoint();
-	AccountantClassic_Profile["options"].moneyinfoframe_x = x;
-	AccountantClassic_Profile["options"].moneyinfoframe_y = y;
-]]
-end
-
-function AccountantClassicMoneyInfoFrame_Init()
-	if (addon.db.profile.showmoneyinfo == true) then
-		AccountantClassicMoneyInfoFrame:Show();
-	else
-		AccountantClassicMoneyInfoFrame:Hide();
-	end
-end
-
-function AccountantClassicMoneyInfoFrame_OnEnter(self)
-	if (isInLockdown) then
-		return;
-	end
-
-	if (not GameTooltip:IsShown()) then
-		local amoney_str = AccountantClassic_ShowSessionToolTip();
-
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -10, 0);
-		GameTooltip:SetBackdropColor(0, 0, 0, 0.5);
-		GameTooltip:SetText("|cFFFFFFFF"..L["Accountant Classic"].." - "..L["This Session"], 1, 1, 1, nil, 1);
-		GameTooltip:AddLine(amoney_str, 1, 1, 1, 1);
-		local tokenstr = addon:BackpackTokenFrame_Update();
-		if (tokenstr) then
-			GameTooltip:AddLine(tokenstr, 1, 1, 1, 1);
-		end
-		if (profile.showintrotip == true) then
-			GameTooltip:AddLine("("..L["Left-click and drag to move this button.\nRight-Click to open Accountant Classic."]..")", 0.8, 0.8, 0.8, 1);
-		end
-		GameTooltip:Show();
-	else
-		GameTooltip:Hide();
-	end
-end
-
-function AccountantClassicMoneyInfoFrame_OnLeave(self)
-	GameTooltip_Hide();
 end
 
 function AccountantClassic_ParseDateStrings(s, typ)
@@ -1913,7 +1772,7 @@ function AccountantClassic_LogTypeOnShow(self)
 							tooltipText = tooltipText..k_zone..": ";
 							mIn = mIn + Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["In"];
 							mOut = mOut + Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["Out"];
-							tooltipText = tooltipText..L["ACCLOC_IN"]..AccountantClassic_GetFormattedValue(mIn)..", "..L["ACCLOC_OUT"]..AccountantClassic_GetFormattedValue(mOut).."\n";
+							tooltipText = tooltipText..L["ACCLOC_IN"]..addon:GetFormattedValue(mIn)..", "..L["ACCLOC_OUT"]..addon:GetFormattedValue(mOut).."\n";
 						end
 					end
 				end
@@ -1927,3 +1786,113 @@ function AccountantClassic_LogTypeOnShow(self)
 		end
 	end
 end
+
+function addon:OnInitialize()
+	self.db = AceDB:New("Accountant_ClassicDB", private.constants.defaults, true);
+	profile = self.db.profile
+	if not self.db then
+		self:Print("Error: Database not loaded correctly.  Please exit out of WoW and delete the Accountant Classic database file Accountant_Classic.lua) found in: \\World of Warcraft\\WTF\\Account\\<Account Name>>\\SavedVariables\\")
+		return
+	end
+	self.db.RegisterCallback(self, "OnProfileChanged", "Refresh")
+	self.db.RegisterCallback(self, "OnProfileCopied", "Refresh")
+	self.db.RegisterCallback(self, "OnProfileReset", "Refresh")
+
+	LDB.type = "data source";
+	LDB.text = L["Accountant Classic"];
+	LDB.label = L["Accountant Classic"];
+	LDB.icon = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantClassicButton-Up";
+	LDB.OnClick = (function(self, button)
+		if button == "LeftButton" then
+			AccountantClassic_ButtonOnClick();
+		elseif button == "RightButton" then
+			addon:OpenOptions();
+		end
+	end);
+	LDB.OnTooltipShow = (function(tooltip)
+		if not tooltip or not tooltip.AddLine then return end
+		local title = "|cffffffff"..L["Accountant Classic"];
+		if (profile.showmoneyonbutton) then
+			title = title.." - "..addon:GetFormattedValue(GetMoney());
+		end
+		tooltip:AddLine(title);
+		if (profile.showsessiononbutton == true) then
+			tooltip:AddLine(addon:ShowSessionToolTip());
+		end
+		if (profile.showintrotip == true) then
+			tooltip:AddLine(L["Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button."]);
+		end
+	end);
+
+	ACbutton:Register(private.addon_name, LDB, profile.minimap);
+	self:RegisterChatCommand("accountantbutton", AccountantClassic_ButtonToggle);
+	self:RegisterChatCommand("accountant", Accountant_Slash);
+	self:RegisterChatCommand("acc", Accountant_Slash);
+	initOptions()
+	addon:SetupOptions()
+	
+	MoneyFrame = addon:GetModule("MoneyFrame", true)
+end
+
+function addon:OnEnable()
+	copyOptions()
+
+	self:SecureHook("RepairAllItems")
+	self:SecureHook("CursorHasItem")
+	
+	loadData()
+	setLabels()
+
+	-- Cash
+	AC_CURRMONEY = GetMoney();
+	-- Check if there is any un-recorded money in or out
+	if (AC_LASTSESSMONEY ~= AC_CURRMONEY) then
+		AC_LOGTYPE = "OTHER";
+		AC_LASTMONEY = AC_LASTSESSMONEY;
+		updateLog();
+	end
+	AC_LASTMONEY = AC_CURRMONEY;
+	
+	settleTabText()
+	addon:PopulateCharacterList()
+	
+	self:Refresh()
+	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType])
+end
+
+function addon:Toggle()
+	self.db.profile.minimap.hide = not self.db.profile.minimap.hide
+	if self.db.profile.minimap.hide then
+		ACbutton:Hide(private.addon_name)
+	else
+		ACbutton:Show(private.addon_name)
+	end
+end
+
+function addon:Refresh()
+	profile = self.db.profile
+
+	if (profile.showmoneyinfo) then
+		AccountantClassicMoneyInfoFrame:Show()
+		MoneyFrame:ArrangeMoneyInfoFrame()
+	else
+		AccountantClassicMoneyInfoFrame:Hide()
+	end
+	AccountantClassic_OnShow()
+	arrangeAccountantClassicFrame()
+	
+	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType])
+end
+
+function AccountantClassic_ButtonToggle()
+	addon:Toggle()
+end
+
+function AccountantClassic_ButtonOnClick()
+	if AccountantClassicFrame:IsVisible() then
+		AccountantClassicFrame:Hide();
+	else
+		AccountantClassicFrame:Show();
+	end
+end
+

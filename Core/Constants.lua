@@ -45,13 +45,17 @@ constants.defaults = {
 		infoalpha = 1,
 		faction = playerFaction,
 		class = playerClass,
+		AcFramePoint = { "TOPLEFT", "UIParent", "TOPLEFT", 0, -104 },
+		MnyFramePoint = { "TOPLEFT", "UIParent", "TOPLEFT", 10, -80 },
 		profileCopied = false,
 	},
 };
 
 constants.events = {
-	"PLAYER_LOGIN",
-	"ADDON_LOADED",
+--	"PLAYER_LOGIN",
+--	"ADDON_LOADED",
+--	"UNIT_NAME_UPDATE",
+--	"PLAYER_ENTERING_WORLD",
 	-- Garrison
 	"GARRISON_MISSION_FINISHED",
 	"GARRISON_ARCHITECT_OPENED",
@@ -111,10 +115,6 @@ constants.events = {
 	-- Others
 	"CHAT_MSG_MONEY",
 	"PLAYER_MONEY",
-	"UNIT_NAME_UPDATE",
-	"PLAYER_ENTERING_WORLD",
-	"PLAYER_REGEN_ENABLED",
-	"PLAYER_REGEN_DISABLED",
 };
 
 constants.logmodes = {"Session", "Day", "PrvDay", "Week", "PrvWeek", "Month", "PrvMonth", "Year", "PrvYear", "Total" }

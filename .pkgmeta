@@ -14,6 +14,8 @@ externals:
 # SVN
     Libs/AceAddon-3.0: 
         url: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+    Libs/AceEvent-3.0: 
+        url: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
     Libs/AceDB-3.0: 
         url: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
     Libs/AceConsole-3.0: 

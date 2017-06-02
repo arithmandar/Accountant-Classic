@@ -54,5 +54,7 @@
 Libs\Libs.xml
 Locale\Locales.xml
 Core\Constants.lua
-Accountant_Classic.xml
+Core\Core.lua
+Core\Core.xml
+Core\MoneyFrame.lua
 Core\Config.lua

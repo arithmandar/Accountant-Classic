@@ -99,7 +99,6 @@ local function to_confirm_character_removal(value)
 	LibDialog:Spawn("ACCLOC_CHARREMOVE");
 end
 
-
 local options, moduleOptions = nil, {}
 
 local function getOptions()

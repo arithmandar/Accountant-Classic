@@ -1,7 +1,6 @@
 <!-- $Id$ -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="Accountant_Classic.lua"/>
 
 	<!-- Item Row Template -->
 	<Button name="AccountantClassicTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
@@ -12,46 +11,6 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<!-- Floating current money info -->
-	<Frame name="AccountantClassicMoneyInfoFrame" movable="true" enableMouse="true" parent="UIParent"> 
-		<Size>
-			<AbsDimension x="160" y="21" />
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="UIParent">
-				<Offset>
-					<AbsDimension x="10" y="-80" />
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="AccountantClassicMoneyInfoText" inherits="GameFontNormal" Text="Current Money">
-<!--					<Anchors>
-						<Anchor point="TOPLEFT" />
-						<Anchor point="BOTTOMRIGHT" />
-					</Anchors>-->
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnMouseDown>
-				AccountantClassicMoneyInfoFrame_HandleMouseDown(self, button);
-			</OnMouseDown>
-			<OnMouseUp>
-				AccountantClassicMoneyInfoFrame_HandleMouseUp(self, button)
-			</OnMouseUp>
-			<OnUpdate>
-				AccountantClassicMoneyInfoFrame_Update(self);						
-			</OnUpdate>
-			<OnEnter>
-				AccountantClassicMoneyInfoFrame_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				AccountantClassicMoneyInfoFrame_OnLeave(self);
-			</OnLeave>
-		</Scripts>
-	</Frame>
 
 	<!-- Text rows -->
 	<Frame name="AccountantClassicRowTemplate" virtual="true">
@@ -751,6 +710,7 @@
 				tinsert(UISpecialFrames, "AccountantClassicFrame");
 				UIPanelWindows["AccountantClassicFrame"] = { area = "left", pushable = 11 };
 				self:RegisterForDrag("LeftButton");
+				self:SetClampedToScreen(true);
 
 				<!-- Setup -->
 				AccountantClassic_RegisterEvents(self);
@@ -761,17 +721,11 @@
 			<OnEvent>
 				AccountantClassic_OnEvent(self, event, ...);
 			</OnEvent>
-			<OnDragStart>
-				self:StartMoving();
-			</OnDragStart>
-			<OnDragStop>
-				self:StopMovingOrSizing();
-			</OnDragStop>
-<!--			<OnMouseDown>
-				AccountantClassic_HandleMouseDown(self, button);
-			</OnMouseDown>-->
+			<OnMouseDown>
+				AccountantClassic_OnMouseDown(self, button);
+			</OnMouseDown>
 			<OnMouseUp>
-				self:StopMovingOrSizing();
+				AccountantClassic_OnMouseUp(self, button);
 			</OnMouseUp>
 		</Scripts>
 	</Frame>

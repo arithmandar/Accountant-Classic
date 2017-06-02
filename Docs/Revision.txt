@@ -6,6 +6,15 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.05 (Jun. xx, 2017)
+==========================
+  - Now the floating money frame's position will be kept and will be restored
+    if you temporary disabled the addon and then enabled it again
+  - Now the Accountant Classic's main frame's position will be kept and will be 
+    restored if you temporary disabled the addon and then enabled it again
+  - Dev: Split Money frame related codes to separated file
+  - Dev: Codes reorganized
+
 * v2.09.04 (May 25, 2017)
 ==========================
   - Lib update:
