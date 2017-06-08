@@ -6,7 +6,7 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.09.05 (Jun. xx, 2017)
+* v2.09.05 (Jun. 09, 2017)
 ==========================
   - Now the floating money frame's position will be kept and will be restored
     if you temporary disabled the addon and then enabled it again
