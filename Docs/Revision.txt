@@ -6,6 +6,12 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.06 (Jun. 16, 2017)
+==========================
+- Fixed no-lib version's lib setting. LibDataBroker-1.1 should be embedded anyway.
+- Removed LibAboutPanel.
+- Re-organized option panel's layout
+
 * v2.09.05 (Jun. 09, 2017)
 ==========================
   - Now the floating money frame's position will be kept and will be restored

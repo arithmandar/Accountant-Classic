@@ -44,6 +44,8 @@ local addon = LibStub("AceAddon-3.0"):NewAddon(private.addon_name, "AceConsole-3
 addon.constants = private.constants
 addon.constants.addon_name = private.addon_name
 addon.Name = FOLDER_NAME
+addon.LocName = select(2, GetAddOnInfo(addon.Name))
+addon.Notes = select(3, GetAddOnInfo(addon.Name))
 _G.Accountant_Classic = addon
 
 local MoneyFrame

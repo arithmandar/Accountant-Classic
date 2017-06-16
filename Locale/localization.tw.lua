@@ -60,7 +60,7 @@ L["Show money on minimap button's tooltip"] = "在小地圖按鈕的提示顯示
 L["Show session info"]= "顯示本次收入/支出"
 L["Show session info on minimap button's tooltip"] = "在小地圖按鈕的提示顯示本次收入/支出"
 L["Show money on screen"] = "在遊戲畫面顯示目前現金"
-L["Reset position"] = "重置位置"
+L["Reset position"] = "重設位置"
 L["Reset money frame's position"] = "重置畫面上顯示現金的位置"
 L["Minimap Button Settings"] = "小地圖按鍵設定"
 L["Minimap Button Position"] = "小地圖按鈕位置"
@@ -95,6 +95,7 @@ L["Main Frame's Scale and Alpha Settings"] = "主視窗的大小與透明度"
 L["Onscreen Actionbar's Scale and Alpha Settings"] = "浮動視窗的大小與透明度"
 L["Character Data's Removal"] = "角色資料刪除"
 L["Profile Options"] = "設定檔選項"
+L["Scale and Transparency"] = "大小與透明度"
 
 -- Misc
 L["Are you sure you want to reset the \"%s\" data?"] = "是否確定要將「%s」頁籤的資料歸零?"

@@ -105,7 +105,7 @@ local function getOptions()
 	if not options then
 		options = {
 			type = "group",
-			name = L["Accountant Classic"],
+			name = addon.LocName,
 			args = {
 				general = {
 					order = 1,
@@ -117,13 +117,13 @@ local function getOptions()
 						intro = {
 							order = 0,
 							type = "description",
-							name = L["A basic tool to track your monetary incomings and outgoings within WoW."],
+							name = addon.Notes,
 						},
 						group1 = {
 							order = 10,
 							type = "group",
 							name = L["Minimap Button Settings"],
-							inline = true,
+							--inline = true,
 							args = {
 								minimapButton = {
 									order = 12,
@@ -139,12 +139,14 @@ local function getOptions()
 									type = "toggle",
 									name = L["Show money"],
 									desc = L["Show money on minimap button's tooltip"],
+									disabled = function() return addon.db.profile.minimap.hide end,
 								},
 								showsessiononbutton = {
 									order = 14,
 									type = "toggle",
 									name = L["Show session info"],
 									desc = L["Show session info on minimap button's tooltip"],
+									disabled = function() return addon.db.profile.minimap.hide end,
 								},
 							},
 						},
@@ -152,7 +154,7 @@ local function getOptions()
 							order = 21,
 							type = "group",
 							name = L["LDB Display Settings"],
-							inline = true,
+							--inline = true,
 							args = {
 								ldbDisplayType = {
 									order = 22,
@@ -176,13 +178,13 @@ local function getOptions()
 							order = 31,
 							type = "group",
 							name = L["General and Data Display Format Settings"],
-							inline = true,
+							--inline = true,
 							args = {
 								showmoneyinfo = {
 									order = 32,
 									type = "toggle",
 									name = L["Show money on screen"],
-									width = "double",
+									--width = "double",
 								},
 								resetButtonPos = {
 									order = 32.1,
@@ -256,56 +258,64 @@ local function getOptions()
 						group4 = {
 							order = 41,
 							type = "group",
-							name = L["Main Frame's Scale and Alpha Settings"],
-							inline = true,
+							name = L["Scale and Transparency"],
+							--inline = true,
 							args = {
-								scale = {
-									order = 42,
-									type = "range",
-									name = L["Accountant Classic Frame's Scale"],
-									min = 0.5, max = 1.75, bigStep = 0.02,
-									isPercent = true,
-									width = "full",
+								group41 = {
+									order = 41,
+									type = "group",
+									name = L["Main Frame's Scale and Alpha Settings"],
+									inline = true,
+									args = {
+										scale = {
+											order = 42,
+											type = "range",
+											name = L["Accountant Classic Frame's Scale"],
+											min = 0.5, max = 1.75, bigStep = 0.02,
+											isPercent = true,
+											width = "full",
+										},
+										alpha = {
+											order = 43,
+											type = "range",
+											name = L["Accountant Classic Frame's Transparency"],
+											min = 0.1, max = 1, bigStep = 0.1,
+											isPercent = true,
+											width = "full",
+										},
+									},
 								},
-								alpha = {
-									order = 43,
-									type = "range",
-									name = L["Accountant Classic Frame's Transparency"],
-									min = 0.1, max = 1, bigStep = 0.1,
-									isPercent = true,
-									width = "full",
+								group42 = {
+									order = 51,
+									type = "group",
+									name = L["Onscreen Actionbar's Scale and Alpha Settings"],
+									inline = true,
+									args = {
+										infoscale = {
+											order = 52,
+											type = "range",
+											name = L["Accountant Classic Floating Info's Scale"],
+											min = 0.5, max = 3, bigStep = 0.1,
+											isPercent = true,
+											width = "full",
+										},
+										infoalpha = {
+											order = 53,
+											type = "range",
+											name = L["Accountant Classic Floating Info's Transparency"],
+											min = 0.1, max = 1, bigStep = 0.1,
+											isPercent = true,
+											width = "full",
+										},
+									},
 								},
 							},
 						},
 						group5 = {
 							order = 51,
 							type = "group",
-							name = L["Onscreen Actionbar's Scale and Alpha Settings"],
-							inline = true,
-							args = {
-								infoscale = {
-									order = 52,
-									type = "range",
-									name = L["Accountant Classic Floating Info's Scale"],
-									min = 0.5, max = 3, bigStep = 0.1,
-									isPercent = true,
-									width = "full",
-								},
-								infoalpha = {
-									order = 53,
-									type = "range",
-									name = L["Accountant Classic Floating Info's Transparency"],
-									min = 0.1, max = 1, bigStep = 0.1,
-									isPercent = true,
-									width = "full",
-								},
-							},
-						},
-						group6 = {
-							order = 61,
-							type = "group",
 							name = L["Character Data's Removal"],
-							inline = true,
+							--inline = true,
 							args = {
 								deleteData = {
 									order = 62,
@@ -353,15 +363,10 @@ function addon:SetupOptions()
 	self.optionsFrames = {}
 
 	-- setup options table
-	AceConfigReg:RegisterOptionsTable(L["Accountant Classic"], getOptions)
-	self.optionsFrames.General = AceConfigDialog:AddToBlizOptions(L["Accountant Classic"], nil, nil, "general")
+	AceConfigReg:RegisterOptionsTable(addon.LocName, getOptions)
+	self.optionsFrames.General = AceConfigDialog:AddToBlizOptions(addon.LocName, nil, nil, "general")
 
 	self:RegisterModuleOptions("Profiles", giveProfiles, L["Profile Options"])
-
-	-- Add in the about panel to the Bliz options (not a part of the ace3 config)
-	if LibStub:GetLibrary("LibAboutPanel", true) then
-		self.optionsFrames["About"] = LibStub:GetLibrary("LibAboutPanel").new(L["Accountant Classic"], addon.Name)
-	end
 end
 
 -- Description: Function which extends our options table in a modular way
@@ -373,5 +378,5 @@ end
 -- Output: None.
 function addon:RegisterModuleOptions(name, optionTbl, displayName)
 	moduleOptions[name] = optionTbl
-	self.optionsFrames[name] = AceConfigDialog:AddToBlizOptions(L["Accountant Classic"], displayName, L["Accountant Classic"], name)
+	self.optionsFrames[name] = AceConfigDialog:AddToBlizOptions(addon.LocName, displayName, addon.LocName, name)
 end
