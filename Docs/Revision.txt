@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.07 (Jun. 16, 2017)
+==========================
+- Fixed lib loading issue
+
 * v2.09.06 (Jun. 16, 2017)
 ==========================
 - Fixed no-lib version's lib setting. LibDataBroker-1.1 should be embedded anyway.
