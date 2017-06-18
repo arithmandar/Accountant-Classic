@@ -1160,9 +1160,9 @@ function AccountantClassic_OnEvent(self, event, ...)
 
 	if AccountantClassic_Verbose and AC_LOGTYPE ~= oldType then ACC_Print("Accountant mode changed to '"..AC_LOGTYPE.."'"); end
 	
-	--[[if (Accountant_ClassicSaveData) then
+	if (Accountant_ClassicSaveData) then
 		LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType])
-	end]]
+	end
 end
 
 function AccountantClassic_OnShow(self)

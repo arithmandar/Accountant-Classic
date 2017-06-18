@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.08 (Jun. 18, 2017)
+==========================
+- Fixed LDB text's updating issue
+- Options tuning fine-tuned
+
 * v2.09.07 (Jun. 16, 2017)
 ==========================
 - Fixed lib loading issue

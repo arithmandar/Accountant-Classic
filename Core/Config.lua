@@ -194,6 +194,7 @@ local function getOptions()
 									func = function()
 										AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 10, -80)
 									end,
+									disabled = function() return not addon.db.profile.showmoneyinfo end,
 								},
 
 								showintrotip = {
@@ -290,6 +291,7 @@ local function getOptions()
 									type = "group",
 									name = L["Onscreen Actionbar's Scale and Alpha Settings"],
 									inline = true,
+									disabled = function() return not addon.db.profile.showmoneyinfo end,
 									args = {
 										infoscale = {
 											order = 52,
