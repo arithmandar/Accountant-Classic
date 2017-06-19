@@ -234,6 +234,7 @@ local function getOptions()
 									name = L["Also track subzone info"],
 									desc = L["Enable to also track on the subzone info. For example: Suramar - Sanctum of Order"],
 									width = "full",
+									disabled = function() return not addon.db.profile.trackzone end,
 								},
 								weekstart = {
 									order = 37,
