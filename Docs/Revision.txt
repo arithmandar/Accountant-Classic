@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.10.00 (Jul. xx, 2017)
+==========================
+- Lib Update: LibUIDropDownMenu
+- Updated PlaySound API's usage method to support both 7.2.5 and 7.3.0 of WoW clients
+
 * v2.09.08 (Jun. 18, 2017)
 ==========================
 - Fixed LDB text's updating issue
