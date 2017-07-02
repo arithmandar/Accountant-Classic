@@ -38,7 +38,7 @@ externals:
         url: https://repos.wowace.com/wow/libstub/trunk
     Libs/LibUIDropDownMenu: 
         url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
-        tag: latest
+        tag: v1.04.7030024484
 # Git
     Libs/LibDataBroker-1.1: 
         url: https://repos.wowace.com/wow/libdatabroker-1-1
