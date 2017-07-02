@@ -36,8 +36,8 @@ externals:
         url: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     Libs/LibStub: 
         url: https://repos.wowace.com/wow/libstub/trunk
-    Libs/LibUIDropDownMenu: 
-        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
+#    Libs/LibUIDropDownMenu: 
+#        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
 # Git
     Libs/LibAboutPanel: 
         url: https://repos.curseforge.com/wow/libaboutpanel
