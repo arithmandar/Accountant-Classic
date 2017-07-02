@@ -6,10 +6,6 @@ manual-changelog:
 
 enable-nolib-creation: yes
 
-ignore:
-    - Images/PSD
-    - Libs/NoTaint_UIDropDownMenu
-
 externals:
 # SVN
     Libs/AceAddon-3.0: 
@@ -36,9 +32,8 @@ externals:
         url: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     Libs/LibStub: 
         url: https://repos.wowace.com/wow/libstub/trunk
-    Libs/LibUIDropDownMenu: 
-        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
-        tag: v1.04.7030024484
+#    Libs/LibUIDropDownMenu: 
+#        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
 # Git
     Libs/LibDataBroker-1.1: 
         url: https://repos.wowace.com/wow/libdatabroker-1-1
@@ -47,4 +42,8 @@ externals:
         url: https://repos.wowace.com/wow/libdialog-1-0
 
 license-output: Docs/LICENSE.txt
+
+ignore:
+    - Images/PSD
+    - Libs/NoTaint_UIDropDownMenu
 
