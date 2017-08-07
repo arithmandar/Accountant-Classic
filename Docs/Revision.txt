@@ -6,7 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.10.00 (Jul. 17, 2017)
+* v2.09.10 (Aug. xx, 2017)
+==========================
+- Added option to support in remember the last character selection from the dropdown menu
+
+* v2.09.09 (Jul. 17, 2017)
 ==========================
 - Lib Update: LibUIDropDownMenu
 - Updated PlaySound API's usage method to support both 7.2.5 and 7.3.0 of WoW clients

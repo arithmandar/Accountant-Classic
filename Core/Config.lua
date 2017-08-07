@@ -196,7 +196,6 @@ local function getOptions()
 									end,
 									disabled = function() return not addon.db.profile.showmoneyinfo end,
 								},
-
 								showintrotip = {
 									order = 33,
 									type = "toggle",
@@ -221,15 +220,25 @@ local function getOptions()
 										addon:PopulateCharacterList()
 									end,
 								},
-								trackzone = {
+								rememberSelectedCharacter = {
 									order = 36,
+									type = "toggle",
+									name = L["Remember character selected"],
+									desc = L["Remember the latest character selection in dropdown menu."],
+									width = "full",
+									set = function(info, value)
+										addon.db.profile.rememberSelectedCharacter = value
+									end,
+								},
+								trackzone = {
+									order = 37,
 									type = "toggle",
 									name = L["Track location of incoming / outgoing money"],
 									desc = L["Enable to track the location of each incoming / outgoing money and also show the breakdown info while mouse hover each of the expenditure."],
 									width = "full",
 								},
 								tracksubzone = {
-									order = 36.1,
+									order = 37.1,
 									type = "toggle",
 									name = L["Also track subzone info"],
 									desc = L["Enable to also track on the subzone info. For example: Suramar - Sanctum of Order"],
@@ -237,7 +246,7 @@ local function getOptions()
 									disabled = function() return not addon.db.profile.trackzone end,
 								},
 								weekstart = {
-									order = 37,
+									order = 38,
 									type = "select",
 									name = L["Start of Week"],
 									values = function()

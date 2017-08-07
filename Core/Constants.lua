@@ -48,6 +48,7 @@ constants.defaults = {
 		AcFramePoint = { "TOPLEFT", "UIParent", "TOPLEFT", 0, -104 },
 		MnyFramePoint = { "TOPLEFT", "UIParent", "TOPLEFT", 10, -80 },
 		profileCopied = false,
+		rememberSelectedCharacter = true,
 	},
 };
 

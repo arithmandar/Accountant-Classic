@@ -75,7 +75,7 @@ local AC_TABS = #private.constants.logmodes + 1
 local AC_CHARSCROLL_LIST = {}
 local AC_CURR_LINES = 0
 local AC_CHAR_LINES = private.constants.maxCharLines -- Maximum lines for characters to be displayed. We have 18 lines of space but we are using the 18th line to present the total. 
-local AC_SELECTED_CHAR_NUM = 1;
+local AC_SELECTED_CHAR_NUM
 local AccountantClassic_Verbose = nil;
 --local AccountantClassic_GotName = false;
 
@@ -438,9 +438,10 @@ function addon:PopulateCharacterList()
 end
 
 local function AccountantClassicFrameCharacterDropDown_OnClick(self)
-	L_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID());
-	AC_SELECTED_CHAR_NUM = self.value;
-	AccountantClassic_OnShow();
+	L_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID())
+	AC_SELECTED_CHAR_NUM = self.value
+	profile.selectedCharacter = AC_SELECTED_CHAR_NUM
+	AccountantClassic_OnShow()
 end
 
 local function AccountantClassicFrameCharacterDropDown_Init()
@@ -477,14 +478,20 @@ local function AccountantClassicFrameCharacterDropDown_Init()
 end
 
 function AccountantClassicFrameCharacterDropDown_Setup()
-	L_UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init);
-	for i = 1, #AC_CHARSCROLL_LIST do
-		if (AC_SERVER == AC_CHARSCROLL_LIST[i][1] and AC_PLAYER == AC_CHARSCROLL_LIST[i][2]) then
-			AC_SELECTED_CHAR_NUM = i;
+	L_UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init)
+	if not profile.rememberSelectedCharacter or not AC_SELECTED_CHAR_NUM then
+		for i = 1, #AC_CHARSCROLL_LIST do
+			if (AC_SERVER == AC_CHARSCROLL_LIST[i][1] and AC_PLAYER == AC_CHARSCROLL_LIST[i][2]) then
+				AC_SELECTED_CHAR_NUM = i;
+			end
 		end
 	end
-	L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, AC_SELECTED_CHAR_NUM);
-	L_UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200);
+	if (profile.rememberSelectedCharacter) then
+		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, profile.selectedCharacter or AC_SELECTED_CHAR_NUM or 1)
+	else
+		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, AC_SELECTED_CHAR_NUM or 1)
+	end
+	L_UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200)
 end
 
 local function AccountantClassic_LogsShifting()

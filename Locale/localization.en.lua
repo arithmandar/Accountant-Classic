@@ -96,6 +96,8 @@ L["Onscreen Actionbar's Scale and Alpha Settings"] = "Onscreen Actionbar's Scale
 L["Character Data's Removal"] = "Character Data's Removal"
 L["Profile Options"] = "Profile Options"
 L["Scale and Transparency"] = "Scale and Transparency"
+L["Remember character selected"] = "Remember character selected"
+L["Remember the latest character selection in dropdown menu."] = "Remember the latest character selection in dropdown menu."
 
 -- Misc
 L["Are you sure you want to reset the \"%s\" data?"] = "Are you sure you want to reset the \"%s\" data?" -- %s would be the log mode, for example, Session, Day, Week, etc.
