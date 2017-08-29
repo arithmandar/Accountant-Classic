@@ -127,8 +127,8 @@ function MoneyFrame:OnDisable()
 end
 
 function MoneyFrame:ArrangeMoneyInfoFrame()
-	self.frame:SetScale(profile.infoscale)
-	self.frame:SetAlpha(profile.infoalpha)
+	self.frame:SetScale(profile.infoscale or 1)
+	self.frame:SetAlpha(profile.infoalpha or 1)
 	local point, relativeTo, relativePoint, ofsx, ofsy = unpack(profile.MnyFramePoint)
 	self.frame:ClearAllPoints()
 	self.frame:SetParent(UIParent)

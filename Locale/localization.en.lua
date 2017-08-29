@@ -7,8 +7,14 @@ if not L then return end
 -- Header
 L["Accountant Classic"] = "Accountant Classic"
 L["A basic tool to track your monetary incomings and outgoings within WoW."] = "A basic tool to track your monetary incomings and outgoings within WoW."
-L["Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button."] = "Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button."
-L["Left-click and drag to move this button.\nRight-Click to open Accountant Classic."] = "Left-click and drag to move this button.\nRight-Click to open Accountant Classic."
+L[ [=[Left-Click to open Accountant Classic.
+Right-Click for Accountant Classic options.
+Left-click and drag to move this button.]=] ] = [=[Left-Click to open Accountant Classic.
+Right-Click for Accountant Classic options.
+Left-click and drag to move this button.]=]
+L[ [=[Left-click and drag to move this button.
+Right-Click to open Accountant Classic.]=] ] = [=[Left-click and drag to move this button.
+Right-Click to open Accountant Classic.]=]
 L["Total Incomings"] = "Total Incomings"
 L["Total Outgoings"] = "Total Outgoings"
 L["Net Profit / Loss"] = "Net Profit / Loss"

@@ -7,8 +7,14 @@ if not L then return end
 -- Header
 L["Accountant Classic"] = "個人會計"
 L["A basic tool to track your monetary incomings and outgoings within WoW."] = "追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。"
-L["Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button."] = "左鍵開啟個人會計\n右鍵開啟個人會計選項\n右鍵並拖曳以移動圖示按鈕位置"
-L["Left-click and drag to move this button.\nRight-Click to open Accountant Classic."] = "右鍵並拖曳以移動圖示按鈕位置\n右鍵開啟個人會計"
+L[ [=[Left-Click to open Accountant Classic.
+Right-Click for Accountant Classic options.
+Left-click and drag to move this button.]=] ] =  [=[左鍵開啟個人會計
+右鍵開啟個人會計選項
+右鍵並拖曳以移動圖示按鈕位置]=]
+L[ [=[Left-click and drag to move this button.
+Right-Click to open Accountant Classic.]=] ] = [=[右鍵並拖曳以移動圖示按鈕位置
+右鍵開啟個人會計]=]
 L["Total Incomings"] = "總收入"
 L["Total Outgoings"] = "總支出"
 L["Net Profit / Loss"] = "淨收益/虧損"
@@ -96,6 +102,8 @@ L["Onscreen Actionbar's Scale and Alpha Settings"] = "浮動視窗的大小與�
 L["Character Data's Removal"] = "角色資料刪除"
 L["Profile Options"] = "設定檔選項"
 L["Scale and Transparency"] = "大小與透明度"
+L["Remember character selected"] = "記憶選擇的角色"
+L["Remember the latest character selection in dropdown menu."] = "記憶上次在下拉式選單所選擇的角色。"
 
 -- Misc
 L["Are you sure you want to reset the \"%s\" data?"] = "是否確定要將「%s」頁籤的資料歸零?"

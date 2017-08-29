@@ -1,4 +1,4 @@
-﻿## Interface: 70200
+﻿## Interface: 70300
 #@non-debug@
 ## Title: @localization(locale="enUS", key="Title", namespace="ToC")@
 ## Title-deDE: @localization(locale="deDE", key="Title", namespace="ToC")@

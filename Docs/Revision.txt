@@ -6,29 +6,34 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.09.10 (Aug. xx, 2017)
+* v2.09.10 (Aug. 29, 2017)
 ==========================
-- Added option to support in remember the last character selection from the dropdown menu
+  - ToC update to support WoW 7.3.0
+  - Lib Update: LibUIDropDownMenu, Ace3
+  - Added option to support in remember the last character selection from the dropdown menu
+  - Translation update:
+    - Korean (next96)
+    - Russian (BLizzatron)
 
 * v2.09.09 (Jul. 17, 2017)
 ==========================
-- Lib Update: LibUIDropDownMenu
-- Updated PlaySound API's usage method to support both 7.2.5 and 7.3.0 of WoW clients
+  - Lib Update: LibUIDropDownMenu
+  - Updated PlaySound API's usage method to support both 7.2.5 and 7.3.0 of WoW clients
 
 * v2.09.08 (Jun. 18, 2017)
 ==========================
-- Fixed LDB text's updating issue
-- Options tuning fine-tuned
+  - Fixed LDB text's updating issue
+  - Options tuning fine-tuned
 
 * v2.09.07 (Jun. 16, 2017)
 ==========================
-- Fixed lib loading issue
+  - Fixed lib loading issue
 
 * v2.09.06 (Jun. 16, 2017)
 ==========================
-- Fixed no-lib version's lib setting. LibDataBroker-1.1 should be embedded anyway.
-- Removed LibAboutPanel.
-- Re-organized option panel's layout
+  - Fixed no-lib version's lib setting. LibDataBroker-1.1 should be embedded anyway.
+  - Removed LibAboutPanel.
+  - Re-organized option panel's layout
 
 * v2.09.05 (Jun. 09, 2017)
 ==========================
