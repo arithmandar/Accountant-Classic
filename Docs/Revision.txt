@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.12 (Sep. 11, 2017)
+==========================
+  - Fixed LibDialog's issue in PlaySound function call
+
 * v2.09.11 (Aug. 31, 2017)
 ==========================
   - Lib Update: LibUIDropDownMenu
