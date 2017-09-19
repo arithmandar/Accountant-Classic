@@ -1550,7 +1550,7 @@ end
 function AccountantClassicTab_OnClick(self)
 	PanelTemplates_SetTab(AccountantClassicFrame, self:GetID());
 	AC_CURRTAB = self:GetID();
-	PlaySound(PlaySoundKitID and "igCharacterInfoTab" or 841);
+	PlaySound(841);
 	AccountantClassic_OnShow();
 end
 
