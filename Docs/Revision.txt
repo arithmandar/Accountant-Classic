@@ -6,6 +6,12 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.09.14 (Mar. 04, 2018)
+==========================
+  - Lib Update: 
+    - LibDBIcon
+    - AceConfig
+
 * v2.09.13 (Sep. 19, 2017)
 ==========================
   - Updated LibDialog and fixed issue in PlaySound function call
