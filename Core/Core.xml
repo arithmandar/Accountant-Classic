@@ -535,6 +535,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">

@@ -227,7 +227,7 @@ local function getOptions()
 									desc = L["Enable to show all characters' money info from all factions. Disable to only show all characters' info from current faction."],
 									width = "full",
 									set = function(info, value)
-										addon.db.profile.cross_server = value
+										addon.db.profile.show_allFactions = value
 										addon:PopulateCharacterList()
 									end,
 								},

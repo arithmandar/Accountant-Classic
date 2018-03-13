@@ -358,49 +358,49 @@ end
 local function setLabels()
 	-- if current tab is All Chars tab
 	if (AC_CURRTAB == AC_TABS) then
-		AccountantClassicFrameResetButton:Hide();
+		AccountantClassicFrameResetButton:Hide()
 
-		AccountantClassicFrame.Source:SetText(L["Character"]);
-		AccountantClassicFrame.In:SetText(L["Money"]);
-		AccountantClassicFrame.Out:SetText(L["Updated"]);
-		AccountantClassicFrame.TotalIn:SetText(L["Total Incomings"]..":");
-		AccountantClassicFrame.TotalOut:SetText(L["Total Outgoings"]..":");
-		AccountantClassicFrame.TotalFlow:SetText(L["Sum Total"]..":");
-		AccountantClassicFrame.TotalInValue:SetText("");
-		AccountantClassicFrame.TotalOutValue:SetText("");
-		AccountantClassicFrame.TotalFlowValue:SetText("");
+		AccountantClassicFrame.Source:SetText(L["Character"])
+		AccountantClassicFrame.In:SetText(L["Money"])
+		AccountantClassicFrame.Out:SetText(L["Updated"])
+		AccountantClassicFrame.TotalIn:SetText(L["Total Incomings"]..":")
+		AccountantClassicFrame.TotalOut:SetText(L["Total Outgoings"]..":")
+		AccountantClassicFrame.TotalFlow:SetText(L["Sum Total"]..":")
+		AccountantClassicFrame.TotalInValue:SetText("")
+		AccountantClassicFrame.TotalOutValue:SetText("")
+		AccountantClassicFrame.TotalFlowValue:SetText("")
 		for i = 1, 18, 1 do
-			_G["AccountantClassicFrameRow"..i.."Title".."_Text"]:SetText("");
-			_G["AccountantClassicFrameRow"..i.."In".."_Text"]:SetText("");
-			_G["AccountantClassicFrameRow"..i.."Out".."_Text"]:SetText("");
-			_G["AccountantClassicFrameRow"..i.."Title"].logType = "";
-			_G["AccountantClassicFrameRow"..i.."In"].logType = "";
-			_G["AccountantClassicFrameRow"..i.."Out"].logType = "";
+			_G["AccountantClassicFrameRow"..i.."Title".."_Text"]:SetText("")
+			_G["AccountantClassicFrameRow"..i.."In".."_Text"]:SetText("")
+			_G["AccountantClassicFrameRow"..i.."Out".."_Text"]:SetText("")
+			_G["AccountantClassicFrameRow"..i.."Title"].logType = ""
+			_G["AccountantClassicFrameRow"..i.."In"].logType = ""
+			_G["AccountantClassicFrameRow"..i.."Out"].logType = ""
 		end
-		return;
+		return
 	else
-		AccountantClassicFrameResetButton:Show();
+		AccountantClassicFrameResetButton:Show()
 
-		AccountantClassicFrame.Source:SetText(L["Source"]);
-		AccountantClassicFrame.In:SetText(L["Incomings"]);
-		AccountantClassicFrame.Out:SetText(L["Outgoings"]);
-		AccountantClassicFrame.TotalIn:SetText(L["Total Incomings"]..":");
-		AccountantClassicFrame.TotalOut:SetText(L["Total Outgoings"]..":");
-		AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":");
+		AccountantClassicFrame.Source:SetText(L["Source"])
+		AccountantClassicFrame.In:SetText(L["Incomings"])
+		AccountantClassicFrame.Out:SetText(L["Outgoings"])
+		AccountantClassicFrame.TotalIn:SetText(L["Total Incomings"]..":")
+		AccountantClassicFrame.TotalOut:SetText(L["Total Outgoings"]..":")
+		AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":")
 
 		-- Row Labels (auto generate)
-		local InPos = 1;
+		local InPos = 1
 		for key,value in pairs(AC_DATA) do
-			AC_DATA[key].InPos = InPos;
-			_G["AccountantClassicFrameRow"..InPos.."Title".."_Text"]:SetText(AC_DATA[key].Title);
-			InPos = InPos + 1;
+			AC_DATA[key].InPos = InPos
+			_G["AccountantClassicFrameRow"..InPos.."Title".."_Text"]:SetText(AC_DATA[key].Title)
+			InPos = InPos + 1
 		end
 
 		-- Set the header
-		local name = AccountantClassicFrame:GetName();
-		local header = _G[name.."TitleText"];
+		local name = AccountantClassicFrame:GetName()
+		local header = _G[name.."TitleText"]
 		if ( header ) then
-			header:SetText(L["Accountant Classic"]);
+			header:SetText(L["Accountant Classic"])
 		end
 	end
 end
@@ -415,29 +415,42 @@ local function settleTabText()
 	PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
-	-- Hide tab9 - Prv.Year until year 2018 is coming
-	AccountantClassicFrameTab9:Hide();
 end
 
 function addon:PopulateCharacterList()
 	local i = 1
 	local serverkey, servervalue, charkey, charvalue
 
+	-- Clean up AC_CHARSCROLL_LIST
 	if (#AC_CHARSCROLL_LIST > 0) then
 		AC_CHARSCROLL_LIST = {}
 	end
 	if (profile.cross_server) then
 		for serverkey, servervalue in orderedpairs(Accountant_ClassicSaveData) do
 			for charkey, charvalue in orderedpairs(Accountant_ClassicSaveData[serverkey]) do
-				AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
-				i = i + 1
+				if (profile.show_allFactions) then
+					AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
+					i = i + 1
+				else
+					if (charvalue.options.faction == AccountantClassic_Faction) then
+						AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
+						i = i + 1
+					end
+				end
 			end
 		end
 	else
 		serverkey = AC_SERVER
 		for charkey, charvalue in orderedpairs(Accountant_ClassicSaveData[serverkey]) do
-			AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
-			i = i + 1
+			if (profile.show_allFactions) then
+				AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
+				i = i + 1
+			else
+				if (charvalue.options.faction == AccountantClassic_Faction) then
+					AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
+					i = i + 1
+				end
+			end
 		end
 	end
 	AC_CURR_LINES = i - 1
@@ -1402,6 +1415,35 @@ function AccountantClassic_OnShow(self)
 		if (profile.cross_server) then
 			for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
 				for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+					if (profile.show_allFactions) then
+						if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
+							alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+						end
+
+						for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+							allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
+							allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+						end
+						i = i + 1;
+					else
+						if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["faction"] == AccountantClassic_Faction) then
+							if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
+								alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+							end
+
+							for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+								allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
+								allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+							end
+							i = i + 1;
+						end
+					end
+				end
+			end
+		else
+			serverkey = AC_SERVER;
+			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
+				if (profile.show_allFactions) then
 					if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
 						alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
 					end
@@ -1411,20 +1453,19 @@ function AccountantClassic_OnShow(self)
 						allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
 					end
 					i = i + 1;
-				end
-			end
-		else
-			serverkey = AC_SERVER;
-			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-				if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-					alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
-				end
+				else
+					if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["faction"] == AccountantClassic_Faction) then
+						if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
+							alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+						end
 
-				for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-					allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
-					allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+						for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
+							allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
+							allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+						end
+						i = i + 1;
+					end
 				end
-				i = i + 1;
 			end
 		end
 		AccountantClassicScrollBar_Update();
