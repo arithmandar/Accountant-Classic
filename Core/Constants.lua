@@ -33,6 +33,7 @@ constants.defaults = {
 		showmoneyonbutton = true,
 		showsessiononbutton = true,
 		cross_server = true,
+		show_allFactions = true,
 		trackzone = true,
 		tracksubzone = true,
 		breakupnumbers = true,

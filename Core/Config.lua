@@ -220,8 +220,19 @@ local function getOptions()
 										addon:PopulateCharacterList()
 									end,
 								},
-								rememberSelectedCharacter = {
+								show_allFactions = {
 									order = 36,
+									type = "toggle",
+									name = L["Show all factions' characters info"],
+									desc = L["Enable to show all characters' money info from all factions. Disable to only show all characters' info from current faction."],
+									width = "full",
+									set = function(info, value)
+										addon.db.profile.cross_server = value
+										addon:PopulateCharacterList()
+									end,
+								},
+								rememberSelectedCharacter = {
+									order = 37,
 									type = "toggle",
 									name = L["Remember character selected"],
 									desc = L["Remember the latest character selection in dropdown menu."],
@@ -231,14 +242,14 @@ local function getOptions()
 									end,
 								},
 								trackzone = {
-									order = 37,
+									order = 38,
 									type = "toggle",
 									name = L["Track location of incoming / outgoing money"],
 									desc = L["Enable to track the location of each incoming / outgoing money and also show the breakdown info while mouse hover each of the expenditure."],
 									width = "full",
 								},
 								tracksubzone = {
-									order = 37.1,
+									order = 38.1,
 									type = "toggle",
 									name = L["Also track subzone info"],
 									desc = L["Enable to also track on the subzone info. For example: Suramar - Sanctum of Order"],
@@ -246,7 +257,7 @@ local function getOptions()
 									disabled = function() return not addon.db.profile.trackzone end,
 								},
 								weekstart = {
-									order = 38,
+									order = 39,
 									type = "select",
 									name = L["Start of Week"],
 									values = function()
@@ -256,7 +267,7 @@ local function getOptions()
 									end,
 								},
 								dateformat = {
-									order = 38,
+									order = 40,
 									type = "select",
 									name = L["Select the date format:"],
 									desc = L["Date format showing in \"All Chars\" and \"Week\" tabs"],

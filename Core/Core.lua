@@ -116,6 +116,24 @@ local function TableIndex(t,val)
 	end
 end
 
+local function orderednext(t, n)
+	local key = t[t.__next]
+	
+	if not key then return end
+	t.__next = t.__next + 1
+	return key, t.__source[key]
+end
+
+local function orderedpairs(t, f)
+	local keys, kn = {__source = t, __next = 1}, 1
+	
+	for k in pairs(t) do
+		keys[kn], kn = k, kn + 1
+	end
+	tsort(keys, f)
+	return orderednext, keys
+end
+
 -- Code by Grayhoof (SCT)
 local function AccountantClassic_CloneTable(tablein)	-- Return a copy of the table tablein
 	local new_table = {};			-- Create a new table
@@ -402,36 +420,36 @@ local function settleTabText()
 end
 
 function addon:PopulateCharacterList()
-	local i = 1;
-	local serverkey, servervalue, charkey, charvalue;
+	local i = 1
+	local serverkey, servervalue, charkey, charvalue
 
 	if (#AC_CHARSCROLL_LIST > 0) then
-		AC_CHARSCROLL_LIST = {};
+		AC_CHARSCROLL_LIST = {}
 	end
 	if (profile.cross_server) then
-		for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
-			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-				AC_CHARSCROLL_LIST[i] = { serverkey, charkey };
-				i = i + 1;
+		for serverkey, servervalue in orderedpairs(Accountant_ClassicSaveData) do
+			for charkey, charvalue in orderedpairs(Accountant_ClassicSaveData[serverkey]) do
+				AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
+				i = i + 1
 			end
 		end
 	else
-		serverkey = AC_SERVER;
-		for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-			AC_CHARSCROLL_LIST[i] = { serverkey, charkey };
-			i = i + 1;
+		serverkey = AC_SERVER
+		for charkey, charvalue in orderedpairs(Accountant_ClassicSaveData[serverkey]) do
+			AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
+			i = i + 1
 		end
 	end
-	AC_CURR_LINES = i - 1;
+	AC_CURR_LINES = i - 1
 
 	-- Create and align any new entry buttons that we need
 	for i = 1, AC_CURR_LINES do
 		if (not _G["AccountantClassicCharacterEntry"..i]) then
-			local f = CreateFrame("Frame", "AccountantClassicCharacterEntry"..i, AccountantClassicFrame, "AccountantClassicRowTemplate");
+			local f = CreateFrame("Frame", "AccountantClassicCharacterEntry"..i, AccountantClassicFrame, "AccountantClassicRowTemplate")
 			if i == 1 then
-				f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0);
+				f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0)
 			else
-				f:SetPoint("TOPLEFT", "AccountantClassicCharacterEntry"..(i - 1), "BOTTOMLEFT", 0, -1);
+				f:SetPoint("TOPLEFT", "AccountantClassicCharacterEntry"..(i - 1), "BOTTOMLEFT", 0, -1)
 			end
 		end
 	end
@@ -1688,24 +1706,6 @@ function AccountantClassic_ParseDateStrings(s, typ)
 	end
 	
 	return sdate;
-end
-
-local function orderednext(t, n)
-	local key = t[t.__next]
-	
-	if not key then return end
-	t.__next = t.__next + 1
-	return key, t.__source[key]
-end
-
-local function orderedpairs(t, f)
-	local keys, kn = {__source = t, __next = 1}, 1
-	
-	for k in pairs(t) do
-		keys[kn], kn = k, kn + 1
-	end
-	tsort(keys, f)
-	return orderednext, keys
 end
 
 local AC_MAXTOOLTIPLINES = 50;
