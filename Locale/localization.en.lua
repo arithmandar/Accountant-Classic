@@ -104,6 +104,8 @@ L["Profile Options"] = "Profile Options"
 L["Scale and Transparency"] = "Scale and Transparency"
 L["Remember character selected"] = "Remember character selected"
 L["Remember the latest character selection in dropdown menu."] = "Remember the latest character selection in dropdown menu."
+L["Show all factions' characters info"] = "Show all factions' characters info"
+L["Enable to show all characters' money info from all factions. Disable to only show all characters' info from current faction."] = "Enable to show all characters' money info from all factions. Disable to only show all characters' info from current faction."
 
 -- Misc
 L["Are you sure you want to reset the \"%s\" data?"] = "Are you sure you want to reset the \"%s\" data?" -- %s would be the log mode, for example, Session, Day, Week, etc.

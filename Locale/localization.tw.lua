@@ -104,6 +104,8 @@ L["Profile Options"] = "設定檔選項"
 L["Scale and Transparency"] = "大小與透明度"
 L["Remember character selected"] = "記憶選擇的角色"
 L["Remember the latest character selection in dropdown menu."] = "記憶上次在下拉式選單所選擇的角色。"
+L["Show all factions' characters info"] = "顯示所有陣營的角色資訊"
+L["Enable to show all characters' money info from all factions. Disable to only show all characters' info from current faction."] = "啟用以顯示來自所有陣營的所有角色的金流資訊。停用則僅會顯示目前陣營的角色資訊。"
 
 -- Misc
 L["Are you sure you want to reset the \"%s\" data?"] = "是否確定要將「%s」頁籤的資料歸零?"
