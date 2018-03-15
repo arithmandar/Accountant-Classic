@@ -122,11 +122,125 @@ local function getOptions()
 						group1 = {
 							order = 10,
 							type = "group",
+							name = L["General and Data Display Format Settings"],
+							inline = true,
+							args = {
+								showmoneyinfo = {
+									order = 12,
+									type = "toggle",
+									name = L["Show money on screen"],
+									width = "full",
+								},
+								resetButtonPos = {
+									order = 12.1,
+									type = "execute",
+									name = L["Reset position"],
+									desc = L["Reset money frame's position"],
+									--width = "full",
+									func = function()
+										AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 10, -80)
+									end,
+									disabled = function() return not addon.db.profile.showmoneyinfo end,
+								},
+								showintrotip = {
+									order = 13,
+									type = "toggle",
+									name = L["Display Instruction Tips"],
+									desc = L["Toggle whether to display minimap button or floating money frame's operation tips."],
+									width = "full",
+								},
+								breakupnumbers = {
+									order = 14,
+									type = "toggle",
+									name = L["Converts a number into a localized string, grouping digits as required."],
+									width = "full",
+								},
+								rememberSelectedCharacter = {
+									order = 15,
+									type = "toggle",
+									name = L["Remember character selected"],
+									desc = L["Remember the latest character selection in dropdown menu."],
+									width = "full",
+									set = function(info, value)
+										addon.db.profile.rememberSelectedCharacter = value
+									end,
+								},
+								cross_server = {
+									order = 16,
+									type = "toggle",
+									name = L["Show all realms' characters info"],
+									desc = L["Enable to show all characters' money info from all realms. Disable to only show current realm's character info."],
+									width = "full",
+									set = function(info, value)
+										addon.db.profile.cross_server = value
+										addon:PopulateCharacterList()
+										addon:Refresh()
+									end,
+								},
+								show_allFactions = {
+									order = 17,
+									type = "toggle",
+									name = L["Show all factions' characters info"],
+									desc = L["Enable to show all characters' money info from all factions. Disable to only show all characters' info from current faction."],
+									width = "full",
+									set = function(info, value)
+										addon.db.profile.show_allFactions = value
+										addon:PopulateCharacterList()
+										addon:Refresh()
+									end,
+								},
+								group_tracking = {
+									order = 18, 
+									type = "group",
+									name = L["Enhanced Tracking Options"],
+									inline = true,
+									args = {
+										trackzone = {
+											order = 18,
+											type = "toggle",
+											name = L["Track location of incoming / outgoing money"],
+											desc = L["Enable to track the location of each incoming / outgoing money and also show the breakdown info while mouse hover each of the expenditure."],
+											width = "full",
+										},
+										tracksubzone = {
+											order = 18.1,
+											type = "toggle",
+											name = L["Also track subzone info"],
+											desc = L["Enable to also track on the subzone info. For example: Suramar - Sanctum of Order"],
+											width = "full",
+											disabled = function() return not addon.db.profile.trackzone end,
+										},
+									},
+								},
+								weekstart = {
+									order = 19,
+									type = "select",
+									name = L["Start of Week"],
+									values = function()
+										local ACC_WEEKDAYS = { WEEKDAY_SUNDAY, WEEKDAY_MONDAY, WEEKDAY_TUESDAY, WEEKDAY_WEDNESDAY, WEEKDAY_THURSDAY, WEEKDAY_FRIDAY, WEEKDAY_SATURDAY };
+
+										return ACC_WEEKDAYS
+									end,
+								},
+								dateformat = {
+									order = 20,
+									type = "select",
+									name = L["Select the date format:"],
+									desc = L["Date format showing in \"All Chars\" and \"Week\" tabs"],
+									values = function()
+										return addon.constants.dateformats
+									end,
+								},
+							},
+						},
+						group2 = {
+							order = 20,
+							type = "group",
 							name = L["Minimap Button Settings"],
-							--inline = true,
+							inline = true,
 							args = {
 								minimapButton = {
-									order = 12,
+									order = 22,
 									type = "toggle",
 									name = L["Show minimap button"],
 									get = function()
@@ -135,14 +249,14 @@ local function getOptions()
 									set = AccountantClassic_ButtonToggle,
 								},
 								showmoneyonbutton = {
-									order = 13,
+									order = 23,
 									type = "toggle",
 									name = L["Show money"],
 									desc = L["Show money on minimap button's tooltip"],
 									disabled = function() return addon.db.profile.minimap.hide end,
 								},
 								showsessiononbutton = {
-									order = 14,
+									order = 24,
 									type = "toggle",
 									name = L["Show session info"],
 									desc = L["Show session info on minimap button's tooltip"],
@@ -150,14 +264,14 @@ local function getOptions()
 								},
 							},
 						},
-						group2 = {
-							order = 21,
+						group3 = {
+							order = 30,
 							type = "group",
 							name = L["LDB Display Settings"],
-							--inline = true,
+							inline = true,
 							args = {
 								ldbDisplayType = {
-									order = 22,
+									order = 32,
 									type = "select",
 									name = L["LDB Display Type"],
 									desc = L["Data type to be displayed on LDB"],
@@ -174,114 +288,11 @@ local function getOptions()
 								},
 							},
 						},
-						group3 = {
-							order = 31,
-							type = "group",
-							name = L["General and Data Display Format Settings"],
-							--inline = true,
-							args = {
-								showmoneyinfo = {
-									order = 32,
-									type = "toggle",
-									name = L["Show money on screen"],
-									--width = "double",
-								},
-								resetButtonPos = {
-									order = 32.1,
-									type = "execute",
-									name = L["Reset position"],
-									desc = L["Reset money frame's position"],
-									func = function()
-										AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 10, -80)
-									end,
-									disabled = function() return not addon.db.profile.showmoneyinfo end,
-								},
-								showintrotip = {
-									order = 33,
-									type = "toggle",
-									name = L["Display Instruction Tips"],
-									desc = L["Toggle whether to display minimap button or floating money frame's operation tips."],
-									width = "full",
-								},
-								breakupnumbers = {
-									order = 34,
-									type = "toggle",
-									name = L["Converts a number into a localized string, grouping digits as required."],
-									width = "full",
-								},
-								cross_server = {
-									order = 35,
-									type = "toggle",
-									name = L["Show all realms' characters info"],
-									desc = L["Enable to show all characters' money info from all realms. Disable to only show current realm's character info."],
-									width = "full",
-									set = function(info, value)
-										addon.db.profile.cross_server = value
-										addon:PopulateCharacterList()
-									end,
-								},
-								show_allFactions = {
-									order = 36,
-									type = "toggle",
-									name = L["Show all factions' characters info"],
-									desc = L["Enable to show all characters' money info from all factions. Disable to only show all characters' info from current faction."],
-									width = "full",
-									set = function(info, value)
-										addon.db.profile.show_allFactions = value
-										addon:PopulateCharacterList()
-									end,
-								},
-								rememberSelectedCharacter = {
-									order = 37,
-									type = "toggle",
-									name = L["Remember character selected"],
-									desc = L["Remember the latest character selection in dropdown menu."],
-									width = "full",
-									set = function(info, value)
-										addon.db.profile.rememberSelectedCharacter = value
-									end,
-								},
-								trackzone = {
-									order = 38,
-									type = "toggle",
-									name = L["Track location of incoming / outgoing money"],
-									desc = L["Enable to track the location of each incoming / outgoing money and also show the breakdown info while mouse hover each of the expenditure."],
-									width = "full",
-								},
-								tracksubzone = {
-									order = 38.1,
-									type = "toggle",
-									name = L["Also track subzone info"],
-									desc = L["Enable to also track on the subzone info. For example: Suramar - Sanctum of Order"],
-									width = "full",
-									disabled = function() return not addon.db.profile.trackzone end,
-								},
-								weekstart = {
-									order = 39,
-									type = "select",
-									name = L["Start of Week"],
-									values = function()
-										local ACC_WEEKDAYS = { WEEKDAY_SUNDAY, WEEKDAY_MONDAY, WEEKDAY_TUESDAY, WEEKDAY_WEDNESDAY, WEEKDAY_THURSDAY, WEEKDAY_FRIDAY, WEEKDAY_SATURDAY };
-
-										return ACC_WEEKDAYS
-									end,
-								},
-								dateformat = {
-									order = 40,
-									type = "select",
-									name = L["Select the date format:"],
-									desc = L["Date format showing in \"All Chars\" and \"Week\" tabs"],
-									values = function()
-										return addon.constants.dateformats
-									end,
-								},
-							},
-						},
 						group4 = {
-							order = 41,
+							order = 40,
 							type = "group",
 							name = L["Scale and Transparency"],
-							--inline = true,
+							inline = true,
 							args = {
 								group41 = {
 									order = 41,
@@ -335,13 +346,13 @@ local function getOptions()
 							},
 						},
 						group5 = {
-							order = 51,
+							order = 50,
 							type = "group",
 							name = L["Character Data's Removal"],
-							--inline = true,
+							inline = true,
 							args = {
 								deleteData = {
-									order = 62,
+									order = 52,
 									type = "select",
 									name = L["Select the character to be removed:"],
 									desc = L["The selected character's Accountant Classic data will be removed."],

@@ -6,10 +6,15 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.10.00 (Mar. xx, 2018)
+* v2.10.00 (Mar. 15, 2018)
 ==========================
-- Sorted all characters' displaying order. It will now sort the server and the character names.
-- Enable Prev. Year tab
+  - Sorted all characters' displaying order. It will now sort the server and the character names.
+  - Enable Prev. Year tab
+  - Adjusted option toggling settings
+  - New feature: 
+    - Now you can select to show specific server or all servers / specific faction or all factions' money summary.
+  - Translation update:
+    - Korean (next96)
 
 * v2.09.14 (Mar. 04, 2018)
 ==========================

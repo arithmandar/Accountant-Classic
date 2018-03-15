@@ -76,20 +76,22 @@ local AC_CHARSCROLL_LIST = {}
 local AC_CURR_LINES = 0
 local AC_CHAR_LINES = private.constants.maxCharLines -- Maximum lines for characters to be displayed. We have 18 lines of space but we are using the 18th line to present the total. 
 local AC_SELECTED_CHAR_NUM
+local AC_SELECTED_SERVER
+local AC_SELECTED_FACTION
 local AccountantClassic_Verbose = nil;
 --local AccountantClassic_GotName = false;
 
-local AC_SERVER = GetRealmName();
-local AC_PLAYER = UnitName("player");
-local AccountantClassic_Faction = UnitFactionGroup("player");
-local _, AccountantClassic_Class = UnitClass("player");
-local AC_SHOWALLCHARS = false;
+local AC_SERVER = GetRealmName()
+local AC_PLAYER = UnitName("player")
+local AC_FACTION = UnitFactionGroup("player")
+local _, AC_CLASS = UnitClass("player")
+local AC_SHOWALLCHARS = false
 
 local AC_DATA = private.constants.onlineData
 
-local cdate = date("%d/%m/%y");
-local cmonth = date("%m");
-local cyear = date("%Y");
+local cdate = date("%d/%m/%y")
+local cmonth = date("%m")
+local cyear = date("%Y")
 
 local profile
 
@@ -106,8 +108,8 @@ local AccountantClassicDefaultOptions = {
 	curryear = cyear,
 	-- prvyear,
 	totalcash = 0,
-	faction = AccountantClassic_Faction,
-	class = AccountantClassic_Class,
+	faction = AC_FACTION,
+	class = AC_CLASS,
 };
 
 local function TableIndex(t,val)
@@ -417,7 +419,7 @@ local function settleTabText()
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 end
 
-function addon:PopulateCharacterList()
+function addon:PopulateCharacterList(server, faction)
 	local i = 1
 	local serverkey, servervalue, charkey, charvalue
 
@@ -425,14 +427,14 @@ function addon:PopulateCharacterList()
 	if (#AC_CHARSCROLL_LIST > 0) then
 		AC_CHARSCROLL_LIST = {}
 	end
-	if (profile.cross_server) then
+	if (not server or server == "All") then
 		for serverkey, servervalue in orderedpairs(Accountant_ClassicSaveData) do
 			for charkey, charvalue in orderedpairs(Accountant_ClassicSaveData[serverkey]) do
-				if (profile.show_allFactions) then
+				if (not faction or faction == "All") then
 					AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
 					i = i + 1
 				else
-					if (charvalue.options.faction == AccountantClassic_Faction) then
+					if (charvalue.options.faction == faction) then
 						AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
 						i = i + 1
 					end
@@ -440,13 +442,13 @@ function addon:PopulateCharacterList()
 			end
 		end
 	else
-		serverkey = AC_SERVER
+		serverkey = server or AC_SERVER
 		for charkey, charvalue in orderedpairs(Accountant_ClassicSaveData[serverkey]) do
-			if (profile.show_allFactions) then
+			if (not faction or faction == "All") then
 				AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
 				i = i + 1
 			else
-				if (charvalue.options.faction == AccountantClassic_Faction) then
+				if (charvalue.options.faction == faction) then
 					AC_CHARSCROLL_LIST[i] = { serverkey, charkey }
 					i = i + 1
 				end
@@ -467,6 +469,96 @@ function addon:PopulateCharacterList()
 		end
 	end
 end
+
+
+local function AccountantClassicFrameServerDropDown_OnClick(self)
+	L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, self.value)
+	AC_SELECTED_SERVER = self.value
+	addon:PopulateCharacterList(AC_SELECTED_SERVER, AC_SELECTED_FACTION)
+	AccountantClassic_OnShow()
+end
+
+local function AccountantClassicFrameServerDropDown_Init()
+	local info
+	local i = 1
+	for k, v in orderedpairs(Accountant_ClassicSaveData) do
+		info = L_UIDropDownMenu_CreateInfo()
+		info.text = k
+		info.value = k
+		info.func = AccountantClassicFrameServerDropDown_OnClick
+		L_UIDropDownMenu_AddButton(info)
+		i = i + 1
+	end
+	
+	-- Added All Chars to dropdown
+	info = L_UIDropDownMenu_CreateInfo()
+	info.text = L["All Servers"]
+	info.value = "All"
+	info.tooltipTitle = L["Show all realms' characters info"]
+	info.tooltipOnButton = true
+	info.func = AccountantClassicFrameServerDropDown_OnClick
+	L_UIDropDownMenu_AddButton(info)
+end
+
+function AccountantClassicFrameServerDropDown_Setup()
+	L_UIDropDownMenu_Initialize(AccountantClassicFrameServerDropDown, AccountantClassicFrameServerDropDown_Init)
+	
+	if (profile.cross_server and not AC_SELECTED_SERVER) then
+		AC_SELECTED_SERVER = "All"
+		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, "All")
+	else
+		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, AC_SELECTED_SERVER or AC_SERVER)
+	end
+	L_UIDropDownMenu_SetWidth(AccountantClassicFrameServerDropDown, 200)
+end
+
+
+local function AccountantClassicFrameFactionDropDown_OnClick(self)
+	L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, self.value)
+	AC_SELECTED_FACTION = self.value
+	addon:PopulateCharacterList(AC_SELECTED_SERVER, AC_SELECTED_FACTION)
+	AccountantClassic_OnShow()
+end
+
+local function AccountantClassicFrameFactionDropDown_Init()
+	local info
+	info = L_UIDropDownMenu_CreateInfo()
+	info.icon = "Interface\\PVPFrame\\PVP-Currency-Alliance"
+	info.text = FACTION_ALLIANCE
+	info.colorCode = "|cff7babe0"
+	info.value = "Alliance"
+	info.arg1 = "Alliance"
+	info.func = AccountantClassicFrameFactionDropDown_OnClick
+	L_UIDropDownMenu_AddButton(info)
+
+	info = L_UIDropDownMenu_CreateInfo()
+	info.icon = "Interface\\PVPFrame\\PVP-Currency-Horde"
+	info.text = FACTION_HORDE
+	info.colorCode = "|cffda6955"
+	info.value = "Horde"
+	info.arg1 = "Horde"
+	info.func = AccountantClassicFrameFactionDropDown_OnClick
+	L_UIDropDownMenu_AddButton(info)
+	
+	-- Added All Factions to dropdown
+	info = L_UIDropDownMenu_CreateInfo()
+	info.text = L["All Factions"]
+	info.value = "All"
+	info.func = AccountantClassicFrameFactionDropDown_OnClick
+	L_UIDropDownMenu_AddButton(info)
+end
+
+function AccountantClassicFrameFactionDropDown_Setup()
+	L_UIDropDownMenu_Initialize(AccountantClassicFrameFactionDropDown, AccountantClassicFrameFactionDropDown_Init)
+	if (profile.show_allFactions and not AC_SELECTED_FACTION) then
+		AC_SELECTED_FACTION = "All"
+		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, "All")
+	else
+		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, AC_SELECTED_FACTION or AC_FACTION)
+	end
+	L_UIDropDownMenu_SetWidth(AccountantClassicFrameFactionDropDown, 200)
+end
+
 
 local function AccountantClassicFrameCharacterDropDown_OnClick(self)
 	L_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID())
@@ -1204,12 +1296,12 @@ function AccountantClassic_OnEvent(self, event, ...)
 end
 
 function AccountantClassic_OnShow(self)
-	local cdate = date("%d/%m/%y");
-	local cmonth = date("%m");
-	local cyear = date("%Y");
-	local fs = _G["AccountantClassicFrameExtra"];
-	local fsv = _G["AccountantClassicFrameExtraValue"];
-	local prvday, prvdateweek, prvmonth;
+	local cdate = date("%d/%m/%y")
+	local cmonth = date("%m")
+	local cyear = date("%Y")
+	local fs = _G["AccountantClassicFrameExtra"]
+	local fsv = _G["AccountantClassicFrameExtraValue"]
+	local prvday, prvdateweek, prvmonth
 	
 --[[
 	if ( AccountantClassic_Profile["options"]["date"] ~= cdate ) then
@@ -1247,259 +1339,267 @@ function AccountantClassic_OnShow(self)
 	end
 	AccountantClassic_Profile["options"]["month"] = cmonth;
 ]]
-	AccountantClassic_LogsShifting();
-	setLabels();
+	AccountantClassic_LogsShifting()
+	setLabels()
 	if ( AC_CURRTAB ~= AC_TABS ) then
 		-- for all the tabs except for character tab
-		AccountantClassicScrollBar:Hide();
+		addon:PopulateCharacterList()
+		AccountantClassicFrameServerDropDown:Hide()
+		AccountantClassicFrameFactionDropDown:Hide()
+		AccountantClassicScrollBar:Hide()
 		for i = 1, AC_CURR_LINES do
 			if (_G["AccountantClassicCharacterEntry"..i]) then
-				_G["AccountantClassicCharacterEntry"..i]:Hide();
+				_G["AccountantClassicCharacterEntry"..i]:Hide()
 			end
 		end
 		if (AC_CURRTAB == TableIndex(private.constants.logmodes, "Session")) then
-			AccountantClassicFrameCharacterDropDown:Hide();
+			AccountantClassicFrameCharacterDropDown:Hide()
 		else
-			AccountantClassicFrameCharacterDropDown:Show();
+			AccountantClassicFrameCharacterDropDown:Show()
 		end
 
-		local TotalIn = 0;
-		local TotalOut = 0;
-		local mode = private.constants.logmodes[AC_CURRTAB];
-		local colIn, colOut;
+		local TotalIn = 0
+		local TotalOut = 0
+		local mode = private.constants.logmodes[AC_CURRTAB]
+		local colIn, colOut
 		for key, value in pairs(AC_DATA) do
-			colIn = _G["AccountantClassicFrameRow"..AC_DATA[key].InPos.."In"];
-			colOut = _G["AccountantClassicFrameRow"..AC_DATA[key].InPos.."Out"];
+			colIn = _G["AccountantClassicFrameRow"..AC_DATA[key].InPos.."In"]
+			colOut = _G["AccountantClassicFrameRow"..AC_DATA[key].InPos.."Out"]
 			
-			colIn.logType = key;
-			colOut.logType = key;
-			colIn.cashflow = "In";
-			colOut.cashflow = "Out";
+			colIn.logType = key
+			colOut.logType = key
+			colIn.cashflow = "In"
+			colOut.cashflow = "Out"
 
-			local mIn = 0;
-			local mOut = 0;
+			local mIn = 0
+			local mOut = 0
 			if (AC_CURRTAB == TableIndex(private.constants.logmodes, "Session")) then
-				mIn = AC_DATA[key][mode].In;
-				mOut = AC_DATA[key][mode].Out;
+				mIn = AC_DATA[key][mode].In
+				mOut = AC_DATA[key][mode].Out
 			else
 				if (AC_SELECTED_CHAR_NUM <= #AC_CHARSCROLL_LIST) then
-					local j = AC_SELECTED_CHAR_NUM;
-					local serverkey = AC_CHARSCROLL_LIST[j][1];
-					local charkey = AC_CHARSCROLL_LIST[j][2];
-					prvdateweek = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvdateweek or nil;
-					prvday = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvday or nil;
-					prvmonth = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvmonth or nil;
+					local j = AC_SELECTED_CHAR_NUM
+					local serverkey = AC_CHARSCROLL_LIST[j][1]
+					local charkey = AC_CHARSCROLL_LIST[j][2]
+					prvdateweek = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvdateweek or nil
+					prvday = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvday or nil
+					prvmonth = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvmonth or nil
 					
 					if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-						mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+						mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]
 					end
 					if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-						mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+						mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]
 					end
 				elseif (AC_SELECTED_CHAR_NUM == #AC_CHARSCROLL_LIST + 1) then
-					local serverkey, servervalue, charkey, charvalue;
+					local serverkey, servervalue, charkey, charvalue
 					if (profile.cross_server) then
 						for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
 							for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
 								if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-									mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+									mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]
 								end
 								if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-									mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+									mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]
 								end
 							end
 						end
 					else
-						serverkey = AC_SERVER;
+						serverkey = AC_SERVER
 						for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
 							if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-								mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"];
+								mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]
 							end
 							if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-								mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"];
+								mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]
 							end
 						end
 					end
 				end
 			end
 
-			TotalIn = TotalIn + mIn;
-			TotalOut = TotalOut + mOut;
+			TotalIn = TotalIn + mIn
+			TotalOut = TotalOut + mOut
 
-			colIn.Text:SetText(addon:GetFormattedValue(mIn));
-			colOut.Text:SetText(addon:GetFormattedValue(mOut));
+			colIn.Text:SetText(addon:GetFormattedValue(mIn))
+			colOut.Text:SetText(addon:GetFormattedValue(mOut))
 		end
-		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(TotalIn));
-		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(TotalOut));
+		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(TotalIn))
+		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(TotalOut))
 		if (TotalOut > TotalIn) then
-			diff = TotalOut - TotalIn;
-			AccountantClassicFrame.TotalFlow:SetText("|cFFFF3333"..L["Net Loss"]..":");
-			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..addon:GetFormattedValue(diff));
+			diff = TotalOut - TotalIn
+			AccountantClassicFrame.TotalFlow:SetText("|cFFFF3333"..L["Net Loss"]..":")
+			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..addon:GetFormattedValue(diff))
 		else
 			if (TotalOut ~= TotalIn) then
-				diff = TotalIn - TotalOut;
-				AccountantClassicFrame.TotalFlow:SetText("|cFF00FF00"..L["Net Profit"]..":");
-				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..addon:GetFormattedValue(diff));
+				diff = TotalIn - TotalOut
+				AccountantClassicFrame.TotalFlow:SetText("|cFF00FF00"..L["Net Profit"]..":")
+				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..addon:GetFormattedValue(diff))
 			else
-				AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":");
-				AccountantClassicFrame.TotalFlowValue:SetText("");
+				AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":")
+				AccountantClassicFrame.TotalFlowValue:SetText("")
 			end
 		end
 		-- Set row 18 to be empty so that the total row from all characters will be clean out
-		_G["AccountantClassicFrameRow18Title"].Text:SetText("");
-		_G["AccountantClassicFrameRow18In"].Text:SetText("");
+		_G["AccountantClassicFrameRow18Title"].Text:SetText("")
+		_G["AccountantClassicFrameRow18In"].Text:SetText("")
 
 		-- Extra info
 		if (AC_CURRTAB == TableIndex(private.constants.logmodes, "Week")) then
-			fs:SetText(L["Week Start"]..":");
-			fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1));
+			fs:SetText(L["Week Start"]..":")
+			fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1))
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "PrvWeek")) then
 			if (prvdateweek) then
-				fs:SetText(L["Week Start"]..":");
-				fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvdateweek"], 1));
+				fs:SetText(L["Week Start"]..":")
+				fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvdateweek"], 1))
 			else
-				fs:SetText("");
-				fsv:SetText("");
+				fs:SetText("")
+				fsv:SetText("")
 			end
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "Month")) then
-			local m = tonumber(AccountantClassic_Profile["options"]["month"]);
-			fs:SetText("");
-			fsv:SetText(AC_MONTHS[m]);
+			local m = tonumber(AccountantClassic_Profile["options"]["month"])
+			fs:SetText("")
+			fsv:SetText(AC_MONTHS[m])
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "PrvMonth")) then
 			if (prvmonth) then
-				local m = tonumber(prvmonth);
-				fs:SetText("");
-				fsv:SetText(AC_MONTHS[m]);
+				local m = tonumber(prvmonth)
+				fs:SetText("")
+				fsv:SetText(AC_MONTHS[m])
 			else
-				fs:SetText("");
-				fsv:SetText("");
+				fs:SetText("")
+				fsv:SetText("")
 			end
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "Day")) then
-			fs:SetText("");
-			fsv:SetText(AccountantClassic_ParseDateStrings(cdate, 2));
+			fs:SetText("")
+			fsv:SetText(AccountantClassic_ParseDateStrings(cdate, 2))
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "PrvDay")) then
 			if (prvday) then
-				fs:SetText("");
-				fsv:SetText(AccountantClassic_ParseDateStrings(prvday, 2));
+				fs:SetText("")
+				fsv:SetText(AccountantClassic_ParseDateStrings(prvday, 2))
 			else
-				fs:SetText("");
-				fsv:SetText("");
+				fs:SetText("")
+				fsv:SetText("")
 			end
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "Year")) then
-			fs:SetText("");
-			fsv:SetText(AccountantClassic_Profile["options"]["curryear"]);
+			fs:SetText("")
+			fsv:SetText(AccountantClassic_Profile["options"]["curryear"])
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "PrvYear")) then
-			fs:SetText("");
+			fs:SetText("")
 			if (AccountantClassic_Profile["options"]["prvyear"]) then
-				fsv:SetText(AccountantClassic_Profile["options"]["prvyear"]);
+				fsv:SetText(AccountantClassic_Profile["options"]["prvyear"])
 			else
-				fsv:SetText("");
+				fsv:SetText("")
 			end
 		else
-			fs:SetText("");
-			fsv:SetText("");
+			fs:SetText("")
+			fsv:SetText("")
 		end
 		
 	else
 		-- all characters' tab
 		-- AccountantClassicFrame.ShowAll:Hide();
+		addon:PopulateCharacterList(AC_SELECTED_SERVER, AC_SELECTED_FACTION)
 		AccountantClassicFrameCharacterDropDown:Hide();
+		AccountantClassicFrameServerDropDown:Show()
+		AccountantClassicFrameFactionDropDown:Show()
 		
-		local alltotal = 0;
-		local allin = 0;
-		local allout = 0;
-		local i = 1;
-		local serverkey, servervalue, charkey, charvalue;
+		local alltotal = 0
+		local allin = 0
+		local allout = 0
+		local i = 1
+		local serverkey, servervalue, charkey, charvalue
 
-		i = 1;
-		if (profile.cross_server) then
+		i = 1
+		if (AC_SELECTED_SERVER == "All") then
 			for serverkey, servervalue in pairs(Accountant_ClassicSaveData) do
 				for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-					if (profile.show_allFactions) then
+					if (AC_SELECTED_FACTION == "All") then
 						if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-							alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+							alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]
 						end
 
 						for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-							allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
-							allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+							allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"]
+							allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"]
 						end
-						i = i + 1;
+						i = i + 1
 					else
-						if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["faction"] == AccountantClassic_Faction) then
+						local faction = AC_SELECTED_FACTION or AC_FACTION
+						if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["faction"] == faction) then
 							if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-								alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+								alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]
 							end
 
 							for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-								allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
-								allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+								allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"]
+								allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"]
 							end
-							i = i + 1;
+							i = i + 1
 						end
 					end
 				end
 			end
 		else
-			serverkey = AC_SERVER;
+			serverkey = AC_SELECTED_SERVER or AC_SERVER
 			for charkey, charvalue in pairs(Accountant_ClassicSaveData[serverkey]) do
-				if (profile.show_allFactions) then
+				if (AC_SELECTED_FACTION == "All") then
 					if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-						alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+						alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]
 					end
 
 					for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-						allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
-						allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+						allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"]
+						allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"]
 					end
-					i = i + 1;
+					i = i + 1
 				else
-					if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["faction"] == AccountantClassic_Faction) then
+					local faction = AC_SELECTED_FACTION or AC_FACTION
+					if (Accountant_ClassicSaveData[serverkey][charkey]["options"]["faction"] == faction) then
 						if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-							alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"];
+							alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]
 						end
 
 						for key, value in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-							allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"];
-							allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"];
+							allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"]
+							allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"]
 						end
-						i = i + 1;
+						i = i + 1
 					end
 				end
 			end
 		end
-		AccountantClassicScrollBar_Update();
+		AccountantClassicScrollBar_Update()
 
-		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(allin));
-		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(allout));
+		AccountantClassicFrame.TotalInValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(allin))
+		AccountantClassicFrame.TotalOutValue:SetText("|cFFFFFFFF"..addon:GetFormattedValue(allout))
 		if (allout > allin) then
-			diff = allout - allin;
-			AccountantClassicFrame.TotalFlow:SetText("|cFFFF3333"..L["Net Loss"]..":");
-			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..addon:GetFormattedValue(diff));
+			diff = allout - allin
+			AccountantClassicFrame.TotalFlow:SetText("|cFFFF3333"..L["Net Loss"]..":")
+			AccountantClassicFrame.TotalFlowValue:SetText("|cFFFF3333"..addon:GetFormattedValue(diff))
 		else
 			if allout ~= allin then
-				diff = allin - allout;
-				AccountantClassicFrame.TotalFlow:SetText("|cFF00FF00"..L["Net Profit"]..":");
-				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..addon:GetFormattedValue(diff));
+				diff = allin - allout
+				AccountantClassicFrame.TotalFlow:SetText("|cFF00FF00"..L["Net Profit"]..":")
+				AccountantClassicFrame.TotalFlowValue:SetText("|cFF00FF00"..addon:GetFormattedValue(diff))
 			else
-				AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":");
-				AccountantClassicFrame.TotalFlowValue:SetText("");
+				AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":")
+				AccountantClassicFrame.TotalFlowValue:SetText("")
 			end
 		end
-		_G["AccountantClassicFrameRow18Title"].Text:SetText(L["Sum Total"]);
-		_G["AccountantClassicFrameRow18In"].Text:SetText("|cFFFFFFFF"..addon:GetFormattedValue(alltotal));
+		_G["AccountantClassicFrameRow18Title"].Text:SetText(L["Sum Total"])
+		_G["AccountantClassicFrameRow18In"].Text:SetText("|cFFFFFFFF"..addon:GetFormattedValue(alltotal))
 		
-		fs:SetText("");
-		fsv:SetText("");
+		fs:SetText("")
+		fsv:SetText("")
 	end
-	SetPortraitTexture(AccountantClassicFramePortrait, "player");
-	PanelTemplates_SetTab(AccountantClassicFrame, AC_CURRTAB);
+	SetPortraitTexture(AccountantClassicFramePortrait, "player")
+	PanelTemplates_SetTab(AccountantClassicFrame, AC_CURRTAB)
 end
 
 function AccountantClassic_OnMouseDown(self, button)
 	-- Handle left button clicks
 	if (button == "LeftButton") then
-		self:StartMoving();
+		self:StartMoving()
 	end
 end
 
@@ -1893,15 +1993,26 @@ function addon:OnEnable()
 	loadData()
 	setLabels()
 
+	if (profile.cross_server and not AC_SELECTED_SERVER) then 
+		AC_SELECTED_SERVER = "All" 
+	elseif (not profile.cross_server and not AC_SELECTED_SERVER) then 
+		AC_SELECTED_SERVER = AC_SERVER
+	end
+	if (profile.show_allFactions and not AC_SELECTED_FACTION) then 
+		AC_SELECTED_FACTION = "All" 
+	elseif (not profile.show_allFactions and not AC_SELECTED_FACTION) then 
+		AC_SELECTED_FACTION = AC_FACTION
+	end
+	
 	-- Cash
-	AC_CURRMONEY = GetMoney();
+	AC_CURRMONEY = GetMoney()
 	-- Check if there is any un-recorded money in or out
 	if (AC_LASTSESSMONEY ~= AC_CURRMONEY) then
-		AC_LOGTYPE = "OTHER";
-		AC_LASTMONEY = AC_LASTSESSMONEY;
-		updateLog();
+		AC_LOGTYPE = "OTHER"
+		AC_LASTMONEY = AC_LASTSESSMONEY
+		updateLog()
 	end
-	AC_LASTMONEY = AC_CURRMONEY;
+	AC_LASTMONEY = AC_CURRMONEY
 	
 	settleTabText()
 	addon:PopulateCharacterList()
