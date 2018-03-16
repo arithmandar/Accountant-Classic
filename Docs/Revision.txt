@@ -6,7 +6,7 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.10.00 (Mar. 15, 2018)
+* v2.10.00 (Mar. 16, 2018)
 ==========================
   - Sorted all characters' displaying order. It will now sort the server and the character names.
   - Enable Prev. Year tab
