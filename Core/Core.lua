@@ -617,6 +617,7 @@ function AccountantClassicFrameCharacterDropDown_Setup()
 	L_UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200)
 end
 
+
 local function AccountantClassic_LogsShifting()
 	-- Since we now (2016/12/17) supported to show specifc character or all characters' incoming / 
 	--   outgoing data in each logmode, we have to deal with the date / week / month's shifting for all
@@ -985,25 +986,25 @@ end]]
 
 function Accountant_Slash(msg)
 	if msg == nil or msg == "" then
-		msg = "log";
+		msg = "log"
 	end
 	local args = {n=0}
 	local function helper(word) tinsert(args, word) end
-	gsub(msg, "[_%w]+", helper);
+	gsub(msg, "[_%w]+", helper)
 	if args[1] == 'log'  then
-		ShowUIPanel(AccountantClassicFrame);
+		ShowUIPanel(AccountantClassicFrame)
 	elseif args[1] == 'verbose' then
 		if AccountantClassic_Verbose == nil then
-			AccountantClassic_Verbose = 1;
-			ACC_Print("Verbose Mode On");
+			AccountantClassic_Verbose = 1
+			ACC_Print("Verbose Mode On")
 		else
 			AccountantClassic_Verbose = nil;
-			ACC_Print("Verbose Mode Off");
+			ACC_Print("Verbose Mode Off")
 		end
 	elseif args[1] == 'week' then
-		ACC_Print(addon:WeekStart());
+		ACC_Print(addon:WeekStart())
 	else
-		AccountantClassic_ShowUsage();
+		ACC_Print("/accountant log\n")
 	end
 end
 
@@ -1145,6 +1146,35 @@ function addon:WeekStart()
 	return strsub(wdate,0,8);
 end
 
+local function parseDateStrings(s, typ)
+	local mm, dd, yy;
+	local sdate = s;
+	
+	if (typ == 1) then -- mm/dd/yy, currently used in dateweek (WeekStart)
+		mm = strsub(sdate, 1, 2);
+		dd = strsub(sdate, 4, 5);
+	else
+		dd = strsub(sdate, 1, 2);
+		mm = strsub(sdate, 4, 5);
+	end
+	yy = strsub(sdate, 7, 8);
+
+--[[ /////////////////////////
+	[1] = "mm/dd/yy";
+	[2] = "dd/mm/yy";
+	[3] = "yy/mm/dd";
+]]
+	if (profile.dateformat == 1) then
+		sdate = mm.."/"..dd.."/"..yy;
+	elseif (profile.dateformat == 2) then
+		sdate = dd.."/"..mm.."/"..yy;
+	else
+		sdate = yy.."/"..mm.."/"..dd;
+	end
+	
+	return sdate;
+end
+
 function AccountantClassicScrollBar_Update()
 	local lineplusoffset;
 	FauxScrollFrame_Update(AccountantClassicScrollBar, AC_CURR_LINES, AC_CHAR_LINES, 19);
@@ -1172,7 +1202,7 @@ function AccountantClassicScrollBar_Update()
 			end
 			if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
 				f.In.Text:SetText("|cFFFFFFFF"..addon:GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
-				f.Out.Text:SetText(AccountantClassic_ParseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["lastsessiondate"], 2));
+				f.Out.Text:SetText(parseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["lastsessiondate"], 2));
 			else
 				f.In.Text:SetText("Unknown");
 			end
@@ -1447,11 +1477,11 @@ function AccountantClassic_OnShow(self)
 		-- Extra info
 		if (AC_CURRTAB == TableIndex(private.constants.logmodes, "Week")) then
 			fs:SetText(L["Week Start"]..":")
-			fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1))
+			fsv:SetText(parseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1))
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "PrvWeek")) then
 			if (prvdateweek) then
 				fs:SetText(L["Week Start"]..":")
-				fsv:SetText(AccountantClassic_ParseDateStrings(AccountantClassic_Profile["options"]["prvdateweek"], 1))
+				fsv:SetText(parseDateStrings(AccountantClassic_Profile["options"]["prvdateweek"], 1))
 			else
 				fs:SetText("")
 				fsv:SetText("")
@@ -1471,11 +1501,11 @@ function AccountantClassic_OnShow(self)
 			end
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "Day")) then
 			fs:SetText("")
-			fsv:SetText(AccountantClassic_ParseDateStrings(cdate, 2))
+			fsv:SetText(parseDateStrings(cdate, 2))
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "PrvDay")) then
 			if (prvday) then
 				fs:SetText("")
-				fsv:SetText(AccountantClassic_ParseDateStrings(prvday, 2))
+				fsv:SetText(parseDateStrings(prvday, 2))
 			else
 				fs:SetText("")
 				fsv:SetText("")
@@ -1611,10 +1641,6 @@ end
 
 function ACC_Print(msg)
 	DEFAULT_CHAT_FRAME:AddMessage(msg);
-end
-
-function AccountantClassic_ShowUsage()
-	ACC_Print("/accountant log\n");
 end
 
 local function AccountantClassic_ResetConfirmed()
@@ -1818,35 +1844,6 @@ function addon:ShowSessionToolTip()
 	if (amoney_str) then
 		return amoney_str;
 	end
-end
-
-function AccountantClassic_ParseDateStrings(s, typ)
-	local mm, dd, yy;
-	local sdate = s;
-	
-	if (typ == 1) then -- mm/dd/yy, currently used in dateweek (WeekStart)
-		mm = strsub(sdate, 1, 2);
-		dd = strsub(sdate, 4, 5);
-	else
-		dd = strsub(sdate, 1, 2);
-		mm = strsub(sdate, 4, 5);
-	end
-	yy = strsub(sdate, 7, 8);
-
---[[ /////////////////////////
-	[1] = "mm/dd/yy";
-	[2] = "dd/mm/yy";
-	[3] = "yy/mm/dd";
-]]
-	if (profile.dateformat == 1) then
-		sdate = mm.."/"..dd.."/"..yy;
-	elseif (profile.dateformat == 2) then
-		sdate = dd.."/"..mm.."/"..yy;
-	else
-		sdate = yy.."/"..mm.."/"..dd;
-	end
-	
-	return sdate;
 end
 
 local AC_MAXTOOLTIPLINES = 50;
