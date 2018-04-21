@@ -27,13 +27,18 @@ $Id$
 -- Upvalued Lua API.
 -----------------------------------------------------------------------
 local _G = getfenv(0)
-local pairs = _G.pairs
+local pairs, select, unpack, type = _G.pairs, _G.select, _G.unpack, _G.type
 local tonumber = _G.tonumber
 local table = _G.table
 local tinsert, tsort = table.insert, table.sort
 local string = _G.string
 local format, gsub, strfind, strsub = string.format, string.gsub, string.find, string.sub
+local math = _G.math
 local floor, fmod = math.floor, math.fmod
+-- WoW
+local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
+local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass = GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass
+
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
@@ -84,7 +89,7 @@ local AccountantClassic_Verbose = nil;
 local AC_SERVER = GetRealmName()
 local AC_PLAYER = UnitName("player")
 local AC_FACTION = UnitFactionGroup("player")
-local _, AC_CLASS = UnitClass("player")
+local AC_CLASS = select(2, UnitClass("player"))
 local AC_SHOWALLCHARS = false
 
 local AC_DATA = private.constants.onlineData
@@ -358,19 +363,20 @@ function AccountantClassic_RegisterEvents(self)
 end
 
 local function setLabels()
+	local f = _G["AccountantClassicFrame"]
 	-- if current tab is All Chars tab
 	if (AC_CURRTAB == AC_TABS) then
 		AccountantClassicFrameResetButton:Hide()
 
-		AccountantClassicFrame.Source:SetText(L["Character"])
-		AccountantClassicFrame.In:SetText(L["Money"])
-		AccountantClassicFrame.Out:SetText(L["Updated"])
-		AccountantClassicFrame.TotalIn:SetText(L["Total Incomings"]..":")
-		AccountantClassicFrame.TotalOut:SetText(L["Total Outgoings"]..":")
-		AccountantClassicFrame.TotalFlow:SetText(L["Sum Total"]..":")
-		AccountantClassicFrame.TotalInValue:SetText("")
-		AccountantClassicFrame.TotalOutValue:SetText("")
-		AccountantClassicFrame.TotalFlowValue:SetText("")
+		f.Source:SetText(L["Character"])
+		f.In:SetText(L["Money"])
+		f.Out:SetText(L["Updated"])
+		f.TotalIn:SetText(L["Total Incomings"]..":")
+		f.TotalOut:SetText(L["Total Outgoings"]..":")
+		f.TotalFlow:SetText(L["Sum Total"]..":")
+		f.TotalInValue:SetText("")
+		f.TotalOutValue:SetText("")
+		f.TotalFlowValue:SetText("")
 		for i = 1, 18, 1 do
 			_G["AccountantClassicFrameRow"..i.."Title".."_Text"]:SetText("")
 			_G["AccountantClassicFrameRow"..i.."In".."_Text"]:SetText("")
@@ -383,12 +389,12 @@ local function setLabels()
 	else
 		AccountantClassicFrameResetButton:Show()
 
-		AccountantClassicFrame.Source:SetText(L["Source"])
-		AccountantClassicFrame.In:SetText(L["Incomings"])
-		AccountantClassicFrame.Out:SetText(L["Outgoings"])
-		AccountantClassicFrame.TotalIn:SetText(L["Total Incomings"]..":")
-		AccountantClassicFrame.TotalOut:SetText(L["Total Outgoings"]..":")
-		AccountantClassicFrame.TotalFlow:SetText(L["Net Profit / Loss"]..":")
+		f.Source:SetText(L["Source"])
+		f.In:SetText(L["Incomings"])
+		f.Out:SetText(L["Outgoings"])
+		f.TotalIn:SetText(L["Total Incomings"]..":")
+		f.TotalOut:SetText(L["Total Outgoings"]..":")
+		f.TotalFlow:SetText(L["Net Profit / Loss"]..":")
 
 		-- Row Labels (auto generate)
 		local InPos = 1
@@ -399,7 +405,7 @@ local function setLabels()
 		end
 
 		-- Set the header
-		local name = AccountantClassicFrame:GetName()
+		local name = f:GetName()
 		local header = _G[name.."TitleText"]
 		if ( header ) then
 			header:SetText(L["Accountant Classic"])
