@@ -54,7 +54,9 @@
 Libs\Libs.xml
 Locale\Locales.xml
 Core\Constants.lua
+
 Core\Core.lua
+Core\Template.xml
 Core\Core.xml
 Core\MoneyFrame.lua
 Core\Config.lua
