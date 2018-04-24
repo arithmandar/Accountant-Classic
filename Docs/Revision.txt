@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.10.01 (Apr. 24, 2018)
+==========================
+  - Library updtae: LibUIDropDownMenu
+
 * v2.10.00 (Mar. 16, 2018)
 ==========================
   - Sorted all characters' displaying order. It will now sort the server and the character names.
