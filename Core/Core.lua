@@ -574,36 +574,33 @@ local function AccountantClassicFrameCharacterDropDown_OnClick(self)
 end
 
 local function AccountantClassicFrameCharacterDropDown_Init()
-	local info;
+	local info
 	for i = 1, #AC_CHARSCROLL_LIST do
-		local serverkey = AC_CHARSCROLL_LIST[i][1];
-		local charkey = AC_CHARSCROLL_LIST[i][2];
-		info = L_UIDropDownMenu_CreateInfo();
-		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
-			local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
-			local faction_icon = "Interface\\PVPFrame\\PVP-Currency-"..factionstr;
-			info.icon = faction_icon
-		end
+		local serverkey = AC_CHARSCROLL_LIST[i][1]
+		local charkey = AC_CHARSCROLL_LIST[i][2]
+		info = L_UIDropDownMenu_CreateInfo()
+		local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction or nil
+		info.icon = factionstr and "Interface\\PVPFrame\\PVP-Currency-"..factionstr or nil
 		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
-			local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
-			info.colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"];
+			local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class
+			info.colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"]
 		end
-		info.text = serverkey.." - "..charkey;
-		info.value = i;
-		info.arg1 = serverkey;
-		info.arg2 = charkey;
-		info.func = AccountantClassicFrameCharacterDropDown_OnClick;
-		L_UIDropDownMenu_AddButton(info);
+		info.text = serverkey.." - "..charkey
+		info.value = i
+		info.arg1 = serverkey
+		info.arg2 = charkey
+		info.func = AccountantClassicFrameCharacterDropDown_OnClick
+		L_UIDropDownMenu_AddButton(info)
 	end
 	
 	-- Added All Chars to dropdown
-	info = L_UIDropDownMenu_CreateInfo();
-	info.text = L["All Chars"];
-	info.value = #AC_CHARSCROLL_LIST + 1;
-	info.tooltipTitle = L["Show all characters' incoming and outgoing data."];
-	info.tooltipOnButton = true;
-	info.func = AccountantClassicFrameCharacterDropDown_OnClick;
-	L_UIDropDownMenu_AddButton(info);
+	info = L_UIDropDownMenu_CreateInfo()
+	info.text = L["All Chars"]
+	info.value = #AC_CHARSCROLL_LIST + 1
+	info.tooltipTitle = L["Show all characters' incoming and outgoing data."]
+	info.tooltipOnButton = true
+	info.func = AccountantClassicFrameCharacterDropDown_OnClick
+	L_UIDropDownMenu_AddButton(info)
 end
 
 function AccountantClassicFrameCharacterDropDown_Setup()
@@ -1182,39 +1179,37 @@ local function parseDateStrings(s, typ)
 end
 
 function AccountantClassicScrollBar_Update()
-	local lineplusoffset;
-	FauxScrollFrame_Update(AccountantClassicScrollBar, AC_CURR_LINES, AC_CHAR_LINES, 19);
+	local lineplusoffset
+	FauxScrollFrame_Update(AccountantClassicScrollBar, AC_CURR_LINES, AC_CHAR_LINES, 19)
 	for i = 1, AC_CHAR_LINES do
-		local f = _G["AccountantClassicCharacterEntry"..i];
-		lineplusoffset = i + FauxScrollFrame_GetOffset(AccountantClassicScrollBar);
+		local f = _G["AccountantClassicCharacterEntry"..i]
+		lineplusoffset = i + FauxScrollFrame_GetOffset(AccountantClassicScrollBar)
 		if (lineplusoffset <= AC_CURR_LINES) then
-			local player_text, factionstr, faction_icon, classToken, class_color;
-			local serverkey = AC_CHARSCROLL_LIST[lineplusoffset][1];
-			local charkey = AC_CHARSCROLL_LIST[lineplusoffset][2];
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
-				factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction;
-				faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s";
-				if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
-					classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
-					class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
-				end
-				if(classToken) then 
-					f.Title.Text:SetText(format(class_color..faction_icon.."|r", serverkey, charkey));
-				else
-					f.Title.Text:SetText(format(faction_icon, serverkey, charkey));
-				end
-			else
-				f.Title.Text:SetText(charkey);
+			local player_text, factionstr, faction_icon, classToken, class_color
+			local serverkey = AC_CHARSCROLL_LIST[lineplusoffset][1]
+			local charkey = AC_CHARSCROLL_LIST[lineplusoffset][2]
+
+			factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction or nil
+			faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s" or "%s - %s"
+			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
+				classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class
+				class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"]
 			end
+			if(classToken) then 
+				f.Title.Text:SetText(format(class_color..faction_icon.."|r", serverkey, charkey))
+			else
+				f.Title.Text:SetText(format(faction_icon, serverkey, charkey))
+			end
+
 			if Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"] ~= nil then
-				f.In.Text:SetText("|cFFFFFFFF"..addon:GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]));
-				f.Out.Text:SetText(parseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["lastsessiondate"], 2));
+				f.In.Text:SetText("|cFFFFFFFF"..addon:GetFormattedValue(Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]))
+				f.Out.Text:SetText(parseDateStrings(Accountant_ClassicSaveData[serverkey][charkey]["options"]["lastsessiondate"], 2))
 			else
-				f.In.Text:SetText("Unknown");
+				f.In.Text:SetText("Unknown")
 			end
-			f:Show();
+			f:Show()
 		elseif (f) then
-			f:Hide();
+			f:Hide()
 		end
 	end
 end

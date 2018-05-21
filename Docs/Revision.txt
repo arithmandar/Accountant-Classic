@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.10.02 (May. 22, 2018)
+==========================
+  - Enhanced faction icon's handling
+
 * v2.10.01 (Apr. 24, 2018)
 ==========================
   - Library updtae: LibUIDropDownMenu

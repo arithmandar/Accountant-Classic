@@ -45,14 +45,14 @@ local function get_character_data_listMenu()
 	
 	for serverkey, server_value in pairs(Accountant_ClassicSaveData) do
 		for charkey, char_value in pairs(Accountant_ClassicSaveData[serverkey]) do
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].faction) then
-				factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction
-				faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s"
-			end
+			factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction or nil
+			faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s" or "%s - %s"
+
 			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
 				local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
 				colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"];
 			end
+
 			list[i] = format(colorCode..faction_icon.."|r", serverkey, charkey)
 			character_data_list[i] = { serverkey, charkey }
 			
@@ -63,18 +63,17 @@ local function get_character_data_listMenu()
 end
 
 local function to_confirm_character_removal(value)
-	local selected_srv  = character_data_list[value][1];
-	local selected_char  = character_data_list[value][2];
-	local faction_icon = "";
-	local class_color = "";
+	local selected_srv  = character_data_list[value][1]
+	local selected_char  = character_data_list[value][2]
+	local faction_icon
+	local class_color = ""
 
-	if (Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction) then
-		local factionstr = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction;
-		faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t";
-	end
+	local factionstr = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction or nil
+	faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t" or ""
+
 	if (Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class) then
-		local classToken = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class;
-		class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
+		local classToken = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class
+		class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"]
 	end
 
 	-- Confirm box
@@ -83,11 +82,11 @@ local function to_confirm_character_removal(value)
 		buttons = {
 			{
 				text = OKAY,
-				on_click = function() addon:CharacterRemovalProceed(selected_srv, selected_char); end,
+				on_click = function() addon:CharacterRemovalProceed(selected_srv, selected_char) end,
 			},
 			{
 				text = CANCEL,
-				on_click = function(self, mouseButton, down) LibDialog:Dismiss("ACCLOC_CHARREMOVE"); end,
+				on_click = function(self, mouseButton, down) LibDialog:Dismiss("ACCLOC_CHARREMOVE") end,
 			},
 		},
 		show_while_dead = true,
@@ -95,8 +94,8 @@ local function to_confirm_character_removal(value)
 		is_exclusive = true,
 		show_during_cinematic = false,
 		
-	});
-	LibDialog:Spawn("ACCLOC_CHARREMOVE");
+	})
+	LibDialog:Spawn("ACCLOC_CHARREMOVE")
 end
 
 local options, moduleOptions = nil, {}
