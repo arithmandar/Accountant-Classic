@@ -581,10 +581,10 @@ local function AccountantClassicFrameCharacterDropDown_Init()
 		info = L_UIDropDownMenu_CreateInfo()
 		local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction or nil
 		info.icon = factionstr and "Interface\\PVPFrame\\PVP-Currency-"..factionstr or nil
-		if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
-			local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class
-			info.colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"]
-		end
+
+		local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class
+		info.colorCode = class and "|c"..RAID_CLASS_COLORS[class]["colorStr"] or nil
+
 		info.text = serverkey.." - "..charkey
 		info.value = i
 		info.arg1 = serverkey
@@ -1191,10 +1191,10 @@ function AccountantClassicScrollBar_Update()
 
 			factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction or nil
 			faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s" or "%s - %s"
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
-				classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class
-				class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"]
-			end
+
+			classToken = Accountant_ClassicSaveData[serverkey][charkey]["options"].class or nil
+			class_color = classToken and "|c"..RAID_CLASS_COLORS[classToken]["colorStr"] or ""
+
 			if(classToken) then 
 				f.Title.Text:SetText(format(class_color..faction_icon.."|r", serverkey, charkey))
 			else
@@ -1706,27 +1706,24 @@ function AccountantClassic_ResetData()
 end
 
 function addon:CharacterRemovalProceed(server, character)
-	local faction_icon = "";
-	local class_color = "";
+	local faction_icon, class_color
 	for ka, va in pairs(Accountant_ClassicSaveData) do
 		if (ka == server) then
 			for kb, vb in pairs(Accountant_ClassicSaveData[ka]) do
 				if (kb == character) then
-					if (Accountant_ClassicSaveData[ka][kb]["options"].faction) then
-						local factionstr = Accountant_ClassicSaveData[ka][kb]["options"].faction;
-						faction_icon = "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t";
-					end
-					if (Accountant_ClassicSaveData[ka][kb]["options"].class) then
-						local classToken = Accountant_ClassicSaveData[ka][kb]["options"].class;
-						class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"];
-					end
-					Accountant_ClassicSaveData[ka][kb] = nil;
-					ACC_Print(format(L["|cffffffff\"%s - %s|cffffffff\" character's Accountant Classic data has been removed."], faction_icon..class_color..server, character));
-					addon:PopulateCharacterList();
+					local factionstr = Accountant_ClassicSaveData[ka][kb]["options"].faction or nil
+					faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t" or ""
+
+					local classToken = Accountant_ClassicSaveData[ka][kb]["options"].class  or nil
+					class_color = classToken and "|c"..RAID_CLASS_COLORS[classToken]["colorStr"] or ""
+
+					Accountant_ClassicSaveData[ka][kb] = nil
+					ACC_Print(format(L["|cffffffff\"%s - %s|cffffffff\" character's Accountant Classic data has been removed."], faction_icon..class_color..server, character))
+					addon:PopulateCharacterList()
 					if AccountantClassicFrame:IsVisible() then
-						AccountantClassic_OnShow();
+						AccountantClassic_OnShow()
 					end
-					return;
+					return
 				end
 			end
 		end

@@ -48,10 +48,8 @@ local function get_character_data_listMenu()
 			factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction or nil
 			faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s" or "%s - %s"
 
-			if (Accountant_ClassicSaveData[serverkey][charkey]["options"].class) then
-				local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class;
-				colorCode = "|c"..RAID_CLASS_COLORS[class]["colorStr"];
-			end
+			local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class or nil
+			colorCode = class and "|c"..RAID_CLASS_COLORS[class]["colorStr"] or ""
 
 			list[i] = format(colorCode..faction_icon.."|r", serverkey, charkey)
 			character_data_list[i] = { serverkey, charkey }
@@ -65,16 +63,13 @@ end
 local function to_confirm_character_removal(value)
 	local selected_srv  = character_data_list[value][1]
 	local selected_char  = character_data_list[value][2]
-	local faction_icon
-	local class_color = ""
+	local faction_icon, class_color
 
 	local factionstr = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction or nil
 	faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t" or ""
 
-	if (Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class) then
-		local classToken = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class
-		class_color = "|c"..RAID_CLASS_COLORS[classToken]["colorStr"]
-	end
+	local classToken = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class or nil
+	class_color = classToken and "|c"..RAID_CLASS_COLORS[classToken]["colorStr"] or ""
 
 	-- Confirm box
 	LibDialog:Register("ACCLOC_CHARREMOVE", {
