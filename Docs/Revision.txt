@@ -6,7 +6,7 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.10.03 (May. 25, 2018)
+* v2.10.03 (May. 28, 2018)
 ==========================
   - Fixed errors while removing old character's data
 
