@@ -9,7 +9,7 @@
 	<Script file="localization.ru.lua"/>
 	<Script file="localization.es.lua"/>
 	<Script file="localization.esMX.lua"/>
-	<Script file="localization.itIT.lua"/>
+	<Script file="localization.it.lua"/>
 	<Script file="localization.ptBR.lua"/>
 	<Script file="globalstrings.lua"/>
 </Ui>

@@ -98,7 +98,7 @@ constants.events = {
 	"TAXIMAP_CLOSED",
 	-- Trade
 	"TRADE_SHOW",
-	"TRADE_CLOSE",
+	"TRADE_CLOSED",
 	-- Mail
 	"MAIL_INBOX_UPDATE",
 	"MAIL_SHOW",

@@ -74,7 +74,9 @@ local AC_CURRMONEY = 0
 local AC_LASTSESSMONEY = 0
 local AC_LASTMONEY = 0
 local AC_CURRTAB = private.constants.currTab
-local AC_MONTHS = { CalendarGetMonthNames() }
+--local AC_MONTHS = { CalendarGetMonthNames() }
+local AC_MONTHS = { MONTH_JANUARY, MONTH_FEBRUARY, MONTH_MARCH, MONTH_APRIL, MONTH_MAY, MONTH_JUNE, MONTH_JULY, MONTH_AUGUST, MONTH_SEPTEMBER, MONTH_OCTOBER, MONTH_NOVEMBER, MONTH_DECEMBER }
+
 -- Number of Accountant Classic tabs; also the tab number of "All Character"
 local AC_TABS = #private.constants.logmodes + 1
 local AC_CHARSCROLL_LIST = {}
@@ -1254,7 +1256,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 	event == "TRANSMOGRIFY_CLOSE" or
 	event == "VOID_STORAGE_CLOSE" or
 	event == "MERCHANT_CLOSED" or
-	event == "TRADE_CLOSE" or
+	event == "TRADE_CLOSED" or
 	event == "TRAINER_CLOSED" or
 	event == "AUCTION_HOUSE_CLOSED"
 	) then

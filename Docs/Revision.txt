@@ -6,6 +6,17 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.11.00 (Jul. 25, 2018)
+==========================
+  - ToC update to support WoW 8.0.1
+  - Libraries update
+  - Replace CalendarGetMonthNames() with private month arrays
+  - Changed even name TRADE_CLOSE to TRADE_CLOSED
+
+* v2.10.04 (Jun. xx, 2018)
+==========================
+  - Fixed error loading Italian's locale file
+
 * v2.10.03 (May. 28, 2018)
 ==========================
   - Fixed errors while removing old character's data
