@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.11.01 (Aug. 07, 2018)
+==========================
+  - Libraries update: Ace3
+
 * v2.11.00 (Jul. 25, 2018)
 ==========================
   - ToC update to support WoW 8.0.1
