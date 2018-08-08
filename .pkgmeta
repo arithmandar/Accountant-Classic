@@ -44,8 +44,8 @@ externals:
         url: https://repos.wowace.com/wow/libdialog-1-0
 
 move-folders:
-    test1: test
-    test2: test1
+    Accountant_Classic/test1: Accountant_Classic/test
+    Accountant_Classic/test2: Accountant_Classic/test1
 
 ignore:
     - Images/PSD
