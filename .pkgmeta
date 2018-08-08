@@ -4,6 +4,8 @@ manual-changelog:
     filename: Docs/Revision.txt
     markup-type: plain
 
+license-output: Docs/LICENSE.txt
+
 enable-nolib-creation: yes
 
 externals:
@@ -41,7 +43,9 @@ externals:
     Libs/LibDialog-1.0: 
         url: https://repos.wowace.com/wow/libdialog-1-0
 
-license-output: Docs/LICENSE.txt
+move-folders:
+    Test1: Test
+    Test2: Test1
 
 ignore:
     - Images/PSD
