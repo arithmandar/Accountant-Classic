@@ -42,10 +42,13 @@ externals:
 # HG
     Libs/LibDialog-1.0: 
         url: https://repos.wowace.com/wow/libdialog-1-0
+# Git
+    Libs-release/LibDataBroker-1.1: 
+        url: https://repos.wowace.com/wow/libdatabroker-1-1
 
 move-folders:
-    Accountant_Classic/test1: Accountant_Classic/test
-    Accountant_Classic/test2: Accountant_Classic/test1
+    Accountant_Classic/Libs-Live: Accountant_Classic/Libs-Dev
+    Accountant_Classic/Libs-release: Accountant_Classic/Libs-Live
 
 ignore:
     - Images/PSD
