@@ -9,7 +9,7 @@ Revision History:
 * v2.11.01 (Aug. 08, 2018)
 ==========================
   - Library update: LibDBIcon-1.0
-  - Spliting the development-used-only lib folder and release one
+  - Splitting the development-used-only lib folder and release one
 
 * v2.11.01 (Aug. 07, 2018)
 ==========================
