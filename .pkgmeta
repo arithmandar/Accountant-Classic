@@ -49,5 +49,5 @@ move-folders:
 
 ignore:
     - Images/PSD
-    - Libs/NoTaint_UIDropDownMenu
+    - Libs-dev
 

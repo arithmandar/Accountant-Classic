@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.11.02 (Aug. 12, 2018)
+==========================
+  - Library update: LibDBIcon-1.0, LibUIDropDownMenu
+
 * v2.11.01 (Aug. 08, 2018)
 ==========================
   - Library update: LibDBIcon-1.0
