@@ -6,7 +6,7 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.11.01 (Dec. 16, 2018)
+* v2.11.04 (Dec. 16, 2018)
 ==========================
   - ToC update to support WoW 8.1.0
 
