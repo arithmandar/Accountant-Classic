@@ -364,6 +364,63 @@ function AccountantClassic_RegisterEvents(self)
 	--self:RegisterForDrag("LeftButton");
 end
 
+local function createACFrames()
+	local parentName = "AccountantClassicFrame"
+	local f = _G[parentName]
+	
+	f.ServerDropDown = _G[parentName.."ServerDropDown"] 
+	if not f.ServerDropDown then 
+		f.ServerDropDown = L_Create_UIDropDownMenu(parentName.."ServerDropDown", f)
+		f.ServerDropDown:Hide()
+		f.ServerDropDown:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -38)
+		f.ServerDropDown.Label = f.ServerDropDown:CreateFontString(parentName.."ServerDropDownLabel", "BACKGROUND", "GameFontNormalSmall")
+		f.ServerDropDown.Label:SetPoint("BOTTOMLEFT", f, "TOPLEFT", 0, 0)
+		f.ServerDropDown:SetScript("OnShow", function(self)
+			AccountantClassicFrameServerDropDown_Setup()
+		end)
+	end
+	
+	f.FactionDropDown = _G[parentName.."FactionDropDown"]
+	if not f.FactionDropDown then 
+		f.FactionDropDown = L_Create_UIDropDownMenu(parentName.."FactionDropDown", f)
+		f.FactionDropDown:Hide()
+		f.FactionDropDown:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -62)
+		f.FactionDropDown.Label = f.ServerDropDown:CreateFontString(parentName.."FactionDropDownLabel", "BACKGROUND", "GameFontNormalSmall")
+		f.FactionDropDown.Label:SetPoint("BOTTOMLEFT", f, "TOPLEFT", 0, 0)
+		f.FactionDropDown:SetScript("OnShow", function(self)
+			AccountantClassicFrameFactionDropDown_Setup()
+		end)
+	end
+
+	f.CharacterDropDown = _G[parentName.."CharacterDropDown"]
+	if not f.CharacterDropDown then
+		f.CharacterDropDown = L_Create_UIDropDownMenu(parentName.."CharacterDropDown", f)
+		f.CharacterDropDown:Hide()
+		f.CharacterDropDown:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -62)
+		f.CharacterDropDown.Label = f.ServerDropDown:CreateFontString(parentName.."CharacterDropDownLabel", "BACKGROUND", "GameFontNormalSmall")
+		f.CharacterDropDown.Label:SetPoint("BOTTOMLEFT", f, "TOPLEFT", 0, 0)
+		f.CharacterDropDown:SetScript("OnShow", function(self)
+			AccountantClassicFrameCharacterDropDown_Setup()
+		end)
+	end
+	--[[
+	-- Rows
+	for i = 1, 18, 1 do
+		local name = parentName.."Row"..i
+		local sf = _G[name]
+		if (not sf) then 
+			sf = CreateFrame("Frame", name, f, AccountantClassicRowTemplate) 
+		end
+		if i == 1 then
+			sf:SetPoint("TOPLEFT", f, "TOPLEFT", 21, -113)
+		else
+			local j = i-1
+			sf:SetPoint("TOPLEFT", _G[name.."Row"..j], "TOPLEFT", 0, -1)
+		end
+		f[name] = sf
+	end]]
+end
+
 local function setLabels()
 	local f = _G["AccountantClassicFrame"]
 	-- if current tab is All Chars tab
@@ -401,8 +458,10 @@ local function setLabels()
 		-- Row Labels (auto generate)
 		local InPos = 1
 		for key,value in pairs(AC_DATA) do
+			local name = "AccountantClassicFrameRow"..InPos
 			AC_DATA[key].InPos = InPos
 			_G["AccountantClassicFrameRow"..InPos.."Title".."_Text"]:SetText(AC_DATA[key].Title)
+			--f[name]Title.Text:SetText(AC_DATA[key].Title)
 			InPos = InPos + 1
 		end
 
@@ -1329,6 +1388,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 end
 
 function AccountantClassic_OnShow(self)
+	createACFrames()
 	local cdate = date("%d/%m/%y")
 	local cmonth = date("%m")
 	local cyear = date("%Y")
@@ -1934,6 +1994,7 @@ function AccountantClassic_LogTypeOnShow(self)
 	end
 end
 
+
 function addon:OnInitialize()
 	self.db = AceDB:New("Accountant_ClassicDB", private.constants.defaults, true);
 	profile = self.db.profile
@@ -1979,6 +2040,7 @@ function addon:OnInitialize()
 	addon:SetupOptions()
 	
 	MoneyFrame = addon:GetModule("MoneyFrame", true)
+	createACFrames()
 end
 
 function addon:OnEnable()

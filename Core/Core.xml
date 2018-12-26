@@ -163,7 +163,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentServerDropDown" inherits="L_UIDropDownMenuTemplate" hidden="true">
+<!--			<Frame name="$parentServerDropDown" inherits="L_UIDropDownMenuTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
 						<Offset>
@@ -243,7 +243,7 @@
 						AccountantClassicFrameCharacterDropDown_Setup()
 					</OnShow>
 				</Scripts>
-			</Frame>
+			</Frame>-->
 			<ScrollFrame name="AccountantClassicScrollBar" inherits="FauxScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="590" y="340" />
