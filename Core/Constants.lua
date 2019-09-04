@@ -5,6 +5,9 @@
 -- Functions
 local _G = getfenv(0);
 -- Libraries
+
+local WoWClassic = select(4, GetBuildInfo()) < 20000
+
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
@@ -51,77 +54,149 @@ constants.defaults = {
 		profileCopied = false,
 		rememberSelectedCharacter = true,
 	},
-};
-
-constants.events = {
---	"PLAYER_LOGIN",
---	"ADDON_LOADED",
---	"UNIT_NAME_UPDATE",
---	"PLAYER_ENTERING_WORLD",
-	-- Garrison
-	"GARRISON_MISSION_FINISHED",
-	"GARRISON_ARCHITECT_OPENED",
-	"GARRISON_ARCHITECT_CLOSED",
-	"GARRISON_MISSION_NPC_OPENED",
-	"GARRISON_MISSION_NPC_CLOSED",
-	"GARRISON_SHIPYARD_NPC_OPENED",
-	"GARRISON_SHIPYARD_NPC_CLOSED",
-	"GARRISON_UPDATE",
-	-- Barber shop
-	"BARBER_SHOP_APPEARANCE_APPLIED",
-	"BARBER_SHOP_OPEN",
-	"BARBER_SHOP_SUCCESS",
-	"BARBER_SHOP_CLOSE",
-	-- Talent
-	"CONFIRM_TALENT_WIPE",
-	-- LFG
-	"LFG_COMPLETION_REWARD",
-	-- VOID
-	"VOID_STORAGE_OPEN",
-	"VOID_STORAGE_CLOSE",
-	-- Transform
-	"TRANSMOGRIFY_OPEN",
-	"TRANSMOGRIFY_CLOSE",
-	-- Merchant
-	"MERCHANT_SHOW",
-	"MERCHANT_CLOSED",
-	"MERCHANT_UPDATE",
-	-- Quest
-	"QUEST_COMPLETE",
-	"QUEST_FINISHED",
-	"QUEST_TURNED_IN",
-	-- Loot
-	"LOOT_OPENED",
-	"LOOT_CLOSED",
-	-- Taxi
-	"TAXIMAP_OPENED",
-	"TAXIMAP_CLOSED",
-	-- Trade
-	"TRADE_SHOW",
-	"TRADE_CLOSED",
-	-- Mail
-	"MAIL_INBOX_UPDATE",
-	"MAIL_SHOW",
-	"MAIL_CLOSED",
-	-- Trainer
-	"TRAINER_SHOW",
-	"TRAINER_CLOSED",
-	-- AH
-	"AUCTION_HOUSE_SHOW",
-	"AUCTION_HOUSE_CLOSED",
-	-- Guild
-	"GUILDBANKFRAME_OPENED",
-	"GUILDBANKFRAME_CLOSED",
-	"GUILDBANK_UPDATE_MONEY",
-	"GUILDBANK_UPDATE_WITHDRAWMONEY",
-	-- Others
-	"CHAT_MSG_MONEY",
-	"PLAYER_MONEY",
-};
+}
 
 constants.logmodes = {"Session", "Day", "PrvDay", "Week", "PrvWeek", "Month", "PrvMonth", "Year", "PrvYear", "Total" }
 
-constants.logtypes = {"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER", "VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD"}
+if WoWClassic then 
+	constants.events = {
+		-- Talent
+		"CONFIRM_TALENT_WIPE",
+		-- Merchant
+		"MERCHANT_SHOW",
+		"MERCHANT_CLOSED",
+		"MERCHANT_UPDATE",
+		-- Quest
+		"QUEST_COMPLETE",
+		"QUEST_FINISHED",
+		"QUEST_TURNED_IN",
+		-- Loot
+		"LOOT_OPENED",
+		"LOOT_CLOSED",
+		-- Taxi
+		"TAXIMAP_OPENED",
+		"TAXIMAP_CLOSED",
+		-- Trade
+		"TRADE_SHOW",
+		"TRADE_CLOSED",
+		-- Mail
+		"MAIL_INBOX_UPDATE",
+		"MAIL_SHOW",
+		"MAIL_CLOSED",
+		-- Trainer
+		"TRAINER_SHOW",
+		"TRAINER_CLOSED",
+		-- AH
+		"AUCTION_HOUSE_SHOW",
+		"AUCTION_HOUSE_CLOSED",
+		-- Others
+		"CHAT_MSG_MONEY",
+		"PLAYER_MONEY",
+	}
+	constants.logtypes = {
+		"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER" 
+	}
+	constants.onlineData = {
+		["TRAIN"] = 	{ Title = L["Training Costs"]};
+		["TAXI"] = 	{ Title = L["Taxi Fares"]};
+		["TRADE"] = 	{ Title = L["Trade Window"]};
+		["AH"] = 	{ Title = AUCTIONS};
+		["MERCH"] = 	{ Title = L["Merchants"]};
+		["REPAIRS"] = 	{ Title = L["Repair Costs"]};
+		["MAIL"] = 	{ Title = L["Mail"]};
+		["QUEST"] = 	{ Title = QUESTS_LABEL};
+		["LOOT"] = 	{ Title = LOOT};
+		["OTHER"] = 	{ Title = L["Unknown"]};
+	}
+else
+	constants.events = {
+		-- Garrison
+		"GARRISON_MISSION_FINISHED",
+		"GARRISON_ARCHITECT_OPENED",
+		"GARRISON_ARCHITECT_CLOSED",
+		"GARRISON_MISSION_NPC_OPENED",
+		"GARRISON_MISSION_NPC_CLOSED",
+		"GARRISON_SHIPYARD_NPC_OPENED",
+		"GARRISON_SHIPYARD_NPC_CLOSED",
+		"GARRISON_UPDATE",
+		-- Barber shop
+		"BARBER_SHOP_APPEARANCE_APPLIED",
+		"BARBER_SHOP_OPEN",
+		"BARBER_SHOP_SUCCESS",
+		"BARBER_SHOP_CLOSE",
+		-- LFG
+		"LFG_COMPLETION_REWARD",
+		-- VOID
+		"VOID_STORAGE_OPEN",
+		"VOID_STORAGE_CLOSE",
+		-- Transform
+		"TRANSMOGRIFY_OPEN",
+		"TRANSMOGRIFY_CLOSE",
+		-- Guild
+		"GUILDBANKFRAME_OPENED",
+		"GUILDBANKFRAME_CLOSED",
+		"GUILDBANK_UPDATE_MONEY",
+		"GUILDBANK_UPDATE_WITHDRAWMONEY",
+
+		-- Talent
+		"CONFIRM_TALENT_WIPE",
+		-- Merchant
+		"MERCHANT_SHOW",
+		"MERCHANT_CLOSED",
+		"MERCHANT_UPDATE",
+		-- Quest
+		"QUEST_COMPLETE",
+		"QUEST_FINISHED",
+		"QUEST_TURNED_IN",
+		-- Loot
+		"LOOT_OPENED",
+		"LOOT_CLOSED",
+		-- Taxi
+		"TAXIMAP_OPENED",
+		"TAXIMAP_CLOSED",
+		-- Trade
+		"TRADE_SHOW",
+		"TRADE_CLOSED",
+		-- Mail
+		"MAIL_INBOX_UPDATE",
+		"MAIL_SHOW",
+		"MAIL_CLOSED",
+		-- Trainer
+		"TRAINER_SHOW",
+		"TRAINER_CLOSED",
+		-- AH
+		"AUCTION_HOUSE_SHOW",
+		"AUCTION_HOUSE_CLOSED",
+		-- Others
+		"CHAT_MSG_MONEY",
+		"PLAYER_MONEY",
+	}
+	constants.logtypes = {
+		"VOID", "TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD",
+		"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER" 
+	}
+	constants.onlineData = {
+		["VOID"] =  	{ Title = VOID_STORAGE};
+		["TRANSMO"] =	{ Title = TRANSMOGRIFY};
+		["GARRISON"] =	{ Title = GARRISON_LOCATION_TOOLTIP.." / "..ORDER_HALL_MISSIONS };
+		["LFG"] =	{ Title = L["LFD, LFR and Scen."]};
+		["BARBER"] =	{ Title = BARBERSHOP};
+		["GUILD"] =	{ Title = GUILD};
+
+		["TRAIN"] = 	{ Title = L["Training Costs"]};
+		["TAXI"] = 	{ Title = L["Taxi Fares"]};
+		["TRADE"] = 	{ Title = L["Trade Window"]};
+		["AH"] = 	{ Title = AUCTIONS};
+		["MERCH"] = 	{ Title = L["Merchants"]};
+		["REPAIRS"] = 	{ Title = L["Repair Costs"]};
+		["MAIL"] = 	{ Title = L["Mail"]};
+		["QUEST"] = 	{ Title = QUESTS_LABEL};
+		["LOOT"] = 	{ Title = LOOT};
+		["OTHER"] = 	{ Title = L["Unknown"]};
+	}
+
+end
+
 
 constants.currTab = 1
 
@@ -129,24 +204,6 @@ constants.ldbDisplayTypes = { "Total", "Session", "Day", "Week", "Month" }
 
 constants.dateformats = { "mm/dd/yy", "dd/mm/yy", "yy/mm/dd", }
 
-constants.onlineData = {
-	["TRAIN"] = 	{ Title = L["Training Costs"]};
-	["TAXI"] = 	{ Title = L["Taxi Fares"]};
-	["TRADE"] = 	{ Title = L["Trade Window"]};
-	["AH"] = 	{ Title = AUCTIONS};
-	["MERCH"] = 	{ Title = L["Merchants"]};
-	["REPAIRS"] = 	{ Title = L["Repair Costs"]};
-	["MAIL"] = 	{ Title = L["Mail"]};
-	["QUEST"] = 	{ Title = QUESTS_LABEL};
-	["LOOT"] = 	{ Title = LOOT};
-	["OTHER"] = 	{ Title = L["Unknown"]};
-	["VOID"] =  	{ Title = VOID_STORAGE};
-	["TRANSMO"] =	{ Title = TRANSMOGRIFY};
-	["GARRISON"] =	{ Title = GARRISON_LOCATION_TOOLTIP.." / "..ORDER_HALL_MISSIONS };
-	["LFG"] =	{ Title = L["LFD, LFR and Scen."]};
-	["BARBER"] =	{ Title = BARBERSHOP};
-	["GUILD"] =	{ Title = GUILD};
-}
 
 constants.tabText = {
 	L["This Session"],
@@ -161,6 +218,7 @@ constants.tabText = {
 	L["Total"],
 	L["All Chars"],
 }
+
 
 
 -- Maximum lines for characters to be displayed. 

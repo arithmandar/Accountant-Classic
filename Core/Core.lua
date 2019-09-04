@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 $Id$
 ]]
 --[[
@@ -38,6 +38,8 @@ local floor, fmod = math.floor, math.fmod
 -- WoW
 local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
 local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass = GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass
+
+local WoWClassic = select(4, GetBuildInfo()) < 20000
 
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
@@ -1303,7 +1305,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 	event == "GARRISON_UPDATE" or
 	event == "GARRISON_ARCHITECT_OPENED" or
 	event == "GARRISON_MISSION_NPC_OPENED" or
-	event == "GARRISON_SHIPYARD_NPC_OPENED"
+	event == "GARRISON_SHIPYARD_NPC_OPENED" 
 	) then
 		AC_LOGTYPE = "GARRISON";
 	elseif ( 
@@ -1829,16 +1831,20 @@ function addon:CursorHasItem()
 end
 
 function addon:BackpackTokenFrame_Update()
-	local name, count, icon, currencyID;
-	local tokenstr = "";
-	for i=1, MAX_WATCHED_TOKENS do
-		name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
-		-- Update watched tokens
-		if ( name ) then
-			tokenstr = tokenstr..AccountantClassic_GetFormattedCurrency(currencyID).." ";
+	if WoWClassic then
+		-- do nothing
+	else
+		local name, count, icon, currencyID;
+		local tokenstr = "";
+		for i=1, MAX_WATCHED_TOKENS do
+			name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
+			-- Update watched tokens
+			if ( name ) then
+				tokenstr = tokenstr..AccountantClassic_GetFormattedCurrency(currencyID).." ";
+			end
 		end
+		return tokenstr;
 	end
-	return tokenstr;
 end
 
 function addon:ShowNetMoney(logmode)
