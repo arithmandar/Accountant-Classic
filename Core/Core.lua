@@ -1208,7 +1208,7 @@ function addon:WeekStart()
 		dt = date("*t",ct);
 		thisDay = dt["wday"];
 	end
-	local wdate = date(nil,ct);
+	local wdate = date("%m/%d/%y",ct);
 	return strsub(wdate,0,8);
 end
 
@@ -1305,7 +1305,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 	event == "GARRISON_UPDATE" or
 	event == "GARRISON_ARCHITECT_OPENED" or
 	event == "GARRISON_MISSION_NPC_OPENED" or
-	event == "GARRISON_SHIPYARD_NPC_OPENED" 
+	event == "GARRISON_SHIPYARD_NPC_OPENED"
 	) then
 		AC_LOGTYPE = "GARRISON";
 	elseif ( 
