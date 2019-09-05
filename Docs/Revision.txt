@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.11.08 (Sep. 06, 2019)
+==========================
+- Fixed date foramt in Week tab
+
 * v2.11.07 (Sep. 04, 2019)
 ==========================
 - Added codes to detect WoW client's build version to better support both WoW 8.2 and Classic

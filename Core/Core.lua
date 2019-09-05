@@ -1208,7 +1208,7 @@ function addon:WeekStart()
 		dt = date("*t",ct);
 		thisDay = dt["wday"];
 	end
-	local wdate = date(nil,ct);
+	local wdate = date("%m/%d/%y",ct);
 	return strsub(wdate,0,8);
 end
 
