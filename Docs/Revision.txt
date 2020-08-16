@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.00 (Aug. xx, 2020)
+==========================
+- Shadowlands changes:
+  - Barber shop events
+
 * v2.11.09 (Jul. 14, 2020)
 ==========================
 - ToC update to support WoW 8.3.0

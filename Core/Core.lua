@@ -37,9 +37,18 @@ local math = _G.math
 local floor, fmod = math.floor, math.fmod
 -- WoW
 local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
-local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass = GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass
+local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo = GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo
 
-local WoWClassic = select(4, GetBuildInfo()) < 20000
+-- Determine WoW TOC Version
+local WoWClassic, WoWRetail, WoWShadowlands
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 19999 then
+	WoWClassic = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+	WoWRetail = true
+else
+	WoWShadowlands = true
+end
 
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
@@ -255,37 +264,6 @@ local function initOptions()
 	local cyear = date("%Y");
 
 	if (Accountant_ClassicSaveData == nil) then
-		-- we should no longer need these after v2.07.00
-		--[[
-		if (Accountant_SaveData ~= nil) then
-			local loadable = select(4, GetAddOnInfo("Accountant"));
-			local enabled = GetAddOnEnableState(UnitName("player"), GetAddOnInfo("Accountant"));
-			if ( (enabled > 0) and loadable ) then
-				local myversion = false;
-				for k, v in pairs(Accountant_SaveData) do
-					-- "Accountant" DB use server-playername as the key. So if Accountant_SaveData exist, and if all the key contains "-", means Accountant_Classic is fresh install
-					if (strfind(k, "-")) then
-						-- do nothing
-					else
-						myversion = true;
-					end
-				end
-				if (myversion) then -- Means we detect Accountant (maintained by urnati and thorismud) and therefore we have to skip converting our old data.
-					AccountantClassic_DetectConflict();
-					return;
-				else
-					Accountant_ClassicSaveData = {};
-				end
-			else
-				Accountant_ClassicSaveData = AccountantClassic_CloneTable(Accountant_SaveData);
-				Accountant_SaveData = nil;
-				AccountantClassic_CleanUpDB();
-			end
-		-- Both Accountant_ClassicSaveData and Accountant_SaveData == nil means this is a fresh install
-		else
-			Accountant_ClassicSaveData = {};
-		end
-		]]
 		Accountant_ClassicSaveData = {};
 	end
 	if (Accountant_ClassicSaveData[AC_SERVER] == nil) then
@@ -1332,7 +1310,13 @@ function AccountantClassic_OnEvent(self, event, ...)
 		AC_LOGTYPE = "";
 	elseif event == "LFG_COMPLETION_REWARD" then
 		AC_LOGTYPE = "LFG";
-	elseif (event == "BARBER_SHOP_OPEN" or event == "BARBER_SHOP_SUCCESS") then
+	elseif (
+	event == "BARBER_SHOP_OPEN" or 
+	event == "BARBER_SHOP_SUCCESS" or
+	event == "BARBER_SHOP_RESULT" or 
+	event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE" or 
+	event == "BARBER_SHOP_COST_UPDATE"
+	) then
 		AC_LOGTYPE = "BARBER";
 	elseif event == "TRANSMOGRIFY_OPEN" then
 		AC_LOGTYPE = "TRANSMO";
