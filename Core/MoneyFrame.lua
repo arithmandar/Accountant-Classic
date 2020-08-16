@@ -6,6 +6,19 @@ $Id$
 local _G = getfenv(0)
 local GameTooltip = _G.GameTooltip
 local unpack = _G.unpack
+local GetBuildInfo = _G.GetBuildInfo
+
+-- Determine WoW TOC Version
+local WoWClassic, WoWRetail, WoWShadowlands
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 19999 then
+	WoWClassic = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+	WoWRetail = true
+else
+	WoWShadowlands = true
+end
+
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
@@ -55,23 +68,29 @@ local function frame_OnEnter(self)
 		return
 	end
 
-	if (not GameTooltip:IsShown()) then
+	local tooltip
+	if (WoWClassic or WoWRetail) then
+		tooltip = GameTooltip
+	else -- Shadowlands
+		tooltip = GetAppropriateTooltip()
+	end
+
+	if (not tooltip:IsShown()) then
 		local amoney_str = addon:ShowSessionToolTip()
 
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -10, 0)
-		GameTooltip:SetBackdropColor(0, 0, 0, 0.5)
-		GameTooltip:SetText("|cFFFFFFFF"..L["Accountant Classic"].." - "..L["This Session"], 1, 1, 1, nil, 1)
-		GameTooltip:AddLine(amoney_str, 1, 1, 1, 1)
+		tooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -10, 0)
+		GameTooltip_SetTitle(tooltip, "|cFFFFFFFF"..L["Accountant Classic"].." - "..L["This Session"])
+		GameTooltip_AddNormalLine(tooltip, amoney_str, true)
 		local tokenstr = addon:BackpackTokenFrame_Update()
 		if (tokenstr) then
-			GameTooltip:AddLine(tokenstr, 1, 1, 1, 1)
+			GameTooltip_AddNormalLine(tooltip, tokenstr, true)
 		end
 		if (profile.showintrotip == true) then
-			GameTooltip:AddLine("("..L["Left-click and drag to move this button.\nRight-Click to open Accountant Classic."]..")", 0.8, 0.8, 0.8, 1)
+			GameTooltip_AddColoredLine(tooltip, "("..L["Left-click and drag to move this button.\nRight-Click to open Accountant Classic."]..")", GRAY_FONT_COLOR, true)
 		end
-		GameTooltip:Show()
+		tooltip:Show()
 	else
-		GameTooltip:Hide()
+		tooltip:Hide()
 	end
 end
 

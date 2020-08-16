@@ -10,6 +10,10 @@ Revision History:
 ==========================
 - Shadowlands changes:
   - Barber shop events
+  - Gametooltip
+  - GetBackpackCurrencyInfo to C_CurrencyInfo.GetBackpackCurrencyInfo
+- Enhancements:
+  - First time loaded won't count your current total money as your current session / day / week / month / year's earning
 
 * v2.11.09 (Jul. 14, 2020)
 ==========================

@@ -38,6 +38,7 @@ local floor, fmod = math.floor, math.fmod
 -- WoW
 local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
 local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo = GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo
+local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo or nil
 
 -- Determine WoW TOC Version
 local WoWClassic, WoWRetail, WoWShadowlands
@@ -48,6 +49,7 @@ elseif wowtocversion > 19999 and wowtocversion < 90000 then
 	WoWRetail = true
 else
 	WoWShadowlands = true
+	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
 end
 
 -- ----------------------------------------------------------------------------
@@ -112,6 +114,7 @@ local cmonth = date("%m")
 local cyear = date("%Y")
 
 local profile
+local AC_FIRSTLOADED = false
 
 local AccountantClassicDefaultOptions = {
 	version = AccountantClassic_Version, 
@@ -178,81 +181,24 @@ local function AccountantClassic_UpdateOptions(player_options)
 	end
 end
 
--- Cleaning up the database record which brough in from "Accountant"
---[[
-local function AccountantClassic_CleanUpDB()
-	if (Accountant_ClassicSaveData ~= nil) then
-		for k,v in pairs(Accountant_ClassicSaveData) do
-			if (strfind(k, "-")) then
-				Accountant_ClassicSaveData[k] = nil;
-			end
-		end
-	end
-end
-]]
-
--- This function is designed for user who have both Accountant and Accountant_Classic installed and Accountant's DB has broken due to DB confliction
--- This function will not be called within Accountant_Classic, this is intended for user to call it manually
---[[function AccountantClassic_CleanUpAccountantDB()
-	if (Accountant_SaveData ~= nil) then
-		for k,v in pairs(Accountant_SaveData) do
-			if (strfind(k, "-")) then
-				-- do nothing
-			else
-				Accountant_SaveData[k] = nil;
-			end
-		end
-	end
-	LibDialog:Register("ACCOUNTANT_CONFLICT_CLEANUP", {
-		text = L["ACCLOC_CLEANUPACCOUNTANT"],
-		width = 500,
-		buttons = {
-			{
-				text = OKAY,
-				on_click = ReloadUI,
-			},
-		},
-		show_while_dead = false,
-		hide_on_escape = true,
-	});
-	LibDialog:Spawn("ACCOUNTANT_CONFLICT_CLEANUP");
-end
-]]
---[[
-local function AccountantClassic_DetectConflict()
-	DisableAddOn("Accountant");
-
-	LibDialog:Register("ACCOUNTANT_CONFLICT", {
-		text = L["ACCLOC_CONFLICT"],
-		buttons = {
-			{
-				text = OKAY,
-				on_click = ReloadUI,
-			},
-		},
-		show_while_dead = false,
-		hide_on_escape = true,
-	});
-	LibDialog:Spawn("ACCOUNTANT_CONFLICT");
-end
-]]
 local function AccountantClassic_InitZoneDB()
 	if (Accountant_ClassicZoneDB == nil) then
-		Accountant_ClassicZoneDB = { };
+		Accountant_ClassicZoneDB = { }
 	end
 	if (Accountant_ClassicZoneDB[AC_SERVER] == nil) then
-		Accountant_ClassicZoneDB[AC_SERVER] = { };
+		Accountant_ClassicZoneDB[AC_SERVER] = { }
 	end
 	if (Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER] == nil) then
+		AC_FIRSTLOADED = true
 		Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER] = { 
-			data = { },
-		};
+			data = { }
+		}
 	end
 	for k_logmode, v_logmode in pairs(private.constants.logmodes) do
 		if (Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][v_logmode] == nil) then
-			Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][v_logmode] = { };
+			Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][v_logmode] = { }
 			for k_logtype, v_logtype in pairs(private.constants.logtypes) do
-				Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][v_logmode][v_logtype] = { };
+				Accountant_ClassicZoneDB[AC_SERVER][AC_PLAYER]["data"][v_logmode][v_logtype] = { }
 			end
 		end
 	end
@@ -913,6 +859,11 @@ local function loadData()
 end
 
 local function updateLog()
+	-- if it's first time loaded this addon, then we don't need to update logs.
+	if AC_FIRSTLOADED then
+		return
+	end
+
 	local cdate = date("%d/%m/%y");
 	--local cmonth = date("%m");
 	--local cyear = date("%Y");
@@ -926,12 +877,13 @@ local function updateLog()
 		end
 	end
 	
-	AC_CURRMONEY = GetMoney();
-	AccountantClassic_Profile["options"].totalcash = AC_CURRMONEY;
-	diff = AC_CURRMONEY - AC_LASTMONEY;
-	AC_LASTMONEY = AC_CURRMONEY;
+	-- calculating diff money
+	AC_CURRMONEY = GetMoney()
+	AccountantClassic_Profile["options"].totalcash = AC_CURRMONEY
+	diff = AC_CURRMONEY - AC_LASTMONEY
+	AC_LASTMONEY = AC_CURRMONEY
 	if (diff == 0 or diff == nil) then
-		return;
+		return
 	end
 
 	local logtype = AC_LOGTYPE;
@@ -992,41 +944,6 @@ local function updateLog()
 		AccountantClassic_OnShow();
 	end
 end
-
---[[
-function AccountantClassic_OnLoad(self)
-	-- Setup
-	--loadData();
-	--setLabels();
-	--AccountantClassicFrame:SetScale(profile.scale); 
-	--AccountantClassicFrame:SetAlpha(profile.alpha); 
-	--AccountantClassicMoneyInfoFrame:SetScale(profile.infoscale); 
-	--AccountantClassicMoneyInfoFrame:SetAlpha(profile.infoalpha); 
-
-	-- Cash
---	AC_CURRMONEY = GetMoney();
-	-- Check if there is any un-recorded money in or out
---	if (AC_LASTSESSMONEY ~= AC_CURRMONEY) then
---		AC_LOGTYPE = "OTHER";
---		AC_LASTMONEY = AC_LASTSESSMONEY;
---		updateLog();
---	end
---	AC_LASTMONEY = AC_CURRMONEY;
-	
-	-- hooks
-	--AccountantClassic_RepairAllItems_old = RepairAllItems;
-	--RepairAllItems = AccountantClassic_RepairAllItems;
-	--AccountantClassic_CursorHasItem_old = CursorHasItem;
-	--CursorHasItem = AccountantClassic_CursorHasItem;
-
-	-- tabs
-	--settleTabText();
-
-	--addon:PopulateCharacterList();
-	--AccountantClassicFrameCharacterDropDown_Setup();
-
-	--ACC_Print(L["Accountant Classic loaded."]);
-end]]
 
 function Accountant_Slash(msg)
 	if msg == nil or msg == "" then
@@ -1259,25 +1176,6 @@ function AccountantClassic_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	local oldType = AC_LOGTYPE;
 
-	--[[
-	if (event == "ADDON_LOADED" and arg1 == private.addon_name) then
-		AccountantClassic_InitOptions();
-	end
-
-	if ( event == "UNIT_NAME_UPDATE" and arg1 == "player" ) or (event=="PLAYER_ENTERING_WORLD") then
-		if (AccountantClassic_GotName) then
-			return;
-		end
-		local playerName = UnitName("player");
-		if ( playerName ~= UNKNOWNBEING and playerName ~= UNKNOWNOBJECT and playerName ~= nil ) then
-			AccountantClassic_GotName = true;
-			AccountantClassic_OnLoad();
-			--AccountantClassicMoneyInfoFrame_Init();
-
-		end
-		return;
-	end]]
-
 	if ( 
 	event == "GARRISON_MISSION_FINISHED" or 
 	event == "GARRISON_UPDATE" or
@@ -1382,42 +1280,6 @@ function AccountantClassic_OnShow(self)
 	local fsv = _G["AccountantClassicFrameExtraValue"]
 	local prvday, prvdateweek, prvmonth
 	
---[[
-	if ( AccountantClassic_Profile["options"]["date"] ~= cdate ) then
-		-- Its a new day! clear out the day tab
-		for mode,value in pairs(AC_DATA) do
-			AC_DATA[mode]["Day"].In = 0;
-			AccountantClassic_Profile["data"][mode]["Day"].In = 0;
-			AC_DATA[mode]["Day"].Out = 0;
-			AccountantClassic_Profile["data"][mode]["Day"].Out = 0;
-		end
-	end
-	AccountantClassic_Profile["options"]["date"] = cdate;
-
-	-- Check to see if the week has rolled over
-	if ( AccountantClassic_Profile["options"]["dateweek"] ~= addon:WeekStart() ) then
-		-- Its a new week! clear out the week tab
-		for mode,value in pairs(AC_DATA) do
-			AC_DATA[mode]["Week"].In = 0;
-			AccountantClassic_Profile["data"][mode]["Week"].In = 0;
-			AC_DATA[mode]["Week"].Out = 0;
-			AccountantClassic_Profile["data"][mode]["Week"].Out = 0;
-		end
-	end
-	AccountantClassic_Profile["options"]["dateweek"] = addon:WeekStart();
-
-	-- Check to see if the month has rolled over
-	if ( AccountantClassic_Profile["options"]["month"] ~= cmonth ) then
-		-- Its a new month! clear out the month tab
-		for mode,value in pairs(AC_DATA) do
-			AC_DATA[mode]["Month"].In = 0;
-			AccountantClassic_Profile["data"][mode]["Month"].In = 0;
-			AC_DATA[mode]["Month"].Out = 0;
-			AccountantClassic_Profile["data"][mode]["Month"].Out = 0;
-		end
-	end
-	AccountantClassic_Profile["options"]["month"] = cmonth;
-]]
 	AccountantClassic_LogsShifting()
 	setLabels()
 	if ( AC_CURRTAB ~= AC_TABS ) then
@@ -1785,23 +1647,6 @@ function AccountantClassicTab_OnClick(self)
 	AccountantClassic_OnShow();
 end
 
--- hooks
---[[
-function AccountantClassic_RepairAllItems(guildBankRepair)
-	if (not guildBankRepair) then
-		AC_LOGTYPE = "REPAIRS";
-	end
-	AccountantClassic_RepairAllItems_old(guildBankRepair);
-end
-
-function AccountantClassic_CursorHasItem()
-	if InRepairMode() then
-		AC_LOGTYPE = "REPAIRS";
-	end
-	local toret = AccountantClassic_CursorHasItem_old();
-	return toret;
-end
-]]
 function addon:RepairAllItems(guildBankRepair)
 	if (not guildBankRepair) then
 		AC_LOGTYPE = "REPAIRS";
