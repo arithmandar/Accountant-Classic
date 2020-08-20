@@ -19,7 +19,7 @@ $Id$
 	Everyone who commented and voted for the mod on curse-gaming.com
   Thiou for the French loc, Snj & JokerGermany for the German loc
   ---------------------------------------------------------------------
-  v2.4 - v2.9:
+  v2.4 - v2.12:
      Updated by: Arith
      Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5.22
 ]]

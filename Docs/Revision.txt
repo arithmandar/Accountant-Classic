@@ -6,14 +6,16 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.12.00 (Aug. xx, 2020)
+* v2.12.00 (Aug. 20, 2020)
 ==========================
-- Shadowlands changes:
+- Shadowlands support, with below changes:
   - Barber shop events
   - Gametooltip
   - GetBackpackCurrencyInfo to C_CurrencyInfo.GetBackpackCurrencyInfo
 - Enhancements:
   - First time loaded won't count your current total money as your current session / day / week / month / year's earning
+- Library update:
+  - LibUIDropDownMenu
 
 * v2.11.09 (Jul. 14, 2020)
 ==========================
