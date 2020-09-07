@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.01 (Sep. 07, 2020)
+==========================
+- Library update:
+  - LibUIDropDownMenu
+
 * v2.12.00 (Aug. 20, 2020)
 ==========================
 - Shadowlands support, with below changes:
