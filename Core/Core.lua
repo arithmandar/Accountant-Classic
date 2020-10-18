@@ -39,6 +39,7 @@ local floor, fmod = math.floor, math.fmod
 local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
 local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo = GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo
 local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo or nil
+local GetCurrencyInfo = GetCurrencyInfo or nil
 
 -- Determine WoW TOC Version
 local WoWClassic, WoWRetail
@@ -48,6 +49,7 @@ if wowtocversion < 19999 then
 else
 	WoWRetail = true
 	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
+	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 end
 
 -- ----------------------------------------------------------------------------
@@ -1079,7 +1081,15 @@ function addon:GetFormattedValue(amount)
 end
 
 local function AccountantClassic_GetFormattedCurrency(currencyID)
-	local name, amount, icon = GetCurrencyInfo(currencyID);
+	local name, amount, icon
+	if WoWClassic then
+		name, amount, icon = GetCurrencyInfo(currencyID)
+	else
+		local info = GetCurrencyInfo(currencyID)
+		name = info.name
+		amount = info.quantity
+		icon = info.iconFileID
+	end
 	
 	if (amount >0) then
 		local CURRENCY_TEXTURE = "%s|T"..icon..":%d:%d:2:0|t";
@@ -1661,16 +1671,22 @@ function addon:BackpackTokenFrame_Update()
 	if WoWClassic then
 		-- do nothing
 	else
-		local name, count, icon, currencyID;
-		local tokenstr = "";
+		local name, count, icon, currencyID
+		local tokenstr = ""
 		for i=1, MAX_WATCHED_TOKENS do
-			name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
+			local info
+			info = GetBackpackCurrencyInfo(i)
 			-- Update watched tokens
-			if ( name ) then
-				tokenstr = tokenstr..AccountantClassic_GetFormattedCurrency(currencyID).." ";
+			if ( info ) then
+				name =  info.name
+				count =  info.quantity
+				icon = info.iconFileID
+				currencyID = info.currencyTypesID
+
+				tokenstr = tokenstr..AccountantClassic_GetFormattedCurrency(currencyID).." "
 			end
 		end
-		return tokenstr;
+		return tokenstr
 	end
 end
 

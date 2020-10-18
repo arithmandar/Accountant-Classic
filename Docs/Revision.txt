@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.04 (Oct. 18, 2020)
+==========================
+- Fixed GetBackpackCurrencyInfo issue
+
 * v2.12.03 (Oct. 18, 2020)
 ==========================
 - Fixed WoW version's detection
