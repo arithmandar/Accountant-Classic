@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.02 (Oct. 18, 2020)
+==========================
+- ToC update to support WoW 9.0.1
+
 * v2.12.01 (Sep. 07, 2020)
 ==========================
 - Library update:

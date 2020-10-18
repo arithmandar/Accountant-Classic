@@ -41,14 +41,12 @@ local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, 
 local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo or nil
 
 -- Determine WoW TOC Version
-local WoWClassic, WoWRetail, WoWShadowlands
+local WoWClassic, WoWRetail
 local wowtocversion  = select(4, GetBuildInfo())
 if wowtocversion < 19999 then
 	WoWClassic = true
-elseif wowtocversion > 19999 and wowtocversion < 90000 then 
-	WoWRetail = true
 else
-	WoWShadowlands = true
+	WoWRetail = true
 	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
 end
 
