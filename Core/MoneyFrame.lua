@@ -9,14 +9,12 @@ local unpack = _G.unpack
 local GetBuildInfo = _G.GetBuildInfo
 
 -- Determine WoW TOC Version
-local WoWClassic, WoWRetail, WoWShadowlands
+local WoWClassic, WoWRetail
 local wowtocversion  = select(4, GetBuildInfo())
 if wowtocversion < 19999 then
 	WoWClassic = true
-elseif wowtocversion > 19999 and wowtocversion < 90000 then 
-	WoWRetail = true
 else
-	WoWShadowlands = true
+	WoWRetail = true
 end
 
 -- ----------------------------------------------------------------------------
@@ -69,7 +67,7 @@ local function frame_OnEnter(self)
 	end
 
 	local tooltip
-	if (WoWClassic or WoWRetail) then
+	if (WoWClassic) then
 		tooltip = GameTooltip
 	else -- Shadowlands
 		tooltip = GetAppropriateTooltip()
