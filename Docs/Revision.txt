@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.05 (Oct. 21, 2020)
+==========================
+- Hard-embed LibDialog with fix for backdrop handling
+
 * v2.12.04 (Oct. 18, 2020)
 ==========================
 - Fixed GetBackpackCurrencyInfo issue

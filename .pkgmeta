@@ -40,8 +40,8 @@ externals:
     Libs-release/LibDataBroker-1.1: 
         url: https://repos.wowace.com/wow/libdatabroker-1-1
 # HG
-    Libs-release/LibDialog-1.0: 
-        url: https://repos.wowace.com/wow/libdialog-1-0
+#    Libs-release/LibDialog-1.0: 
+#        url: https://repos.wowace.com/wow/libdialog-1-0
 
 move-folders:
     Accountant_Classic/Libs: Accountant_Classic/Libs-dev
