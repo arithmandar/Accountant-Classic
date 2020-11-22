@@ -6,6 +6,12 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.05 (Nov. 22, 2020)
+==========================
+- ToC update to support WoW 9.0.1
+- Library update:
+  - LibUIDropDownMenu
+
 * v2.12.05 (Oct. 21, 2020)
 ==========================
 - Hard-embed LibDialog with fix for backdrop handling

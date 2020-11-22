@@ -66,6 +66,9 @@ addon.LocName = select(2, GetAddOnInfo(addon.Name))
 addon.Notes = select(3, GetAddOnInfo(addon.Name))
 _G.Accountant_Classic = addon
 
+-- UIDropDownMenu
+local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+
 local MoneyFrame
 
 local LibDialog = LibStub("LibDialog-1.0");
@@ -296,7 +299,7 @@ local function createACFrames()
 	
 	f.ServerDropDown = _G[parentName.."ServerDropDown"] 
 	if not f.ServerDropDown then 
-		f.ServerDropDown = L_Create_UIDropDownMenu(parentName.."ServerDropDown", f)
+		f.ServerDropDown = LibDD:Create_UIDropDownMenu(parentName.."ServerDropDown", f)
 		f.ServerDropDown:Hide()
 		f.ServerDropDown:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -38)
 		f.ServerDropDown.Label = f.ServerDropDown:CreateFontString(parentName.."ServerDropDownLabel", "BACKGROUND", "GameFontNormalSmall")
@@ -308,7 +311,7 @@ local function createACFrames()
 	
 	f.FactionDropDown = _G[parentName.."FactionDropDown"]
 	if not f.FactionDropDown then 
-		f.FactionDropDown = L_Create_UIDropDownMenu(parentName.."FactionDropDown", f)
+		f.FactionDropDown = LibDD:Create_UIDropDownMenu(parentName.."FactionDropDown", f)
 		f.FactionDropDown:Hide()
 		f.FactionDropDown:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -62)
 		f.FactionDropDown.Label = f.ServerDropDown:CreateFontString(parentName.."FactionDropDownLabel", "BACKGROUND", "GameFontNormalSmall")
@@ -320,7 +323,7 @@ local function createACFrames()
 
 	f.CharacterDropDown = _G[parentName.."CharacterDropDown"]
 	if not f.CharacterDropDown then
-		f.CharacterDropDown = L_Create_UIDropDownMenu(parentName.."CharacterDropDown", f)
+		f.CharacterDropDown = LibDD:Create_UIDropDownMenu(parentName.."CharacterDropDown", f)
 		f.CharacterDropDown:Hide()
 		f.CharacterDropDown:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -62)
 		f.CharacterDropDown.Label = f.ServerDropDown:CreateFontString(parentName.."CharacterDropDownLabel", "BACKGROUND", "GameFontNormalSmall")
@@ -465,7 +468,7 @@ end
 
 
 local function AccountantClassicFrameServerDropDown_OnClick(self)
-	L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, self.value)
+	LibDD:UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, self.value)
 	AC_SELECTED_SERVER = self.value
 	addon:PopulateCharacterList(AC_SELECTED_SERVER, AC_SELECTED_FACTION)
 	AccountantClassic_OnShow()
@@ -475,39 +478,39 @@ local function AccountantClassicFrameServerDropDown_Init()
 	local info
 	local i = 1
 	for k, v in orderedpairs(Accountant_ClassicSaveData) do
-		info = L_UIDropDownMenu_CreateInfo()
+		info = LibDD:UIDropDownMenu_CreateInfo()
 		info.text = k
 		info.value = k
 		info.func = AccountantClassicFrameServerDropDown_OnClick
-		L_UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 		i = i + 1
 	end
 	
 	-- Added All Chars to dropdown
-	info = L_UIDropDownMenu_CreateInfo()
+	info = LibDD:UIDropDownMenu_CreateInfo()
 	info.text = L["All Servers"]
 	info.value = "All"
 	info.tooltipTitle = L["Show all realms' characters info"]
 	info.tooltipOnButton = true
 	info.func = AccountantClassicFrameServerDropDown_OnClick
-	L_UIDropDownMenu_AddButton(info)
+	LibDD:UIDropDownMenu_AddButton(info)
 end
 
 function AccountantClassicFrameServerDropDown_Setup()
-	L_UIDropDownMenu_Initialize(AccountantClassicFrameServerDropDown, AccountantClassicFrameServerDropDown_Init)
+	LibDD:UIDropDownMenu_Initialize(AccountantClassicFrameServerDropDown, AccountantClassicFrameServerDropDown_Init)
 	
 	if (profile.cross_server and not AC_SELECTED_SERVER) then
 		AC_SELECTED_SERVER = "All"
-		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, "All")
+		LibDD:UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, "All")
 	else
-		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, AC_SELECTED_SERVER or AC_SERVER)
+		LibDD:UIDropDownMenu_SetSelectedValue(AccountantClassicFrameServerDropDown, AC_SELECTED_SERVER or AC_SERVER)
 	end
-	L_UIDropDownMenu_SetWidth(AccountantClassicFrameServerDropDown, 200)
+	LibDD:UIDropDownMenu_SetWidth(AccountantClassicFrameServerDropDown, 200)
 end
 
 
 local function AccountantClassicFrameFactionDropDown_OnClick(self)
-	L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, self.value)
+	LibDD:UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, self.value)
 	AC_SELECTED_FACTION = self.value
 	addon:PopulateCharacterList(AC_SELECTED_SERVER, AC_SELECTED_FACTION)
 	AccountantClassic_OnShow()
@@ -515,46 +518,46 @@ end
 
 local function AccountantClassicFrameFactionDropDown_Init()
 	local info
-	info = L_UIDropDownMenu_CreateInfo()
+	info = LibDD:UIDropDownMenu_CreateInfo()
 	info.icon = "Interface\\PVPFrame\\PVP-Currency-Alliance"
 	info.text = FACTION_ALLIANCE
 	info.colorCode = "|cff7babe0"
 	info.value = "Alliance"
 	info.arg1 = "Alliance"
 	info.func = AccountantClassicFrameFactionDropDown_OnClick
-	L_UIDropDownMenu_AddButton(info)
+	LibDD:UIDropDownMenu_AddButton(info)
 
-	info = L_UIDropDownMenu_CreateInfo()
+	info = LibDD:UIDropDownMenu_CreateInfo()
 	info.icon = "Interface\\PVPFrame\\PVP-Currency-Horde"
 	info.text = FACTION_HORDE
 	info.colorCode = "|cffda6955"
 	info.value = "Horde"
 	info.arg1 = "Horde"
 	info.func = AccountantClassicFrameFactionDropDown_OnClick
-	L_UIDropDownMenu_AddButton(info)
+	LibDD:UIDropDownMenu_AddButton(info)
 	
 	-- Added All Factions to dropdown
-	info = L_UIDropDownMenu_CreateInfo()
+	info = LibDD:UIDropDownMenu_CreateInfo()
 	info.text = L["All Factions"]
 	info.value = "All"
 	info.func = AccountantClassicFrameFactionDropDown_OnClick
-	L_UIDropDownMenu_AddButton(info)
+	LibDD:UIDropDownMenu_AddButton(info)
 end
 
 function AccountantClassicFrameFactionDropDown_Setup()
-	L_UIDropDownMenu_Initialize(AccountantClassicFrameFactionDropDown, AccountantClassicFrameFactionDropDown_Init)
+	LibDD:UIDropDownMenu_Initialize(AccountantClassicFrameFactionDropDown, AccountantClassicFrameFactionDropDown_Init)
 	if (profile.show_allFactions and not AC_SELECTED_FACTION) then
 		AC_SELECTED_FACTION = "All"
-		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, "All")
+		LibDD:UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, "All")
 	else
-		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, AC_SELECTED_FACTION or AC_FACTION)
+		LibDD:UIDropDownMenu_SetSelectedValue(AccountantClassicFrameFactionDropDown, AC_SELECTED_FACTION or AC_FACTION)
 	end
-	L_UIDropDownMenu_SetWidth(AccountantClassicFrameFactionDropDown, 200)
+	LibDD:UIDropDownMenu_SetWidth(AccountantClassicFrameFactionDropDown, 200)
 end
 
 
 local function AccountantClassicFrameCharacterDropDown_OnClick(self)
-	L_UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID())
+	LibDD:UIDropDownMenu_SetSelectedID(AccountantClassicFrameCharacterDropDown, self:GetID())
 	AC_SELECTED_CHAR_NUM = self.value
 	profile.selectedCharacter = AC_SELECTED_CHAR_NUM
 	AccountantClassic_OnShow()
@@ -565,7 +568,7 @@ local function AccountantClassicFrameCharacterDropDown_Init()
 	for i = 1, #AC_CHARSCROLL_LIST do
 		local serverkey = AC_CHARSCROLL_LIST[i][1]
 		local charkey = AC_CHARSCROLL_LIST[i][2]
-		info = L_UIDropDownMenu_CreateInfo()
+		info = LibDD:UIDropDownMenu_CreateInfo()
 		local factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction or nil
 		info.icon = factionstr and "Interface\\PVPFrame\\PVP-Currency-"..factionstr or nil
 
@@ -577,21 +580,21 @@ local function AccountantClassicFrameCharacterDropDown_Init()
 		info.arg1 = serverkey
 		info.arg2 = charkey
 		info.func = AccountantClassicFrameCharacterDropDown_OnClick
-		L_UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 	end
 	
 	-- Added All Chars to dropdown
-	info = L_UIDropDownMenu_CreateInfo()
+	info = LibDD:UIDropDownMenu_CreateInfo()
 	info.text = L["All Chars"]
 	info.value = #AC_CHARSCROLL_LIST + 1
 	info.tooltipTitle = L["Show all characters' incoming and outgoing data."]
 	info.tooltipOnButton = true
 	info.func = AccountantClassicFrameCharacterDropDown_OnClick
-	L_UIDropDownMenu_AddButton(info)
+	LibDD:UIDropDownMenu_AddButton(info)
 end
 
 function AccountantClassicFrameCharacterDropDown_Setup()
-	L_UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init)
+	LibDD:UIDropDownMenu_Initialize(AccountantClassicFrameCharacterDropDown, AccountantClassicFrameCharacterDropDown_Init)
 	if not profile.rememberSelectedCharacter or not AC_SELECTED_CHAR_NUM then
 		for i = 1, #AC_CHARSCROLL_LIST do
 			if (AC_SERVER == AC_CHARSCROLL_LIST[i][1] and AC_PLAYER == AC_CHARSCROLL_LIST[i][2]) then
@@ -600,11 +603,11 @@ function AccountantClassicFrameCharacterDropDown_Setup()
 		end
 	end
 	if (profile.rememberSelectedCharacter) then
-		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, profile.selectedCharacter or AC_SELECTED_CHAR_NUM or 1)
+		LibDD:UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, profile.selectedCharacter or AC_SELECTED_CHAR_NUM or 1)
 	else
-		L_UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, AC_SELECTED_CHAR_NUM or 1)
+		LibDD:UIDropDownMenu_SetSelectedValue(AccountantClassicFrameCharacterDropDown, AC_SELECTED_CHAR_NUM or 1)
 	end
-	L_UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200)
+	LibDD:UIDropDownMenu_SetWidth(AccountantClassicFrameCharacterDropDown, 200)
 end
 
 
@@ -1649,6 +1652,7 @@ function addon:CharacterRemovalProceed(server, character)
 end
 
 function AccountantClassicTab_OnClick(self)
+	LibDD:CloseDropDownMenus()
 	PanelTemplates_SetTab(AccountantClassicFrame, self:GetID());
 	AC_CURRTAB = self:GetID();
 	PlaySound(841);
