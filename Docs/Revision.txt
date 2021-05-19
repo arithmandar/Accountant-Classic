@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.08 (May 19, 2021)
+==========================
+- ToC update to support WoW 9.0.5
+- Support WoW Classic 2.1.5
+
 * v2.12.07 (Nov. 22, 2020)
 ==========================
 - Disable no-lib release as the new CurseForge seems to bring-in more torubles for users to download addon

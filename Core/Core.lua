@@ -44,7 +44,7 @@ local GetCurrencyInfo = GetCurrencyInfo or nil
 -- Determine WoW TOC Version
 local WoWClassic, WoWRetail
 local wowtocversion  = select(4, GetBuildInfo())
-if wowtocversion < 19999 then
+if wowtocversion < 30000 then
 	WoWClassic = true
 else
 	WoWRetail = true
