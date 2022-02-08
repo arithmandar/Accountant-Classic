@@ -8,6 +8,12 @@ Revision History:
 
 * v2.12.12 (Jan. 27, 2022)
 ==========================
+- Support multiple ToC
+- BCC ToC update to support WoW 2.5.3
+- Classic ToC update to support WoW 1.14.1
+
+* v2.12.12 (Jan. 27, 2022)
+==========================
 - ToC update to support WoW 9.1.5
 - Library update: LibUIDropDownMenu
 
