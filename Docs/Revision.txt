@@ -6,11 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.12.12 (Jan. 27, 2022)
+* v2.12.13 (Feb. 9, 2022)
 ==========================
 - Support multiple ToC
 - BCC ToC update to support WoW 2.5.3
-- Classic ToC update to support WoW 1.14.1
+- Classic ToC update to support WoW 1.14.2
 
 * v2.12.12 (Jan. 27, 2022)
 ==========================
