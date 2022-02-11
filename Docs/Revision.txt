@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.14 (Feb. 10, 2022)
+==========================
+- Library update: LibUIDropDownMenu
+
 * v2.12.13 (Feb. 9, 2022)
 ==========================
 - Support multiple ToC
