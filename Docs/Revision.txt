@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.19 (Juk. 17, 2022)
+==========================
+- Retail ToC update to support WoW 9.2.5
+- Library update: LibUIDropDownMenu
+
 * v2.12.18 (Mar. 23, 2022)
 ==========================
 - BCC ToC update to support WoW 2.5.4
