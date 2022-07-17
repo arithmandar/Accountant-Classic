@@ -6,7 +6,7 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.12.19 (Jul. 17, 2022)
+* v2.12.20 (Jul. 17, 2022)
 ==========================
 - Classic ToC update to support WoW 1.14.3
 
