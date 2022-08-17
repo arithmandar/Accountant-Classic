@@ -9,12 +9,18 @@ local GetBuildInfo = _G.GetBuildInfo
 -- Libraries
 
 -- Determine WoW TOC Version
-local WoWClassic, WoWRetail
-local wowtocversion  = select(4, GetBuildInfo())
-if wowtocversion < 30000 then
-	WoWClassic = true
-else
+local WoWClassicEra, WoWClassicTBC, WoWWOTLKC, WoWRetail
+local wowversion  = select(4, GetBuildInfo())
+if wowversion < 20000 then
+	WoWClassicEra = true
+elseif wowversion < 30000 then 
+	WoWClassicTBC = true
+elseif wowversion < 40000 then 
+	WoWWOTLKC = true
+elseif wowversion > 90000 then
 	WoWRetail = true
+else
+	-- n/a
 end
 
 -- ----------------------------------------------------------------------------
@@ -67,7 +73,7 @@ constants.defaults = {
 
 constants.logmodes = {"Session", "Day", "PrvDay", "Week", "PrvWeek", "Month", "PrvMonth", "Year", "PrvYear", "Total" }
 
-if WoWClassic then 
+if (WoWClassicEra or WoWClassicTBC or WoWWOTLKC) then 
 	constants.events = {
 		-- Talent
 		"CONFIRM_TALENT_WIPE",

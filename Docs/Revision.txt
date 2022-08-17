@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.21 (Aug. 17, 2022)
+==========================
+- Toc update to support WoW 9.2.7
+- Added support for Wrath of the  Lich King Classic (WoW 3.4.0)
+
 * v2.12.20 (Jul. 17, 2022)
 ==========================
 - Classic ToC update to support WoW 1.14.3

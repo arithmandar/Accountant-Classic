@@ -42,14 +42,21 @@ local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo or nil
 local GetCurrencyInfo = GetCurrencyInfo or nil
 
 -- Determine WoW TOC Version
-local WoWClassic, WoWRetail
-local wowtocversion  = select(4, GetBuildInfo())
-if wowtocversion < 30000 then
-	WoWClassic = true
-else
+local WoWClassicEra, WoWClassicTBC, WoWWOTLKC, WoWRetail
+local wowversion  = select(4, GetBuildInfo())
+if wowversion < 20000 then
+	WoWClassicEra = true
+elseif wowversion < 30000 then 
+	WoWClassicTBC = true
+elseif wowversion < 40000 then 
+	WoWWOTLKC = true
+elseif wowversion > 90000 then
 	WoWRetail = true
+
 	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
 	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+else
+	-- n/a
 end
 
 -- ----------------------------------------------------------------------------
@@ -1085,7 +1092,7 @@ end
 
 local function AccountantClassic_GetFormattedCurrency(currencyID)
 	local name, amount, icon
-	if WoWClassic then
+	if (WoWClassicEra or WoWClassicTBC or WoWWOTLKC) then
 		name, amount, icon = GetCurrencyInfo(currencyID)
 	else
 		local info = GetCurrencyInfo(currencyID)
@@ -1672,7 +1679,7 @@ function addon:CursorHasItem()
 end
 
 function addon:BackpackTokenFrame_Update()
-	if WoWClassic then
+	if (WoWClassicEra or WoWClassicTBC or WoWWOTLKC) then
 		-- do nothing
 	else
 		local name, count, icon, currencyID
