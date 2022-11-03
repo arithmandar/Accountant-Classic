@@ -1,4 +1,4 @@
-﻿## Interface: 90207
+﻿## Interface: 100000
 #@non-debug@
 ## Title: @localization(locale="enUS", key="Title", namespace="ToC")@
 ## Title-deDE: @localization(locale="deDE", key="Title", namespace="ToC")@

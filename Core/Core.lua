@@ -289,7 +289,7 @@ local function arrangeAccountantClassicFrame()
 	f:SetAlpha(profile.alpha)
 	local point, relativeTo, relativePoint, ofsx, ofsy = unpack(profile.AcFramePoint)
 	f:ClearAllPoints()
-	f:SetParent("UIParent")
+	f:SetParent(UIParent)
 	f:SetPoint(point or "TOPLEFT", nil, relativePoint or "TOPLEFT", ofsx or 0, ofsy or -104)
 end
 
@@ -413,8 +413,9 @@ end
 local function settleTabText()
 	local TabText = private.constants.tabText
 	for i = 1, AC_TABS do
-		_G["AccountantClassicFrameTab"..i]:SetText(TabText[i]);
-		PanelTemplates_TabResize(_G["AccountantClassicFrameTab"..i], 25);
+		local tab = _G["AccountantClassicFrameTab"..i]
+		tab.Text:SetText(TabText[i]);
+		--PanelTemplates_TabResize(tab, 25);
 	end
 
 	PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
@@ -1209,7 +1210,7 @@ function AccountantClassic_OnEvent(self, event, ...)
 	event == "BARBER_SHOP_APPEARANCE_APPLIED" or
 	event == "BARBER_SHOP_CLOSE" or
 	event == "TRANSMOGRIFY_CLOSE" or
-	event == "VOID_STORAGE_CLOSE" or
+--	event == "VOID_STORAGE_CLOSE" or
 	event == "MERCHANT_CLOSED" or
 	event == "TRADE_CLOSED" or
 	event == "TRAINER_CLOSED" or
@@ -1236,8 +1237,8 @@ function AccountantClassic_OnEvent(self, event, ...)
 		AC_LOGTYPE = "BARBER";
 	elseif event == "TRANSMOGRIFY_OPEN" then
 		AC_LOGTYPE = "TRANSMO";
-	elseif event == "VOID_STORAGE_OPEN" then
-		AC_LOGTYPE = "VOID";
+--	elseif event == "VOID_STORAGE_OPEN" then
+--		AC_LOGTYPE = "VOID";
 	elseif event == "MERCHANT_SHOW" then
 		AC_LOGTYPE = "MERCH";
 	elseif event == "MERCHANT_UPDATE" then
@@ -1975,4 +1976,21 @@ function AccountantClassic_ButtonOnClick()
 		AccountantClassicFrame:Show();
 	end
 end
+
+AccountantClassicTabButtonMixin = {};
+function AccountantClassicTabButtonMixin:OnLoad()
+	PanelTabButtonMixin.OnLoad(self);
+
+	self.Left:ClearAllPoints();
+	self.Left:SetPoint("TOPLEFT", self, "TOPLEFT", -3, 0);
+	self.Right:ClearAllPoints();
+	self.Right:SetPoint("TOPRIGHT", self, "TOPRIGHT", 7, 0);
+
+	self.LeftActive:ClearAllPoints();
+	self.LeftActive:SetPoint("TOPLEFT", self, "TOPLEFT", -1, 0);
+	self.RightActive:ClearAllPoints();
+	self.RightActive:SetPoint("TOPRIGHT", self, "TOPRIGHT", 8, 0);
+
+end
+
 
