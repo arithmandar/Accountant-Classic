@@ -432,7 +432,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="3" y="-12"/>
+							<AbsDimension x="0" y="-16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -500,87 +500,99 @@
 
 			<Button name="$parentTab1" inherits="AccountantClassicTabTemplate" id="1" text="Session">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="15" y="12" />
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-20"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab2" inherits="AccountantClassicTabTemplate" id="2" text="Day">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT" x="-15" y="0" />
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab3" inherits="AccountantClassicTabTemplate" id="3" text="Yesterday">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT" x="-15" y="-26" />
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="-32"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab4" inherits="AccountantClassicTabTemplate" id="4" text="Week">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab5" inherits="AccountantClassicTabTemplate" id="5" text="Prv. Week">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab6" inherits="AccountantClassicTabTemplate" id="6" text="Month">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab4" relativePoint="TOPRIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab7" inherits="AccountantClassicTabTemplate" id="7" text="Prv. Month">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab5" relativePoint="TOPRIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab5" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab8" inherits="AccountantClassicTabTemplate" id="8" text="Year">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab6" relativePoint="TOPRIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab6" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab9" inherits="AccountantClassicTabTemplate" id="9" text="Prv. Year">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab7" relativePoint="TOPRIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab7" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab10" inherits="AccountantClassicTabTemplate" id="10" text="Total">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab8" relativePoint="TOPRIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab8" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab11" inherits="AccountantClassicTabTemplate" id="11" text="All Chars">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="250" y="0"/>
+							<AbsDimension x="-5" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

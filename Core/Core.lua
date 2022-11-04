@@ -409,20 +409,23 @@ local function setLabels()
 		end
 	end
 end
-
+--[[
 local function settleTabText()
 	local TabText = private.constants.tabText
 	for i = 1, AC_TABS do
 		local tab = _G["AccountantClassicFrameTab"..i]
-		tab.Text:SetText(TabText[i]);
-		--PanelTemplates_TabResize(tab, 25);
+		--tab.Text:SetText(TabText[i]);
+		--tab.TooltipText:SetText(tabTooltip[i]);
+		PanelTemplates_TabResize(tab, 25);
 	end
 
-	PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
+	--PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
+	AccountantClassicFrame.numTabs = AC_TABS
+		
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 end
-
+]]
 function addon:PopulateCharacterList(server, faction)
 	local i = 1
 	local serverkey, servervalue, charkey, charvalue
@@ -1659,6 +1662,7 @@ function addon:CharacterRemovalProceed(server, character)
 	end
 end
 
+--[[
 function AccountantClassicTab_OnClick(self)
 	LibDD:CloseDropDownMenus()
 	PanelTemplates_SetTab(AccountantClassicFrame, self:GetID());
@@ -1666,7 +1670,7 @@ function AccountantClassicTab_OnClick(self)
 	PlaySound(841);
 	AccountantClassic_OnShow();
 end
-
+]]
 function addon:RepairAllItems(guildBankRepair)
 	if (not guildBankRepair) then
 		AC_LOGTYPE = "REPAIRS";
@@ -1934,7 +1938,10 @@ function addon:OnEnable()
 	end
 	AC_LASTMONEY = AC_CURRMONEY
 	
-	settleTabText()
+--	settleTabText()
+	AccountantClassicFrame.numTabs = AC_TABS
+	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
+	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 	addon:PopulateCharacterList()
 	
 	self:Refresh()
@@ -1978,19 +1985,44 @@ function AccountantClassic_ButtonOnClick()
 end
 
 AccountantClassicTabButtonMixin = {};
+
 function AccountantClassicTabButtonMixin:OnLoad()
-	PanelTabButtonMixin.OnLoad(self);
-
-	self.Left:ClearAllPoints();
-	self.Left:SetPoint("TOPLEFT", self, "TOPLEFT", -3, 0);
-	self.Right:ClearAllPoints();
-	self.Right:SetPoint("TOPRIGHT", self, "TOPRIGHT", 7, 0);
-
-	self.LeftActive:ClearAllPoints();
-	self.LeftActive:SetPoint("TOPLEFT", self, "TOPLEFT", -1, 0);
-	self.RightActive:ClearAllPoints();
-	self.RightActive:SetPoint("TOPRIGHT", self, "TOPRIGHT", 8, 0);
-
+	local TabText = private.constants.tabText
+	local i = self:GetID()
+	
+	self:SetFrameLevel(self:GetFrameLevel() + 4);
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	
+	self.Text:SetText(TabText[i]);
 end
 
+function AccountantClassicTabButtonMixin:OnEvent(event, ...)
+	if self:IsVisible() then
+		PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+	end
+end
 
+function AccountantClassicTabButtonMixin:OnShow()
+	PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+end
+
+function AccountantClassicTabButtonMixin:OnEnter()
+	local TabTooltipText = private.constants.tabTooltipText
+	local i = self:GetID()
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(TabTooltipText[i]);
+end
+
+function AccountantClassicTabButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function AccountantClassicTabButtonMixin:OnClick()
+	local id = self:GetID()
+	LibDD:CloseDropDownMenus()
+	PanelTemplates_SetTab(AccountantClassicFrame, id)
+	AC_CURRTAB = id
+	PlaySound(841)
+	AccountantClassic_OnShow()
+end

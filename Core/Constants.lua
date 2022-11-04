@@ -220,7 +220,6 @@ constants.ldbDisplayTypes = { "Total", "Session", "Day", "Week", "Month" }
 
 constants.dateformats = { "mm/dd/yy", "dd/mm/yy", "yy/mm/dd", }
 
-
 constants.tabText = {
 	L["This Session"],
 	L["Today"],
@@ -233,6 +232,19 @@ constants.tabText = {
 	L["Prv. Year"],
 	L["Total"],
 	L["All Chars"],
+}
+constants.tabTooltipText = {
+	L["TT1"],
+	L["TT2"],
+	L["TT3"],
+	L["TT4"],
+	L["TT5"],
+	L["TT6"],
+	L["TT7"],
+	L["TT8"],
+	L["TT9"],
+	L["TT10"],
+	L["TT11"],
 }
 
 

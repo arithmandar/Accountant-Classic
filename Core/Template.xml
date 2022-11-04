@@ -5,9 +5,12 @@
 	<!-- Item Row Template -->
 	<Button name="AccountantClassicTabTemplate" inherits="PanelTabButtonTemplate" mixin="AccountantClassicTabButtonMixin" virtual="true">
 		<Scripts>
-			<OnClick>
-				AccountantClassicTab_OnClick(self);
-			</OnClick>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 
