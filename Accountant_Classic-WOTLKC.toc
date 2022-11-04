@@ -56,7 +56,7 @@ Locale\Locales.xml
 Core\Constants.lua
 
 Core\Core.lua
-Core\Template.xml
-Core\Core.xml
+Core\Template-Classic.xml
+Core\Core-Classic.xml
 Core\MoneyFrame.lua
 Core\Config.lua
