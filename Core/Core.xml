@@ -502,7 +502,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="5" y="-20"/>
+							<AbsDimension x="15" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -511,7 +511,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -520,7 +520,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="-26"/>
+							<AbsDimension x="5" y="-32"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -529,7 +529,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -538,7 +538,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -547,7 +547,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -556,7 +556,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab5" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -565,7 +565,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab6" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -574,7 +574,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab7" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -583,7 +583,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab8" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -592,7 +592,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="-20"/>
+							<AbsDimension x="-5" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
