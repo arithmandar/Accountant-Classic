@@ -409,23 +409,27 @@ local function setLabels()
 		end
 	end
 end
---[[
+
 local function settleTabText()
-	local TabText = private.constants.tabText
-	for i = 1, AC_TABS do
-		local tab = _G["AccountantClassicFrameTab"..i]
-		--tab.Text:SetText(TabText[i]);
-		--tab.TooltipText:SetText(tabTooltip[i]);
-		PanelTemplates_TabResize(tab, 25);
+	if (WoWClassicEra or WoWClassicTBC or WoWWOTLKC) then
+		local TabText = private.constants.tabText
+		for i = 1, AC_TABS do
+			local tab = _G["AccountantClassicFrameTab"..i]
+			tab:SetText(TabText[i]);
+			PanelTemplates_TabResize(tab, 25);
+		end
 	end
 
-	--PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
-	AccountantClassicFrame.numTabs = AC_TABS
+	if (WoWRetail) then
+		AccountantClassicFrame.numTabs = AC_TABS
+	else
+		PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
+	end
 		
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 end
-]]
+
 function addon:PopulateCharacterList(server, faction)
 	local i = 1
 	local serverkey, servervalue, charkey, charvalue
@@ -1938,10 +1942,8 @@ function addon:OnEnable()
 	end
 	AC_LASTMONEY = AC_CURRMONEY
 	
---	settleTabText()
-	AccountantClassicFrame.numTabs = AC_TABS
-	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
-	PanelTemplates_UpdateTabs(AccountantClassicFrame);
+	settleTabText()
+
 	addon:PopulateCharacterList()
 	
 	self:Refresh()
@@ -1992,8 +1994,9 @@ function AccountantClassicTabButtonMixin:OnLoad()
 	
 	self:SetFrameLevel(self:GetFrameLevel() + 4);
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	
-	self.Text:SetText(TabText[i]);
+	if (WoWRetail) then 
+		self.Text:SetText(TabText[i]);
+	end
 end
 
 function AccountantClassicTabButtonMixin:OnEvent(event, ...)

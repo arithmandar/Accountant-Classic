@@ -5,22 +5,10 @@
 	<!-- Item Row Template -->
 	<Button name="AccountantClassicTabTemplate" inherits="CharacterFrameTabButtonTemplate" mixin="AccountantClassicTabButtonMixin" virtual="true">
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-			<OnShow method="OnShow"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
-		<ButtonText parentKey="Text">
-			<Size x="0" y="9"/>
-			<Anchors>
-				<Anchor point="CENTER" x="0" y="2"/>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="GameFontNormalSmall"/>
-		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontHighlightSmall"/>
 	</Button>
 
 	<!-- Text rows -->
@@ -29,59 +17,7 @@
 			<AbsDimension x="600" y="19"/>
 		</Size>
 		<Layers>
-			<Layer level="BACKGROUND">
-			<!--
-				<FontString name="$parentTitle" parentKey="Title" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<Scripts>
-						<OnEnter>
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(ACCLOC_RSTMNYFRM_TIP, nil, nil, nil, nil, 1);
-						</OnEnter>
-						<OnLeave>
-							GameTooltip:Hide();
-						</OnLeave>
-					</Scripts>
-				</FontString>
-			-->
-			<!--
-				<Button name="$parentDelete" inherits="UIPanelButtonTemplate">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Button>
-			-->
-			<!--	
-				<FontString name="$parentIn" parentKey="In" inherits="NumberFontNormal">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="436" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentOut" parentKey="Out" inherits="NumberFontNormal">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="597" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			-->
-			</Layer>
+			<Layer level="BACKGROUND"/>
 		</Layers>
 		<Frames>
 			<Button name="$parentTitle" parentKey="Title">
