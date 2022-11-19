@@ -6,11 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
-* v2.12.23 (Nov. 19, 2022)
+* v2.12.24 (Nov. 19, 2022)
 ==========================
 - Toc update to support WoW 10.0.2
 
-* v2.12.22 (Nov. 06, 2022)
+* v2.12.23 (Nov. 06, 2022)
 ==========================
 - UI fine-tune for WOLTKC
 
