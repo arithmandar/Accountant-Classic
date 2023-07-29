@@ -1,4 +1,4 @@
-﻿## Interface: 100007
+﻿## Interface: 100105
 #@non-debug@
 ## Title: @localization(locale="enUS", key="Title", namespace="ToC")@
 ## Title-deDE: @localization(locale="deDE", key="Title", namespace="ToC")@
@@ -50,6 +50,8 @@
 ## X-License: GPLv2
 ## X-Category: Information
 ## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR, esES, ptBR, ruRU
+## AddonCompartmentFunc: AccountantClassic_ButtonOnClick
+## IconTexture: Interface\AddOns\Accountant_Classic\Images\AccountantClassicButton-Up
 
 Libs\Libs.xml
 Locale\Locales.xml
