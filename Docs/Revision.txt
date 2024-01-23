@@ -6,6 +6,10 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.12.29 (Jan. 23, 2024)
+==========================
+- Library update: LibUIDropDownMenu
+
 * v2.12.28 (Jan. 22, 2024)
 ==========================
 - Library update: LibUIDropDownMenu
