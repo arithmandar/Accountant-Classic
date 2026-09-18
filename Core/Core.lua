@@ -37,38 +37,65 @@ local math = _G.math
 local floor, fmod = math.floor, math.fmod
 -- WoW
 local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
-local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo = GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo
+local C_AddOns = _G.C_AddOns
+local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo = C_AddOns.GetAddOnInfo, C_AddOns.GetAddOnMetadata, _G.GetRealmName, _G.UnitName, _G.UnitFactionGroup, _G.UnitClass, _G.GetBuildInfo
 local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo or nil
 local GetCurrencyInfo = GetCurrencyInfo or nil
 
--- Determine WoW TOC Version
-local WoWClassicEra, WoWClassicTBC, WoWWOTLKC, WoWRetail
-local wowversion  = select(4, GetBuildInfo())
-if wowversion < 20000 then
-	WoWClassicEra = true
-elseif wowversion < 30000 then 
-	WoWClassicTBC = true
-elseif wowversion < 40000 then 
-	WoWWOTLKC = true
-elseif wowversion > 90000 then
+-- Determine WoW client family
+local WoWClassicEra, WoWClassicTBC, WoWWOTLKC, WoWClassicCata, WoWClassicMists, WoWRetail
+local projectID = _G.WOW_PROJECT_ID
+if projectID == _G.WOW_PROJECT_MAINLINE then
 	WoWRetail = true
-
 	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
 	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+elseif projectID == _G.WOW_PROJECT_CLASSIC then
+	WoWClassicEra = true
+elseif projectID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+	WoWClassicTBC = true
+elseif projectID == _G.WOW_PROJECT_WRATH_CLASSIC then
+	WoWWOTLKC = true
+elseif projectID == _G.WOW_PROJECT_CATACLYSM_CLASSIC then
+	WoWClassicCata = true
+elseif projectID == _G.WOW_PROJECT_MISTS_CLASSIC then
+	WoWClassicMists = true
 else
-	-- n/a
+	local wowversion = select(4, GetBuildInfo())
+	if wowversion < 20000 then
+		WoWClassicEra = true
+	elseif wowversion < 30000 then
+		WoWClassicTBC = true
+	elseif wowversion < 40000 then
+		WoWWOTLKC = true
+	elseif wowversion < 90000 then
+		WoWClassicCata = true
+	elseif wowversion > 90000 then
+		WoWRetail = true
+	end
+end
+
+local WoWClassicFamily = WoWClassicEra or WoWClassicTBC or WoWWOTLKC or WoWClassicCata or WoWClassicMists
+local _, private = ...
+private.WoWClassicFamily = WoWClassicFamily
+
+if WoWRetail then
+	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
+	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 end
 
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
-local FOLDER_NAME, private = ...
+local FOLDER_NAME = ...
 local LibStub = _G.LibStub
+if not LibStub then error(FOLDER_NAME .. " requires LibStub.") end
 
 local addon = LibStub("AceAddon-3.0"):NewAddon(private.addon_name, "AceConsole-3.0", "AceHook-3.0")
+
 addon.constants = private.constants
 addon.constants.addon_name = private.addon_name
 addon.Name = FOLDER_NAME
+
 addon.LocName = select(2, GetAddOnInfo(addon.Name))
 addon.Notes = select(3, GetAddOnInfo(addon.Name))
 _G.Accountant_Classic = addon
@@ -303,6 +330,19 @@ end
 local function createACFrames()
 	local parentName = "AccountantClassicFrame"
 	local f = _G[parentName]
+	if not f._accountantInitialized then
+		f:GetScript("OnLoad")(f)
+		f._accountantInitialized = true
+	end
+	for index = 1, 18 do
+		local row = _G[parentName.."Row"..index]
+		if row and not row.Title then
+			AccountantClassic_InitializeRow(row)
+		end
+	end
+	if not _G[parentName.."Tab1"] then
+		AccountantClassic_CreateTabs(f)
+	end
 	
 	f.ServerDropDown = _G[parentName.."ServerDropDown"] 
 	if not f.ServerDropDown then 
@@ -411,12 +451,12 @@ local function setLabels()
 end
 
 local function settleTabText()
-	if (WoWClassicEra or WoWClassicTBC or WoWWOTLKC) then
+	if (WoWClassicFamily) then
 		local TabText = private.constants.tabText
 		for i = 1, AC_TABS do
 			local tab = _G["AccountantClassicFrameTab"..i]
 			tab:SetText(TabText[i]);
-			PanelTemplates_TabResize(tab, 25);
+			PanelTemplates_TabResize(tab, 0, nil, 36, 88);
 		end
 	end
 
@@ -425,7 +465,7 @@ local function settleTabText()
 	else
 		PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
 	end
-		
+
 	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
 	PanelTemplates_UpdateTabs(AccountantClassicFrame);
 end
@@ -471,7 +511,7 @@ function addon:PopulateCharacterList(server, faction)
 	-- Create and align any new entry buttons that we need
 	for i = 1, AC_CURR_LINES do
 		if (not _G["AccountantClassicCharacterEntry"..i]) then
-			local f = CreateFrame("Frame", "AccountantClassicCharacterEntry"..i, AccountantClassicFrame, "AccountantClassicRowTemplate")
+			local f = AccountantClassic_CreateRow(AccountantClassicFrame, "AccountantClassicCharacterEntry"..i)
 			if i == 1 then
 				f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0)
 			else
@@ -1100,7 +1140,7 @@ end
 
 local function AccountantClassic_GetFormattedCurrency(currencyID)
 	local name, amount, icon
-	if (WoWClassicEra or WoWClassicTBC or WoWWOTLKC) then
+	if (WoWClassicFamily) then
 		name, amount, icon = GetCurrencyInfo(currencyID)
 	else
 		local info = GetCurrencyInfo(currencyID)
@@ -1135,6 +1175,9 @@ end
 
 local function parseDateStrings(s, typ)
 	local mm, dd, yy;
+	if not s then
+		return ""
+	end
 	local sdate = s;
 	
 	if (typ == 1) then -- mm/dd/yy, currently used in dateweek (WeekStart)
@@ -1414,7 +1457,7 @@ function AccountantClassic_OnShow(self)
 		-- Extra info
 		if (AC_CURRTAB == TableIndex(private.constants.logmodes, "Week")) then
 			fs:SetText(L["Week Start"]..":")
-			fsv:SetText(parseDateStrings(AccountantClassic_Profile["options"]["dateweek"], 1))
+			fsv:SetText(parseDateStrings(AccountantClassic_Profile["options"]["dateweek"] or addon:WeekStart(), 1))
 		elseif (AC_CURRTAB == TableIndex(private.constants.logmodes, "PrvWeek")) then
 			if (prvdateweek) then
 				fs:SetText(L["Week Start"]..":")
@@ -1688,7 +1731,7 @@ function addon:CursorHasItem()
 end
 
 function addon:BackpackTokenFrame_Update()
-	if (WoWClassicEra or WoWClassicTBC or WoWWOTLKC) then
+	if (WoWClassicFamily) then
 		-- do nothing
 	else
 		local name, count, icon, currencyID
@@ -1994,19 +2037,25 @@ function AccountantClassicTabButtonMixin:OnLoad()
 	
 	self:SetFrameLevel(self:GetFrameLevel() + 4);
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	if (WoWRetail) then 
-		self.Text:SetText(TabText[i]);
-	end
+	self.Text:SetText(TabText[i]);
 end
 
 function AccountantClassicTabButtonMixin:OnEvent(event, ...)
 	if self:IsVisible() then
-		PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+		if (WoWClassicFamily) then
+			PanelTemplates_TabResize(self, 0, nil, 36, 88);
+		else
+			PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+		end
 	end
 end
 
 function AccountantClassicTabButtonMixin:OnShow()
-	PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+	if (WoWClassicFamily) then
+		PanelTemplates_TabResize(self, 0, nil, 36, 88);
+	else
+		PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+	end
 end
 
 function AccountantClassicTabButtonMixin:OnEnter()

@@ -1,4 +1,4 @@
-﻿## Interface: 100205
+﻿## Interface: 11509, 16001, 20506, 30403, 40402, 50504, 120007, 120100
 #@non-debug@
 ## Title: @localization(locale="enUS", key="Title", namespace="ToC")@
 ## Title-deDE: @localization(locale="deDE", key="Title", namespace="ToC")@
@@ -56,9 +56,10 @@
 Libs\Libs.xml
 Locale\Locales.xml
 Core\Constants.lua
+Core\Templates.lua
+Core\UI.lua
 
 Core\Core.lua
-Core\Template.xml
-Core\Core.xml
+Core\Tabs.lua
 Core\MoneyFrame.lua
 Core\Config.lua
