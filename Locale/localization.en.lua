@@ -136,6 +136,8 @@ L["You have manually called the function \n|cFF00FF00AccountantClassic_CleanUpAc
 L["Show All Characters"] = "Show All Characters"
 L["Show all characters' incoming and outgoing data."] = "Show all characters' incoming and outgoing data."
 L["Initial balance captured. Tracking for subsequent money changes has started."] = "Initial balance captured. Tracking for subsequent money changes has started."
+L[" ^"] = " ^"
+L[" v"] = " v"
 
 -- Amount string for CHAT_MESSAGE_MONEY search
 L["(%d+) Gold"] = "(%d+) Gold"

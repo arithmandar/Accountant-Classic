@@ -18,10 +18,25 @@ v2.1 - 2.3:
 	Atlas by Razark for the minimap icon code I lifted
 	Everyone who commented and voted for the mod on curse-gaming.com
 	Thiou for the French loc, Snj & JokerGermany for the German loc
-  ---------------------------------------------------------------------
+---------------------------------------------------------------------
 	v2.4 - v2.12:
 		Updated by: Arith
 		Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5.22
+---------------------------------------------------------------------
+	v2.13 - v2.14:
+		Updated by: kamusis
+		Bug fixes and improvements: Add sort function in All Chars tab
+	v2.20:
+		Updated by: kamusis
+		Priming Approach: one-time baseline initialization to avoid first-session skew;
+		guarded CHAT_MSG_MONEY priming; one-time colored chat alert; minor lints
+		hardening (LDB.text fallback, capture gsub return); removed duplicate
+		hide_on_escape in reset dialog; added comprehensive inline comments.
+ ---------------------------------------------------------------------
+	v2.21:
+		Updated by: Arith
+		Since kamusis has released his revision and use the version number v2.13 ~ v2.20, I will start with v2.21 from now on.
+		Although my revision still continued with my previouse work in v2.12.30, applying the compatibility fixes, and then adopted kamusis' improvements.
 ]]
 -----------------------------------------------------------------------
 -- Upvalued Lua API.
@@ -135,6 +150,8 @@ local AC_CHAR_LINES = private.constants.maxCharLines -- Maximum lines for charac
 local AC_SELECTED_CHAR_NUM
 local AC_SELECTED_SERVER
 local AC_SELECTED_FACTION
+local AC_SORT_BY = "money"
+local AC_SORT_ASC = false
 local AccountantClassic_Verbose = nil;
 --local AccountantClassic_GotName = false;
 
@@ -391,6 +408,52 @@ local function createACFrames()
 	if not _G[parentName.."Tab1"] then
 		AccountantClassic_CreateTabs(f)
 	end
+
+	if not f.HeaderSource then
+		local function makeHeaderButton(name, x, width)
+			local button = CreateFrame("Button", name, f)
+			button:SetSize(width, 19)
+			button:SetPoint("TOPLEFT", f, "TOPLEFT", x, -91)
+			button:SetFrameStrata("HIGH")
+			button:SetScript("OnEnter", function(self)
+				if self.highlightTexture then
+					self.highlightTexture:Show()
+				else
+					self.highlightTexture = self:CreateTexture(nil, "BACKGROUND")
+					self.highlightTexture:SetAllPoints(self)
+					self.highlightTexture:SetColorTexture(1, 1, 1, 0.2)
+					self.highlightTexture:Show()
+				end
+			end)
+			button:SetScript("OnLeave", function(self)
+				if self.highlightTexture then
+					self.highlightTexture:Hide()
+				end
+			end)
+			return button
+		end
+
+		local function toggleSort(sortKey)
+			if AC_SORT_BY == sortKey then
+				AC_SORT_ASC = not AC_SORT_ASC
+			else
+				AC_SORT_BY = sortKey
+				AC_SORT_ASC = true
+			end
+			if AccountantClassicFrame and AccountantClassicFrame:IsVisible() then
+				AccountantClassic_OnShow()
+			end
+		end
+
+		f.HeaderSource = makeHeaderButton(parentName.."HeaderSource", 21, 280)
+		f.HeaderSource:SetScript("OnClick", function() toggleSort("name") end)
+
+		f.HeaderIn = makeHeaderButton(parentName.."HeaderIn", 294, 160)
+		f.HeaderIn:SetScript("OnClick", function() toggleSort("money") end)
+
+		f.HeaderOut = makeHeaderButton(parentName.."HeaderOut", 455, 160)
+		f.HeaderOut:SetScript("OnClick", function() toggleSort("date") end)
+	end
 	
 	f.ServerDropDown = _G[parentName.."ServerDropDown"] 
 	if not f.ServerDropDown then 
@@ -454,6 +517,14 @@ local function setLabels()
 		f.Source:SetText(L["Character"])
 		f.In:SetText(L["Money"])
 		f.Out:SetText(L["Updated"])
+		local arrow = AC_SORT_ASC and L[" ^"] or L[" v"]
+		if AC_SORT_BY == "name" then
+			f.Source:SetText(L["Character"]..arrow)
+		elseif AC_SORT_BY == "money" then
+			f.In:SetText(L["Money"]..arrow)
+		elseif AC_SORT_BY == "date" then
+			f.Out:SetText(L["Updated"]..arrow)
+		end
 		f.TotalIn:SetText(L["Total Incomings"]..":")
 		f.TotalOut:SetText(L["Total Outgoings"]..":")
 		f.TotalFlow:SetText(L["Sum Total"]..":")
@@ -554,7 +625,43 @@ function addon:PopulateCharacterList(server, faction)
 			end
 		end
 	end
+
+	if AC_CURRTAB == AC_TABS and AC_SORT_BY then
+		table.sort(AC_CHARSCROLL_LIST, function(a, b)
+			local aServer, aChar = a[1], a[2]
+			local bServer, bChar = b[1], b[2]
+            local aData = Accountant_ClassicSaveData[aServer][aChar]
+            local bData = Accountant_ClassicSaveData[bServer][bChar]
+			if AC_SORT_BY == "name" then
+				local aName = aServer.."-"..aChar
+				local bName = bServer.."-"..bChar
+				if AC_SORT_ASC then
+					return aName < bName
+				end
+				return aName > bName
+			elseif AC_SORT_BY == "money" then
+				local aMoney = aData.options.totalcash or 0
+				local bMoney = bData.options.totalcash or 0
+				if AC_SORT_ASC then
+					return aMoney < bMoney
+				end
+				return aMoney > bMoney
+			elseif AC_SORT_BY == "date" then
+				local aDate = aData.options.lastsessiondate or ""
+				local bDate = bData.options.lastsessiondate or ""
+				if AC_SORT_ASC then
+					return aDate < bDate
+				end
+				return aDate > bDate
+			end
+			return false
+		end)
+	end
+
 	AC_CURR_LINES = i - 1
+	if AC_CURRTAB == AC_TABS then
+		AC_CURR_LINES = #AC_CHARSCROLL_LIST
+	end
 
 	-- Create and align any new entry buttons that we need
 	for i = 1, AC_CURR_LINES do
@@ -1048,7 +1155,7 @@ function Accountant_Slash(msg)
 	end
 	local args = {n=0}
 	local function helper(word) tinsert(args, word) end
-		-- Updated by: kamusis
+	-- Updated by: kamusis
 	-- Silence linter about discarding return values; we only need the callback side-effect.
 	local _ = gsub(msg, "[_%w]+", helper)
 	if args[1] == 'log'  then
@@ -2042,7 +2149,7 @@ function addon:OnEnable()
 	addon:PopulateCharacterList()
 	
 	self:Refresh()
-	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType])
+	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType]) or ""
 end
 
 function addon:Toggle()
@@ -2066,7 +2173,7 @@ function addon:Refresh()
 	AccountantClassic_OnShow()
 	arrangeAccountantClassicFrame()
 	
-	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType])
+	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType]) or ""
 end
 
 function AccountantClassic_ButtonToggle()
