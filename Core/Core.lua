@@ -2,26 +2,26 @@
 $Id$
 ]]
 --[[
- Accountant
-    v2.1 - 2.3:
-    By Sabaki (sabaki@gmail.com)
-        Updated by: Shadow
-        new codes by Shadow and Rophy
+Accountant
+v2.1 - 2.3:
+	By Sabaki (sabaki@gmail.com)
+		Updated by: Shadow
+		new codes by Shadow and Rophy
 
 	Tracks you incoming / outgoing cash
 
-        Thanks To:
+	Thanks To:
 	2006/6/18 Rophy: v2.2 Added gold shared by party
 
 	Thanks To:
 	Losimagic, Shrill, Fillet for testing
 	Atlas by Razark for the minimap icon code I lifted
 	Everyone who commented and voted for the mod on curse-gaming.com
-  Thiou for the French loc, Snj & JokerGermany for the German loc
+	Thiou for the French loc, Snj & JokerGermany for the German loc
   ---------------------------------------------------------------------
-  v2.4 - v2.12:
-     Updated by: Arith
-     Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5.22
+	v2.4 - v2.12:
+		Updated by: Arith
+		Tntdruid for adding Garrison, Barber shop, Void, and Transform logging in v2.5.22
 ]]
 -----------------------------------------------------------------------
 -- Upvalued Lua API.
@@ -47,8 +47,6 @@ local WoWClassicEra, WoWClassicTBC, WoWWOTLKC, WoWClassicCata, WoWClassicMists, 
 local projectID = _G.WOW_PROJECT_ID
 if projectID == _G.WOW_PROJECT_MAINLINE then
 	WoWRetail = true
-	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
-	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 elseif projectID == _G.WOW_PROJECT_CLASSIC then
 	WoWClassicEra = true
 elseif projectID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
@@ -81,7 +79,6 @@ private.WoWClassicFamily = WoWClassicFamily
 if WoWClassicFamily then
 	GetBackpackCurrencyInfo = _G.GetBackpackCurrencyInfo
 	GetCurrencyInfo = _G.GetCurrencyInfo
-
 else
 	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
 	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
@@ -109,7 +106,6 @@ local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 local MoneyFrame
 
-local LibDialog = LibStub("LibDialog-1.0");
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name);
 local ACbutton = LibStub("LibDBIcon-1.0")
 local AceDB = LibStub("AceDB-3.0")
@@ -122,7 +118,7 @@ end
 local AccountantClassic_Version = GetAddOnMetadata(private.addon_name, "Version");
 --AccountantClassic_Disabled = false;
 -- NewDB
-local AC_NewDB = fales
+local AC_NewDB = false
 local AC_LOGTYPE = ""
 local AC_CURRMONEY = 0
 local AC_LASTSESSMONEY = 0
@@ -156,6 +152,53 @@ local cyear = date("%Y")
 
 local profile
 local AC_FIRSTLOADED = false
+
+-- Updated by: kamusis
+-- Priming flag for one-time baseline initialization
+--
+-- Rationale:
+-- Historically, the addon used AC_FIRSTLOADED to block logging for the entire first
+-- session of a character to avoid counting the current balance as a fake "income".
+-- That prevented skew but also dropped all money changes during the first session.
+--
+-- The Priming Approach replaces that blanket suppression with a one-time baseline
+-- initialization. We set AC_LASTMONEY to the current balance exactly once ("prime")
+-- and then allow normal logging for the rest of the session. This avoids the initial
+-- fake income without losing subsequent changes.
+--
+-- AC_LOG_PRIMED = false means baseline not initialized yet; the first safe path
+-- (PLAYER_MONEY or CHAT_MSG_MONEY) will initialize it. After priming, logging runs
+-- normally. We will also clear AC_FIRSTLOADED at that time to preserve intent.
+local AC_LOG_PRIMED = false
+
+--
+-- One-time UI alert for baseline priming
+--
+-- We want to notify the player once per session when the addon performs the
+-- baseline priming. Using a separate guard ensures we don't spam the UI when
+-- multiple code paths (PLAYER_MONEY / CHAT_MSG_MONEY / updateLog) converge to
+-- the same priming operation.
+local AC_PRIMING_ALERTED = false
+local function AccountantClassic_ShowPrimingAlert()
+	if AC_PRIMING_ALERTED then return end
+	AC_PRIMING_ALERTED = true
+	-- One-time, noticeable chat message (yellow/orange) without using UIErrorsFrame.
+	-- Rationale: keep it visible yet unobtrusive, and consistent across UIs where
+	-- UIErrorsFrame may be hidden or styled away by other addons.
+	local msg = format("|cffffd200[%s]: %s|r", L["Accountant Classic"], L["Initial balance captured. Tracking for subsequent money changes has started."])
+	ACC_Print(msg)
+end
+
+local function AccountantClassic_PrimeBaseline()
+	if AC_LOG_PRIMED then return end
+	AC_LASTMONEY = GetMoney()
+	if AccountantClassic_Profile and AccountantClassic_Profile["options"] then
+		AccountantClassic_Profile["options"].totalcash = AC_LASTMONEY
+	end
+	AC_LOG_PRIMED = true
+	AC_FIRSTLOADED = false
+	AccountantClassic_ShowPrimingAlert()
+end
 
 local AccountantClassicDefaultOptions = {
 	version = AccountantClassic_Version, 
@@ -196,20 +239,6 @@ local function orderedpairs(t, f)
 	end
 	tsort(keys, f)
 	return orderednext, keys
-end
-
--- Code by Grayhoof (SCT)
-local function AccountantClassic_CloneTable(tablein)	-- Return a copy of the table tablein
-	local new_table = {};			-- Create a new table
-	local ka, va = next(tablein, nil);	-- The ka is an index of tablein; va = tablein[ka]
-	while ka do
-		if type(va) == "table" then 
-			va = AccountantClassic_CloneTable(va);
-		end 
-		new_table[ka] = va;
-		ka, va = next(tablein, ka);	-- Get next index
-	end
-	return new_table;
 end
 
 -- function to check if user has all the options parameter, 
@@ -285,15 +314,30 @@ local function initOptions()
 	AccountantClassic_Profile = Accountant_ClassicSaveData[AC_SERVER][AC_PLAYER];
 
 	AccountantClassic_UpdateOptions(AccountantClassic_Profile["options"]);
-
 	AccountantClassic_InitZoneDB();
+
+	-- Seed the baseline immediately for a brand-new profile/session so the first
+	-- real money change is not lost before the first PLAYER_MONEY event arrives.
+	-- This must happen after ZoneDB initialization, because AC_FIRSTLOADED is set
+	-- there for a truly fresh character/session.
+	if AC_FIRSTLOADED
+		or AccountantClassic_Profile["options"].totalcash == nil
+		or (AccountantClassic_Profile["options"].totalcash == 0 and not next(AccountantClassic_Profile["data"])) then
+		AccountantClassic_PrimeBaseline()
+	elseif not AC_LOG_PRIMED then
+		-- An existing profile already has a saved baseline from a previous session.
+		-- Restore it without showing the one-time priming message again.
+		AC_LASTMONEY = AccountantClassic_Profile["options"].totalcash or GetMoney()
+		AC_LOG_PRIMED = true
+		AC_FIRSTLOADED = false
+	end
 end
 
 local function copyOptions()
 	local oprofile = Accountant_ClassicSaveData[AC_SERVER][AC_PLAYER]["options"]
 	local db = addon.db.profile
 	
-	if (db.oprofileCopied) then return end
+	if (db and db.oprofileCopied) then return end
 	db.showbutton = oprofile.showbutton
 	db.showmoneyinfo = oprofile.showmoneyinfo
 	db.showintrotip = oprofile.showintrotip
@@ -325,9 +369,9 @@ local function arrangeAccountantClassicFrame()
 end
 
 function AccountantClassic_RegisterEvents(self)
-        for key, value in pairs( private.constants.events ) do
-            self:RegisterEvent( value );
-        end
+		for key, value in pairs( private.constants.events ) do
+			self:RegisterEvent( value );
+		end
 	--self:RegisterForDrag("LeftButton");
 end
 
@@ -459,19 +503,19 @@ local function settleTabText()
 		local TabText = private.constants.tabText
 		for i = 1, AC_TABS do
 			local tab = _G["AccountantClassicFrameTab"..i]
-			tab:SetText(TabText[i]);
-			PanelTemplates_TabResize(tab, 0, nil, 36, 88);
+			tab:SetText(TabText[i])
+			PanelTemplates_TabResize(tab, 0, nil, 36, 88)
 		end
 	end
 
 	if (WoWRetail) then
 		AccountantClassicFrame.numTabs = AC_TABS
 	else
-		PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS);
+		PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS)
 	end
 
-	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1);
-	PanelTemplates_UpdateTabs(AccountantClassicFrame);
+	PanelTemplates_SetTab(AccountantClassicFrame, AccountantClassicFrameTab1)
+	PanelTemplates_UpdateTabs(AccountantClassicFrame)
 end
 
 function addon:PopulateCharacterList(server, faction)
@@ -858,7 +902,7 @@ local function loadData()
 		end
 	end
 
-	order = 1;
+	local order = 1;
 	for key, value in pairs(AC_DATA) do
 		if (AccountantClassic_Profile["data"][key] == nil) then
 			AccountantClassic_Profile["data"][key] = { };
@@ -878,27 +922,7 @@ local function loadData()
 			AC_DATA[key][mode].In  = AccountantClassic_Profile["data"][key][mode].In;
 			AC_DATA[key][mode].Out = AccountantClassic_Profile["data"][key][mode].Out;
 		end
-		-- Here we reset session data
-		-- AC_DATA[key]["Session"].In = 0;
-		-- AC_DATA[key]["Session"].Out = 0;
 
---[[
-		-- Old Version Conversion
-		if (AccountantClassic_Profile["data"][key].TotalIn ~= nil) then
-			AccountantClassic_Profile["data"][key]["Total"].In = AccountantClassic_Profile["data"][key].TotalIn;
-			AC_DATA[key]["Total"].In = AccountantClassic_Profile["data"][key].TotalIn;
-			AccountantClassic_Profile["data"][key].TotalIn = nil;
-		end
-		if (AccountantClassic_Profile["data"][key].TotalOut ~= nil) then
-			AccountantClassic_Profile["data"][key]["Total"].Out = AccountantClassic_Profile["data"][key].TotalOut;
-			AC_DATA[key]["Total"].Out = AccountantClassic_Profile["data"][key].TotalOut;
-			AccountantClassic_Profile["data"][key].TotalOut = nil;
-		end
-		if (Accountant_SaveData[key] ~= nil) then
-			Accountant_SaveData[key] = nil;
-		end
-		-- End OVC
-]]
 		AC_DATA[key].order = order;
 		order = order + 1;
 	end
@@ -921,8 +945,19 @@ local function loadData()
 end
 
 local function updateLog()
-	-- if it's first time loaded this addon, then we don't need to update logs.
-	if AC_FIRSTLOADED then
+	-- Updated by: kamusis
+	-- One-time baseline priming for first-load sessions
+	--
+	-- Explanation:
+	-- Instead of suppressing the entire first session (which would miss all money
+	-- changes), we perform a single baseline initialization. When AC_FIRSTLOADED is
+	-- true and we have not primed yet (AC_LOG_PRIMED is false), we set
+	-- AC_LASTMONEY to the current balance and store it in options.totalcash. Then we
+	-- mark AC_LOG_PRIMED = true and clear AC_FIRSTLOADED so subsequent calls proceed
+	-- with normal diff-based logging. We return immediately here to avoid treating
+	-- the initial balance as an income/outgoing delta.
+	if AC_FIRSTLOADED and not AC_LOG_PRIMED then
+		AccountantClassic_PrimeBaseline()
 		return
 	end
 
@@ -942,7 +977,7 @@ local function updateLog()
 	-- calculating diff money
 	AC_CURRMONEY = GetMoney()
 	AccountantClassic_Profile["options"].totalcash = AC_CURRMONEY
-	diff = AC_CURRMONEY - AC_LASTMONEY
+	local diff = AC_CURRMONEY - AC_LASTMONEY
 	AC_LASTMONEY = AC_CURRMONEY
 	if (diff == 0 or diff == nil) then
 		return
@@ -1013,7 +1048,9 @@ function Accountant_Slash(msg)
 	end
 	local args = {n=0}
 	local function helper(word) tinsert(args, word) end
-	gsub(msg, "[_%w]+", helper)
+		-- Updated by: kamusis
+	-- Silence linter about discarding return values; we only need the callback side-effect.
+	local _ = gsub(msg, "[_%w]+", helper)
 	if args[1] == 'log'  then
 		ShowUIPanel(AccountantClassicFrame)
 	elseif args[1] == 'verbose' then
@@ -1034,9 +1071,9 @@ end
 -- codes by Tntdruid
 local function AccountantClassic_DetectAhMail()
 	local numItems, totalItems = GetInboxNumItems();
-	for x = 1, totalItems do    
+	for x = 1, totalItems do	
 		-- invoiceType, itemName, playerName, bid, buyout, deposit, consignment = GetInboxInvoiceInfo(index);
-		--    invoiceType : String - type of invoice ("buyer", "seller", or "seller_temp_invoice").
+		--	invoiceType : String - type of invoice ("buyer", "seller", or "seller_temp_invoice").
 		local invoiceType = GetInboxInvoiceInfo(x);
 		if (invoiceType == "seller") then
 			return true;
@@ -1073,18 +1110,33 @@ local function AccountantClassic_OnShareMoney(arg1)
 	end
 
 	money = copper + silver * 100 + gold * 10000
+	-- Updated by: kamusis
+	-- Baseline priming guard for first-load sessions
+	--
+	-- If the very first event we observe is CHAT_MSG_MONEY (shared loot message), we
+	-- must ensure we have a proper baseline before attempting to force-update logs.
+	-- Otherwise, we would manipulate AC_LASTMONEY and then have updateLog() perform
+	-- the one-time priming, which could lead to inconsistent AC_LASTMONEY values.
+	--
+	-- Therefore, when AC_FIRSTLOADED and not AC_LOG_PRIMED, we prime baseline here
+	-- and return without recording this message. Subsequent money changes will be
+	-- tracked normally. This mirrors the priming path used for PLAYER_MONEY.
+	if AC_FIRSTLOADED and not AC_LOG_PRIMED then
+		AccountantClassic_PrimeBaseline()
+		return
+	end
 
 	if (not AC_LASTMONEY) then
 		AC_LASTMONEY = 0;
 	end
 
--- This will force a money update with calculated amount.
+	-- This will force a money update with calculated amount.
 	AC_LASTMONEY = AC_LASTMONEY - money;
 	AC_LOGTYPE = "LOOT";
 	updateLog();
 	AC_LOGTYPE = oldType;
 
--- This will suppress the incoming PLAYER_MONEY event.
+	-- This will suppress the incoming PLAYER_MONEY event.
 	AC_LASTMONEY = AC_LASTMONEY + money;
 
 end
@@ -1104,18 +1156,14 @@ local function AccountantClassic_NiceCash(amount)
 	amount = amount - (gold * agold);
 	if amount >= asilver then
 		silver = floor(amount / asilver);
-		if silver < 10 then
-			silver = " "..silver;
-		end
-		outstr = outstr .. "|cFFDDDDDD" .. silver .. L["s "];
+		local silverDisplay = silver < 10 and " " .. silver or tostring(silver);
+		outstr = outstr .. "|cFFDDDDDD" .. silverDisplay .. L["s "];
 	end
 	amount = amount - (silver * asilver);
 	if amount > 0 then
 		cent = amount;
-		if cent < 10 then
-			cent = " "..cent;
-		end
-		outstr = outstr .. "|cFFFF6600" .. cent .. L["c"];
+		local centDisplay = cent < 10 and " " .. cent or tostring(cent);
+		outstr = outstr .. "|cFFFF6600" .. centDisplay .. L["c"];
 	end
 	outstr = outstr.."|r";
 	return outstr;
@@ -1152,14 +1200,16 @@ local function AccountantClassic_GetFormattedCurrency(currencyID)
 		amount = info.quantity
 		icon = info.iconFileID
 	end
-	
-	if (amount >0) then
-		local CURRENCY_TEXTURE = "%s|T"..icon..":%d:%d:2:0|t";
-		amount = profile.breakupnumbers and BreakUpLargeNumbers(amount) or amount;
-		return format(CURRENCY_TEXTURE.." ", amount, 0, 0);
-	else
-		return "";
+
+	if amount > 0 then
+		local amountText = profile.breakupnumbers and BreakUpLargeNumbers(amount) or tostring(amount)
+		if tonumber(amount) < 10 then
+			amountText = " " .. amountText
+		end
+		return format("%s|T%s:%d:%d:2:0|t ", amountText, icon, 0, 0)
 	end
+
+	return ""
 end
 
 function addon:WeekStart()
@@ -1334,13 +1384,24 @@ function AccountantClassic_OnEvent(self, event, ...)
 	elseif event == "CHAT_MSG_MONEY" then
 		AccountantClassic_OnShareMoney(arg1);
 	elseif event == "PLAYER_MONEY" then
+		-- Updated by: kamusis
+		-- If baseline has not been initialized yet, use the first PLAYER_MONEY
+		-- event as a safe priming point. This sets AC_LASTMONEY to the current
+		-- balance and prevents the initial balance from being counted as income.
+		if not AC_LOG_PRIMED then
+			AccountantClassic_PrimeBaseline()
+			return
+		end
+		if AccountantClassic_Verbose then	
+			ACC_Print("Player money changed, starting to update money log ...")
+		end
 		updateLog();
 	end
 
 	if AccountantClassic_Verbose and AC_LOGTYPE ~= oldType then ACC_Print("Accountant mode changed to '"..AC_LOGTYPE.."'"); end
 	
 	if (Accountant_ClassicSaveData) then
-		LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType])
+		LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType]) or ""
 	end
 end
 
@@ -1664,28 +1725,20 @@ function AccountantClassic_ResetData()
 
 	end
 
-	-- Confirm box
-	LibDialog:Register("ACCOUNTANT_RESET", {
+	-- Using native StaticPopupDialogs to show the confirm box.
+	StaticPopupDialogs["ACCOUNTANT_CLASSIC_RESET"] = {
 		text = format(L["Are you sure you want to reset the \"%s\" data?"], logmode),
-		buttons = {
-			{
-				text = OKAY,
-				on_click = function() AccountantClassic_ResetConfirmed(); end,
-			},
-			{
-				text = CANCEL,
-				on_click = function(self, mouseButton, down) LibDialog:Dismiss("ACCOUNTANT_RESET"); end,
-			},
-		},
-		show_while_dead = true,
-		hide_on_escape = true,
-		is_exclusive = true,
-		hide_on_escape = true,
-		show_during_cinematic = false,
-		
-	});
-	LibDialog:Spawn("ACCOUNTANT_RESET");
-	
+		button1 = OKAY,
+		button2 = CANCEL,
+		OnAccept = function()
+			AccountantClassic_ResetConfirmed();
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+	StaticPopup_Show("ACCOUNTANT_CLASSIC_RESET")
 end
 
 function addon:CharacterRemovalProceed(server, character)
@@ -1738,20 +1791,14 @@ function addon:BackpackTokenFrame_Update()
 	if (WoWClassicFamily) then
 		-- do nothing
 	else
-		local name, count, icon, currencyID
 		local tokenstr = ""
-		for i=1, MAX_WATCHED_TOKENS do
-			local info
-			info = GetBackpackCurrencyInfo(i)
-			-- Update watched tokens
-			if ( info ) then
-				name =  info.name
-				count =  info.quantity
-				icon = info.iconFileID
-				currencyID = info.currencyTypesID
-
-				tokenstr = tokenstr..AccountantClassic_GetFormattedCurrency(currencyID).." "
+		for i = 1, 50 do
+			local info = GetBackpackCurrencyInfo(i)
+			if not info then
+				break
 			end
+
+			tokenstr = tokenstr .. AccountantClassic_GetFormattedCurrency(info.currencyTypesID) .. " "
 		end
 		return tokenstr
 	end
@@ -1797,6 +1844,7 @@ function addon:ShowSessionToolTip()
 
 	local TotalIn = 0;
 	local TotalOut = 0;
+	local diff = 0;
 	for key,value in pairs(AC_DATA) do
 		TotalIn = TotalIn + AC_DATA[key]["Session"].In;
 		TotalOut = TotalOut + AC_DATA[key]["Session"].Out;
@@ -1936,14 +1984,14 @@ function addon:OnInitialize()
 	LDB.OnTooltipShow = (function(tooltip)
 		if not tooltip or not tooltip.AddLine then return end
 		local title = "|cffffffff"..L["Accountant Classic"];
-		if (profile.showmoneyonbutton) then
+		if (profile and profile.showmoneyonbutton) then
 			title = title.." - "..addon:GetFormattedValue(GetMoney());
 		end
 		tooltip:AddLine(title);
-		if (profile.showsessiononbutton == true) then
+		if (profile and profile.showsessiononbutton == true) then
 			tooltip:AddLine(addon:ShowSessionToolTip());
 		end
-		if (profile.showintrotip == true) then
+		if (profile and profile.showintrotip == true) then
 			tooltip:AddLine(L["Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button."]);
 		end
 	end);
@@ -2009,7 +2057,7 @@ end
 function addon:Refresh()
 	profile = self.db.profile
 
-	if (profile.showmoneyinfo) then
+	if (profile and profile.showmoneyinfo) then
 		AccountantClassicMoneyInfoFrame:Show()
 		MoneyFrame:ArrangeMoneyInfoFrame()
 	else

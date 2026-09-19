@@ -135,6 +135,7 @@ L["Detected the conflicted addon - \"|cFFFF0000Accountant|r\" exists and loaded.
 L["You have manually called the function \n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \nto clean up conflicted data existed in \"Accountant\". \nNow click Okay button to reload the game."] = "You have manually called the function \n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \nto clean up conflicted data existed in \"Accountant\". \nNow click Okay button to reload the game."
 L["Show All Characters"] = "Show All Characters"
 L["Show all characters' incoming and outgoing data."] = "Show all characters' incoming and outgoing data."
+L["Initial balance captured. Tracking for subsequent money changes has started."] = "Initial balance captured. Tracking for subsequent money changes has started."
 
 -- Amount string for CHAT_MESSAGE_MONEY search
 L["(%d+) Gold"] = "(%d+) Gold"

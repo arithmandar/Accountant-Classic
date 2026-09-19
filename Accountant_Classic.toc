@@ -41,7 +41,7 @@
 #@end-debug@
 ## Author: arith
 ## Version: @project-version@
-## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibDBIcon-1.0, LibDialog-1.0, !LibUIDropDownMenu
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibDBIcon-1.0, !LibUIDropDownMenu
 ## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB, Accountant_ClassicZoneDB
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-Date: @project-date-iso@

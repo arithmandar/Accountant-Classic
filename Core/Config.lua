@@ -22,7 +22,6 @@ local OpenSettingsPanel = C_SettingsUtil and C_SettingsUtil.OpenSettingsPanel
 local AceConfigReg = LibStub("AceConfigRegistry-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceDBOptions = LibStub("AceDBOptions-3.0")
-local LibDialog = LibStub("LibDialog-1.0")
 
 local optGetter, optSetter
 do
