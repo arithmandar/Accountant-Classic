@@ -630,8 +630,8 @@ function addon:PopulateCharacterList(server, faction)
 		table.sort(AC_CHARSCROLL_LIST, function(a, b)
 			local aServer, aChar = a[1], a[2]
 			local bServer, bChar = b[1], b[2]
-            local aData = Accountant_ClassicSaveData[aServer][aChar]
-            local bData = Accountant_ClassicSaveData[bServer][bChar]
+			local aData = Accountant_ClassicSaveData[aServer][aChar]
+			local bData = Accountant_ClassicSaveData[bServer][bChar]
 			if AC_SORT_BY == "name" then
 				local aName = aServer.."-"..aChar
 				local bName = bServer.."-"..bChar
