@@ -3,7 +3,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "zhTW", false)
 
 if not L then return end
---@do-not-package@
+
 -- Header
 L["Accountant Classic"] = "個人會計"
 L["A basic tool to track your monetary incomings and outgoings within WoW."] = "追蹤每個角色的所有收入與支出狀況，並可顯示當日小計、當週小計、以及自有記錄起的總計。並可顯示所有角色的總金額。"
@@ -46,6 +46,8 @@ L["Options"] = "選項"
 L["Exit"] = "離開"
 
 -- Tabs
+
+-- Tabs' name
 L["This Session"] = "本次"
 L["Today"] = "今天"
 L["Prv. Day"] = "昨天"
@@ -57,6 +59,7 @@ L["This Year"] = "今年"
 L["Prv. Year"] = "去年"
 L["Total"] = "總計"
 L["All Chars"] = "所有角色"
+
 -- Tabs' tooltip
 L["TT1"] = "本次登入"
 L["TT2"] = "今天"
@@ -135,6 +138,9 @@ L["Detected the conflicted addon - \"|cFFFF0000Accountant|r\" exists and loaded.
 L["You have manually called the function \n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \nto clean up conflicted data existed in \"Accountant\". \nNow click Okay button to reload the game."] = "您以手動執行了以下函式\n|cFF00FF00AccountantClassic_CleanUpAccountantDB()|r \n以清除在 \"Accountant\" 插件裡衝突的資料。\n現在請按下確定按鍵以重新載入遊戲。"
 L["Show All Characters"] = "顯示所有角色"
 L["Show all characters' incoming and outgoing data."] = "顯示所有角色的收入與支出加總"
+L["Initial balance captured. Tracking for subsequent money changes has started."] = "已記錄初始餘額。後續資金變動的追蹤已啟動。"
+L[" ^"] = " ▲"
+L[" v"] = " ▼"
 
 -- Amount string for CHAT_MESSAGE_MONEY search
 L["(%d+) Gold"]= "(%d+)金幣"
@@ -144,6 +150,4 @@ L["(%d+) Copper"]= "(%d+)銅幣"
 -- Key Bindings headers
 L["BINDING_HEADER_ACCOUNTANT_CLASSIC_TITLE"] = "個人會計按鍵設定"
 L["BINDING_NAME_ACCOUNTANT_CLASSIC_TOGGLE"] = "開啟個人會計"
---@end-do-not-package@
---@localization(locale="zhTW", format="lua_additive_table", handle-unlocalized="ignore")@
 
