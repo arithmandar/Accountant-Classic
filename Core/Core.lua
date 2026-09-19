@@ -36,11 +36,11 @@ local format, gsub, strfind, strsub = string.format, string.gsub, string.find, s
 local math = _G.math
 local floor, fmod = math.floor, math.fmod
 -- WoW
-local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
 local C_AddOns = _G.C_AddOns
-local GetAddOnInfo, GetAddOnMetadata, GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo = C_AddOns.GetAddOnInfo, C_AddOns.GetAddOnMetadata, _G.GetRealmName, _G.UnitName, _G.UnitFactionGroup, _G.UnitClass, _G.GetBuildInfo
-local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo or nil
-local GetCurrencyInfo = GetCurrencyInfo or nil
+local GetAddOnInfo, GetAddOnMetadata = C_AddOns.GetAddOnInfo, C_AddOns.GetAddOnMetadata
+local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
+local GetRealmName, UnitName, UnitFactionGroup, UnitClass, GetBuildInfo = _G.GetRealmName, _G.UnitName, _G.UnitFactionGroup, _G.UnitClass, _G.GetBuildInfo
+local GetBackpackCurrencyInfo, GetCurrencyInfo
 
 -- Determine WoW client family
 local WoWClassicEra, WoWClassicTBC, WoWWOTLKC, WoWClassicCata, WoWClassicMists, WoWRetail
@@ -78,7 +78,11 @@ local WoWClassicFamily = WoWClassicEra or WoWClassicTBC or WoWWOTLKC or WoWClass
 local _, private = ...
 private.WoWClassicFamily = WoWClassicFamily
 
-if WoWRetail then
+if WoWClassicFamily then
+	GetBackpackCurrencyInfo = _G.GetBackpackCurrencyInfo
+	GetCurrencyInfo = _G.GetCurrencyInfo
+
+else
 	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
 	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 end

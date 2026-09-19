@@ -17,6 +17,8 @@ local LibStub = _G.LibStub;
 local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name)
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
 
+local OpenSettingsPanel = C_SettingsUtil and C_SettingsUtil.OpenSettingsPanel
+
 local AceConfigReg = LibStub("AceConfigRegistry-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceDBOptions = LibStub("AceDBOptions-3.0")
@@ -71,26 +73,21 @@ local function to_confirm_character_removal(value)
 	local classToken = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class or nil
 	class_color = classToken and "|c"..RAID_CLASS_COLORS[classToken]["colorStr"] or ""
 
-	-- Confirm box
-	LibDialog:Register("ACCLOC_CHARREMOVE", {
+	-- Using native StaticPopupDialogs to show the confirm box.
+	StaticPopupDialogs["ACCOUNTANT_CLASSIC_CONFIRM_REMOVE"] = {
 		text = L["The selected character is about to be removed.\nAre you sure you want to remove the following character from Accountant Classic?"].."\n|r"..faction_icon..class_color..selected_srv.." - "..selected_char,
-		buttons = {
-			{
-				text = OKAY,
-				on_click = function() addon:CharacterRemovalProceed(selected_srv, selected_char) end,
-			},
-			{
-				text = CANCEL,
-				on_click = function(self, mouseButton, down) LibDialog:Dismiss("ACCLOC_CHARREMOVE") end,
-			},
-		},
-		show_while_dead = true,
-		hide_on_escape = true,
-		is_exclusive = true,
-		show_during_cinematic = false,
-		
-	})
-	LibDialog:Spawn("ACCLOC_CHARREMOVE")
+		button1 = OKAY,
+		button2 = CANCEL,
+		OnAccept = function()
+			addon:CharacterRemovalProceed(selected_srv, selected_char)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+
+	StaticPopup_Show("ACCOUNTANT_CLASSIC_CONFIRM_REMOVE")
 end
 
 local options, moduleOptions = nil, {}
@@ -375,11 +372,27 @@ local function getOptions()
 end
 
 
-function addon:OpenOptions() 
+function addon:OpenOptions()
+	local frames = addon.optionsFrames or {}
+	local frameRefs = addon.optionsFrameRefs or {}
+
 	-- open the profiles tab before, so the menu expands
-	InterfaceOptionsFrame_OpenToCategory(addon.optionsFrames.Profiles)
-	InterfaceOptionsFrame_OpenToCategory(addon.optionsFrames.Profiles)
-	InterfaceOptionsFrame_OpenToCategory(addon.optionsFrames.General)
+	if OpenSettingsPanel then
+		if frames.Profiles then
+			OpenSettingsPanel(frames.Profiles)
+		end
+		if frames.General then
+			OpenSettingsPanel(frames.General)
+		end
+	elseif InterfaceOptionsFrame_OpenToCategory then
+		if frameRefs.Profiles then
+			InterfaceOptionsFrame_OpenToCategory(frameRefs.Profiles)
+		end
+		if frameRefs.General then
+			InterfaceOptionsFrame_OpenToCategory(frameRefs.General)
+		end
+	end
+
 	if InterfaceOptionsFrame then
 		InterfaceOptionsFrame:Raise()
 	end
@@ -391,10 +404,13 @@ end
 
 function addon:SetupOptions()
 	self.optionsFrames = {}
+	self.optionsFrameRefs = {}
 
 	-- setup options table
 	AceConfigReg:RegisterOptionsTable(addon.LocName, getOptions)
-	self.optionsFrames.General = AceConfigDialog:AddToBlizOptions(addon.LocName, nil, nil, "general")
+	local generalFrame, generalCategoryID = AceConfigDialog:AddToBlizOptions(addon.LocName, nil, nil, "general")
+	self.optionsFrames.General = generalCategoryID
+	self.optionsFrameRefs.General = generalFrame
 
 	self:RegisterModuleOptions("Profiles", giveProfiles, L["Profile Options"])
 end
@@ -408,5 +424,7 @@ end
 -- Output: None.
 function addon:RegisterModuleOptions(name, optionTbl, displayName)
 	moduleOptions[name] = optionTbl
-	self.optionsFrames[name] = AceConfigDialog:AddToBlizOptions(addon.LocName, displayName, addon.LocName, name)
+	local frame, categoryID = AceConfigDialog:AddToBlizOptions(addon.LocName, displayName, addon.LocName, name)
+	self.optionsFrames[name] = categoryID
+	self.optionsFrameRefs[name] = frame
 end
