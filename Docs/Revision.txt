@@ -6,6 +6,11 @@ Known Issue(s):
 Revision History:
 =================
 
+* v2.21.01 (Sep. xx, 2026)
+==========================
+- Revised and enhanced the WoW version'd detection
+- Handles the secondary name that brought in from Forever client, now we can tell the character's income properly
+
 * v2.21.00 (Sep. 19, 2026)
 ==========================
 - Improved compatibility with modern WoW APIs for option panel opening and settings categories.
