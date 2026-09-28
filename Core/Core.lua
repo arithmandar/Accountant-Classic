@@ -1400,6 +1400,13 @@ function AccountantClassic_OnEvent(self, event, ...)
 	end
 end
 
+local function getCharacterModeData(server, character, logType, logMode)
+	local serverData = Accountant_ClassicSaveData[server]
+	local characterData = serverData and serverData[character]
+	local logData = characterData and characterData.data and characterData.data[logType]
+	return logData and logData[logMode]
+end
+
 function AccountantClassic_OnShow(self)
 	createACFrames()
 	local fs = _G["AccountantClassicFrameExtra"]
@@ -1452,32 +1459,27 @@ function AccountantClassic_OnShow(self)
 					prvday = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvday or nil
 					prvmonth = Accountant_ClassicSaveData[serverkey][charkey]["options"].prvmonth or nil
 					
-					if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-						mIn = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]
-					end
-					if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-						mOut = Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]
-					end
+					local modeData = getCharacterModeData(serverkey, charkey, key, mode)
+					mIn = modeData and modeData.In or 0
+					mOut = modeData and modeData.Out or 0
 				elseif (AC_SELECTED_CHAR_NUM == #AC_CHARSCROLL_LIST + 1) then
 					if (profile.cross_server) then
 						for serverkey in pairs(Accountant_ClassicSaveData) do
 							for charkey in pairs(Accountant_ClassicSaveData[serverkey]) do
-								if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]) then
-									mIn = mIn + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["In"]
-								end
-								if (Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode] and Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]) then
-									mOut = mOut + Accountant_ClassicSaveData[serverkey][charkey]["data"][key][mode]["Out"]
+								local modeData = getCharacterModeData(serverkey, charkey, key, mode)
+								if modeData then
+									mIn = mIn + (modeData.In or 0)
+									mOut = mOut + (modeData.Out or 0)
 								end
 							end
 						end
 					else
 						local server = AC_SERVER
 						for charkey in pairs(Accountant_ClassicSaveData[server]) do
-							if (Accountant_ClassicSaveData[server][charkey]["data"][key][mode] and Accountant_ClassicSaveData[server][charkey]["data"][key][mode]["In"]) then
-								mIn = mIn + Accountant_ClassicSaveData[server][charkey]["data"][key][mode]["In"]
-							end
-							if (Accountant_ClassicSaveData[server][charkey]["data"][key][mode] and Accountant_ClassicSaveData[server][charkey]["data"][key][mode]["Out"]) then
-								mOut = mOut + Accountant_ClassicSaveData[server][charkey]["data"][key][mode]["Out"]
+							local modeData = getCharacterModeData(server, charkey, key, mode)
+							if modeData then
+								mIn = mIn + (modeData.In or 0)
+								mOut = mOut + (modeData.Out or 0)
 							end
 						end
 					end
@@ -1583,9 +1585,12 @@ function AccountantClassic_OnShow(self)
 							alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]
 						end
 
-						for key in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-							allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"]
-							allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"]
+						for key in pairs(AC_DATA) do
+							local totalData = getCharacterModeData(serverkey, charkey, key, "Total")
+							if totalData then
+								allin = allin + (totalData.In or 0)
+								allout = allout + (totalData.Out or 0)
+							end
 						end
 						i = i + 1
 					else
@@ -1595,9 +1600,12 @@ function AccountantClassic_OnShow(self)
 								alltotal = alltotal + Accountant_ClassicSaveData[serverkey][charkey]["options"]["totalcash"]
 							end
 
-							for key in pairs(Accountant_ClassicSaveData[serverkey][charkey]["data"]) do
-								allin = allin + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["In"]
-								allout = allout + Accountant_ClassicSaveData[serverkey][charkey]["data"][key]["Total"]["Out"]
+							for key in pairs(AC_DATA) do
+								local totalData = getCharacterModeData(serverkey, charkey, key, "Total")
+								if totalData then
+									allin = allin + (totalData.In or 0)
+									allout = allout + (totalData.Out or 0)
+								end
 							end
 							i = i + 1
 						end
@@ -1612,9 +1620,12 @@ function AccountantClassic_OnShow(self)
 						alltotal = alltotal + Accountant_ClassicSaveData[server][charkey]["options"]["totalcash"]
 					end
 
-					for key in pairs(Accountant_ClassicSaveData[server][charkey]["data"]) do
-						allin = allin + Accountant_ClassicSaveData[server][charkey]["data"][key]["Total"]["In"]
-						allout = allout + Accountant_ClassicSaveData[server][charkey]["data"][key]["Total"]["Out"]
+					for key in pairs(AC_DATA) do
+						local totalData = getCharacterModeData(server, charkey, key, "Total")
+						if totalData then
+							allin = allin + (totalData.In or 0)
+							allout = allout + (totalData.Out or 0)
+						end
 					end
 					i = i + 1
 				else
@@ -1624,9 +1635,12 @@ function AccountantClassic_OnShow(self)
 							alltotal = alltotal + Accountant_ClassicSaveData[server][charkey]["options"]["totalcash"]
 						end
 
-						for key in pairs(Accountant_ClassicSaveData[server][charkey]["data"]) do
-							allin = allin + Accountant_ClassicSaveData[server][charkey]["data"][key]["Total"]["In"]
-							allout = allout + Accountant_ClassicSaveData[server][charkey]["data"][key]["Total"]["Out"]
+						for key in pairs(AC_DATA) do
+							local totalData = getCharacterModeData(server, charkey, key, "Total")
+							if totalData then
+								allin = allin + (totalData.In or 0)
+								allout = allout + (totalData.Out or 0)
+							end
 						end
 						i = i + 1
 					end
@@ -1874,14 +1888,18 @@ function AccountantClassic_LogTypeOnShow(self)
 		local mOut = 0;
 
 		if (logmode == "Session") then
-			tooltipText = "";
 			local serverkey = AC_SERVER;
 			local charkey = AC_PLAYER;
+			local serverData = Accountant_ClassicZoneDB and Accountant_ClassicZoneDB[serverkey]
+			local characterData = serverData and serverData[charkey]
+			local periodData = characterData and characterData.data and characterData.data[logmode]
+			local zoneData = periodData and periodData[logType]
 
-			if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
-				for k_zone, v_zone in orderedpairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType]) do
-					mIn = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["In"];
-					mOut = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["Out"];
+			if zoneData then
+				tooltipText = "";
+				for k_zone, zoneAmounts in orderedpairs(zoneData) do
+					mIn = zoneAmounts.In or 0
+					mOut = zoneAmounts.Out or 0
 					if (cashflow == "In" and mIn > 0) then
 						tooltipText = tooltipText..k_zone..": ";
 						tooltipText = tooltipText..niceCash(mIn).."\n";
@@ -1894,16 +1912,20 @@ function AccountantClassic_LogTypeOnShow(self)
 			end
 		else
 			if (AC_SELECTED_CHAR_NUM <= #AC_CHARSCROLL_LIST) then
-				tooltipText = "";
 				local charindex = AC_SELECTED_CHAR_NUM;
 				local serverkey = AC_CHARSCROLL_LIST[charindex][1];
 				local charkey = AC_CHARSCROLL_LIST[charindex][2];
+				local serverData = Accountant_ClassicZoneDB and Accountant_ClassicZoneDB[serverkey]
+				local characterData = serverData and serverData[charkey]
+				local periodData = characterData and characterData.data and characterData.data[logmode]
+				local zoneData = periodData and periodData[logType]
 
-				if (Accountant_ClassicZoneDB[serverkey] and Accountant_ClassicZoneDB[serverkey][charkey]) then
+				if zoneData then
+					tooltipText = "";
 					local i, j = 1, 1;
-					for k_zone, v_zone in orderedpairs(Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType]) do
-						mIn = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["In"];
-						mOut = Accountant_ClassicZoneDB[serverkey][charkey]["data"][logmode][logType][k_zone]["Out"];
+					for k_zone, zoneAmounts in orderedpairs(zoneData) do
+						mIn = zoneAmounts.In or 0
+						mOut = zoneAmounts.Out or 0
 						if (cashflow == "In" and mIn > 0) then
 							tooltipText = tooltipText..k_zone..": ";
 							tooltipText = tooltipText..niceCash(mIn).."\n";
