@@ -10,6 +10,7 @@ Revision History:
 ==========================
 - Revised and enhanced the WoW version'd detection
 - Handles the secondary name that brought in from Forever client, now we can tell the character's income properly
+- Function name style change
 
 * v2.21.00 (Sep. 19, 2026)
 ==========================
