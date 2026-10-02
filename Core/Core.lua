@@ -75,6 +75,10 @@ addon.Name = FOLDER_NAME
 local _, locname, notes = GetAddOnInfo(addon.Name)
 addon.LocName = locname
 addon.Notes = notes
+-- ToC Metadata
+addon.Version 		= GetAddOnMetadata(addon.Name, "Version")
+addon.UpdateDate 	= GetAddOnMetadata(addon.Name, "X-Date")
+addon.Author 		= GetAddOnMetadata(addon.Name, "Author")
 _G.Accountant_Classic = addon
 
 -- UIDropDownMenu
