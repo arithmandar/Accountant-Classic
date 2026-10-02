@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 $Id$
 ]]
 -- Accountant Classic core logic. See Readme.md for project history and acknowledgements.
@@ -1129,6 +1129,10 @@ local function accountantSlash(msg)
 	local _ = gsub(msg, "[_%w]+", helper)
 	if args[1] == 'log'  then
 		ShowUIPanel(AccountantClassicFrame)
+	elseif args[1] == 'currency' or args[1] == 'ct' then
+		if CurrencyTracker and CurrencyTracker.OpenUI then
+			CurrencyTracker:OpenUI()
+		end
 	elseif args[1] == 'verbose' then
 		if AccountantClassic_Verbose == nil then
 			AccountantClassic_Verbose = 1
@@ -1140,7 +1144,7 @@ local function accountantSlash(msg)
 	elseif args[1] == 'week' then
 		printMessage(addon:WeekStart())
 	else
-		printMessage("/accountant log\n")
+		printMessage("/accountant log\n/accountant currency\n")
 	end
 end
 
@@ -2061,6 +2065,13 @@ function addon:OnEnable()
 	
 	self:Refresh()
 	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType]) or ""
+
+	if CurrencyTracker and CurrencyTracker.Initialize then
+		CurrencyTracker:Initialize()
+		if CurrencyTracker.Enable then
+			CurrencyTracker:Enable()
+		end
+	end
 end
 
 function addon:Toggle()

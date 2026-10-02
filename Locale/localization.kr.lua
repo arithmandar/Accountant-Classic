@@ -1,4 +1,4 @@
-﻿-- $Id$ 
+-- $Id$ 
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "koKR", false)
 
@@ -43,6 +43,8 @@ L["LFD, LFR and Scen."] = "던전 및 공격대"
 L["Reset"] = "초기화"
 L["Options"] = "설정"
 L["Exit"] = "닫기"
+L["Gold"] = "골드"
+L["Summary"] = "요약"
 
 -- Tabs' name
 L["This Session"] = "현재"

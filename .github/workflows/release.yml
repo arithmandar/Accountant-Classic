@@ -48,4 +48,5 @@ jobs:
         with:
           name: Accountant_Classic-Test-Package
           path: .release/*.zip
+          include-hidden-files: true
           if-no-files-found: warn

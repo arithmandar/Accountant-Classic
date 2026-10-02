@@ -43,6 +43,8 @@ L["LFD, LFR and Scen."] = "Fila de Masmorras, Raids, Cenários"
 L["Reset"] = "Reset"
 L["Options"] = "Opções"
 L["Exit"] = "Sair"
+L["Gold"] = "Ouro"
+L["Summary"] = "Resumo"
 
 -- Tabs' name
 L["This Session"] = "Esta Sessão"

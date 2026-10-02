@@ -43,6 +43,8 @@ L["LFD, LFR and Scen."] = "LFD, LFR y ambiente"
 L["Reset"] = "Reiniciar"
 L["Options"] = "Configuraciones"
 L["Exit"] = "Salir"
+L["Gold"] = "Oro"
+L["Summary"] = "Resumen"
 
 -- Tabs' name
 L["This Session"] = "Esta sesión"

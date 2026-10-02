@@ -42,3 +42,6 @@ ACCLOC_FRAMESCALE 		= L["Accountant Classic Frame's Scale"];
 ACCLOC_FRAMEALPHA		= L["Accountant Classic Frame's Transparency"];
 ACCLOC_INFOSCALE		= L["Accountant Classic Floating Info's Scale"];
 ACCLOC_INFOALPHA		= L["Accountant Classic Floating Info's Transparency"];
+ACCLOC_CURRENCY			= L["CT_Header_Currency"] or "Currency";
+ACCLOC_GOLD				= L["Gold"] or "Gold";
+

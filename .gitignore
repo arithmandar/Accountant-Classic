@@ -17,3 +17,6 @@ desktop.ini
 .release/
 *.bak
 *.orig
+
+# Local Development Libs
+Libs/LibCurrencyInfo/

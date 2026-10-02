@@ -44,6 +44,8 @@ L["LFD, LFR and Scen."] = "LFD, LFR и Сцен."
 L["Reset"] = "Сбросить"
 L["Options"] = "Параметры"
 L["Exit"] = "Выход"
+L["Gold"] = "Золото"
+L["Summary"] = "Сводка"
 
 -- Tabs' name
 L["This Session"] = "Эта сессия"

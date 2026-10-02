@@ -7,3 +7,6 @@ if not L then return end
 L["(%d+) Gold"] = "(%d+) oro"
 L["(%d+) Silver"] = "(%d+) argento"
 L["(%d+) Copper"] = "(%d+) rame"
+
+L["Gold"] = "Oro"
+L["Summary"] = "Riepilogo"

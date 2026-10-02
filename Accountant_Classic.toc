@@ -1,4 +1,4 @@
-﻿## Interface: 11509, 16001, 20506, 50504, 120100
+## Interface: 11509, 16001, 20506, 50504, 120100
 ## Title: Accountant Classic
 ## Notes: Tracks gold earned and spent across your characters
 ## Title-deDE: Accountant Classic
@@ -24,7 +24,7 @@
 ## Author: arith, kamusis
 ## Version: @project-version@
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibDBIcon-1.0, !LibUIDropDownMenu
-## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB, Accountant_ClassicZoneDB
+## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB, Accountant_ClassicZoneDB, Accountant_Classic_CurrencyDB
 ## X-Credits: Sabaki, Shadow, Rophy
 ## X-Date: @project-date-iso@
 ## X-Donate: https://www.patreon.com/ArithonWoW
@@ -57,3 +57,4 @@ Core\Core.lua
 Core\Tabs.lua
 Core\MoneyFrame.lua
 Core\Config.lua
+CurrencyTracker\CurrencyTracker.xml

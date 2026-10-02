@@ -82,14 +82,21 @@ local function createActionButton(name, text, width, point, relative, relativePo
 	return button
 end
 
-local exit = createActionButton("AccountantClassicFrameExitButton", ACCLOC_EXIT, 124, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -10, 17, function()
+local btnWidth = 92
+local exit = createActionButton("AccountantClassicFrameExitButton", ACCLOC_EXIT, btnWidth, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -10, 17, function()
 	HideUIPanel(frame)
 end)
-local options = createActionButton("AccountantClassicFrameOptionsButton", ACCLOC_OPTBUT, 124, "TOPRIGHT", exit, "TOPLEFT", 2, 0, function()
+local options = createActionButton("AccountantClassicFrameOptionsButton", ACCLOC_OPTBUT, btnWidth, "TOPRIGHT", exit, "TOPLEFT", 2, 0, function()
 	_G.Accountant_Classic:OpenOptions()
 end)
-createActionButton("AccountantClassicFrameResetButton", ACCLOC_RESET, 124, "TOPRIGHT", options, "TOPLEFT", 2, 0, function()
+local reset = createActionButton("AccountantClassicFrameResetButton", ACCLOC_RESET, btnWidth, "TOPRIGHT", options, "TOPLEFT", 2, 0, function()
 	AccountantClassic_ResetData()
+end)
+createActionButton("AccountantClassicFrameCurrencyButton", ACCLOC_CURRENCY or "Currency", btnWidth, "TOPRIGHT", reset, "TOPLEFT", 2, 0, function()
+	HideUIPanel(frame)
+	if CurrencyTracker and CurrencyTracker.OpenUI then
+		CurrencyTracker:OpenUI()
+	end
 end)
 
 local money = CreateFrame("Frame", "AccountantClassicMoneyFrame", frame, "SmallMoneyFrameTemplate")

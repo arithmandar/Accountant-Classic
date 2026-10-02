@@ -45,6 +45,8 @@ L["LFD, LFR and Scen."] = "LFD, LFR et scénarios."
 L["Reset"] = "Reset"
 L["Options"] = "Options"
 L["Exit"] = "Exit"
+L["Gold"] = "Or"
+L["Summary"] = "Résumé"
 
 -- Tabs' name
 L["This Session"] = "Cette session"

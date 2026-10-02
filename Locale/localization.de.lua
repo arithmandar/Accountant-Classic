@@ -44,6 +44,8 @@ L["LFD, LFR and Scen."] = "Dungeon-, SZ-Browser u. Szenario"
 L["Reset"] = "Zurücksetzen"
 L["Options"] = "Optionen"
 L["Exit"] = "Beenden"
+L["Gold"] = "Gold"
+L["Summary"] = "Übersicht"
 
 -- Tabs' name
 L["This Session"] = "Diese Sitzung"
