@@ -21,17 +21,18 @@
 ## Notes-zhCN: 追踪各个角色获得和花费的金币
 ## Title-zhTW: 個人會計經典版
 ## Notes-zhTW: 記錄所有角色的金幣收支
-## Author: arith
+## Author: arith, kamusis
 ## Version: @project-version@
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibDBIcon-1.0, !LibUIDropDownMenu
 ## SavedVariables: Accountant_ClassicSaveData, Accountant_ClassicDB, Accountant_Classic_NewDB, Accountant_ClassicZoneDB
-## X-Credits: Sabaki, Shadow, Rophy, kamusis
+## X-Credits: Sabaki, Shadow, Rophy
 ## X-Date: @project-date-iso@
 ## X-Donate: https://www.patreon.com/ArithonWoW
 ## X-Website: http://mods.curse.com/addons/wow/accountant-classic
 ## X-License: GPLv2
 ## X-Category: Information
 ## X-Localizations: enUS, frFR, deDE, zhCN, zhTW, koKR, esES, ptBR, ruRU
+## X-Curse-Project-ID: 4344
 ## AddonCompartmentFunc: AccountantClassic_ButtonOnClick
 ## IconTexture: Interface\AddOns\Accountant_Classic\Images\AccountantClassicButton-Up
 ## Category: Other
