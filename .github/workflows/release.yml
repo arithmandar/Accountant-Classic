@@ -1,0 +1,51 @@
+name: Package and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry Run (package only, skip upload to CurseForge/GitHub)'
+        type: boolean
+        default: true
+
+jobs:
+  release:
+    name: Package and Release Addon
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Dry Run: Triggered via workflow_dispatch with dry_run=true (adds -d flag)
+      - name: Package Addon (Dry Run)
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -d
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
+      # Real Release: Triggered on tag push or workflow_dispatch with dry_run=false
+      - name: Package and Release Addon
+        if: github.event_name != 'workflow_dispatch' || !inputs.dry_run
+        uses: BigWigsMods/packager@v2
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload artifact for inspection during Dry Run
+      - name: Upload Test Package Artifact
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
+        uses: actions/upload-artifact@v4
+        with:
+          name: Accountant_Classic-Test-Package
+          path: .release/*.zip
+          if-no-files-found: warn
