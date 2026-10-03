@@ -418,32 +418,6 @@ local function UpdateCurrencyDropdownText(dropdown, currencyId)
     end
 end
 
--- Resolve and format source token/label for child transactions
-local function FormatSourceLabel(source)
-    local label = tostring(source)
-    local LL = CT_GetL()
-    local num = tonumber(source)
-    if num ~= nil then
-        local token
-        if num >= 0 then
-            token = CurrencyTracker.SourceCodeTokens and CurrencyTracker.SourceCodeTokens[num]
-        else
-            local absCode = -num
-            token = CurrencyTracker.DestroyReasonTokens and CurrencyTracker.DestroyReasonTokens[absCode]
-        end
-        if token then
-            label = (LL and LL[token]) or token
-        else
-            label = "S:" .. tostring(num)
-        end
-    elseif type(source) == "string" then
-        if LL and LL[source] then
-            label = LL[source]
-        end
-    end
-    return label
-end
-
 -- Populate single currency rows: summary row + child transaction rows
 local function PopulateSingleCurrencyData(currencyId, timeframe)
     local rows = {}
@@ -503,7 +477,7 @@ local function PopulateSingleCurrencyData(currencyId, timeframe)
             local net = tx.net or (inc - out)
             table.insert(rows, {
                 id = currencyId,
-                name = "- " .. FormatSourceLabel(tx.source),
+                name = "- " .. CurrencyTracker:FormatSourceLabel(tx.source),
                 icon = nil,
                 totalMax = "",
                 income = inc,
@@ -548,28 +522,7 @@ local function UpdateScrollFrame()
         if currentCurrencyId then
             -- Single currency mode: get currency detail data
             if CurrencyTracker and CurrencyTracker.DataManager then
-                -- Respect whitelist toggle like CLI
-                local allow = true
-                do
-                    local wlOn = true
-                    if EnsureSavedVariablesStructure and GetCurrentServerAndCharacter then
-                        local server, character = GetCurrentServerAndCharacter()
-                        local sv = _G.Accountant_ClassicSaveData
-                        if sv and sv[server] and sv[server][character] then
-                            local charData = sv[server][character]
-                            local opt = charData.currencyOptions and charData.currencyOptions.whitelistFilter
-                            if opt ~= nil then wlOn = opt and true or false end
-                        end
-                    end
-                    if wlOn and CurrencyTracker.Constants and CurrencyTracker.Constants.CurrencyWhitelist then
-                        local wlset = {}
-                        for _, id in ipairs(CurrencyTracker.Constants.CurrencyWhitelist) do wlset[id] = true end
-                        if not wlset[currentCurrencyId] then
-                            allow = false
-                        end
-                    end
-                end
-                if allow then
+                if CurrencyTracker:IsCurrencyAllowed(currentCurrencyId) then
                     local rows = PopulateSingleCurrencyData(currentCurrencyId, currentTimeframe)
                     for _, r in ipairs(rows) do
                         table.insert(currentData, r)
@@ -796,71 +749,6 @@ local function UpdateScrollFrame()
         local count = #currentData
         local label = CT_Lget("CT_Header_Currency", "Currency")
         statusText:SetText(string.format("%s: %d", label, count))
-    end
-end
-
--- Refresh data for current view
-local function RefreshData()
-    currentData = {}
-    
-    -- Set context for data retrieval if we have server/character selections
-    local oldServer, oldPlayer
-    if currentServer and currentServer ~= GetRealmName() then
-        oldServer = _G.AC_SERVER
-        _G.AC_SERVER = currentServer
-    end
-    if currentCharacter and currentCharacter ~= UnitName("player") then
-        oldPlayer = _G.AC_PLAYER
-        _G.AC_PLAYER = currentCharacter
-    end
-    
-    -- Get data based on current mode
-    if currentCurrencyId then
-        -- Single currency mode: get currency detail data
-        local rows = PopulateSingleCurrencyData(currentCurrencyId, currentTimeframe)
-        for _, r in ipairs(rows) do
-            table.insert(currentData, r)
-        end
-    else
-        -- All currencies mode: reuse CLI collection logic
-        if CurrencyTracker and CurrencyTracker.CollectMultipleCurrencies then
-            local rows = CurrencyTracker:CollectMultipleCurrencies(currentTimeframe, false)
-            for _, r in ipairs(rows) do
-                local icon = "Interface\\Icons\\INV_Misc_QuestionMark"
-                if C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo then
-                    local ok, info = pcall(C_CurrencyInfo.GetCurrencyInfo, r.id)
-                    if ok and type(info) == "table" and info.iconFileID then
-                        icon = info.iconFileID
-                    end
-                end
-                table.insert(currentData, {
-                    id = r.id,
-                    name = r.name,
-                    icon = icon,
-                    income = r.income or 0,
-                    outgoing = r.outgoing or 0,
-                    net = r.net or 0,
-                    totalMax = r.totalMax or "",
-                    tracked = true,
-                })
-            end
-        end
-    end
-    
-    -- Restore context
-    if oldServer then _G.AC_SERVER = oldServer end
-    if oldPlayer then _G.AC_PLAYER = oldPlayer end
-    
-    -- Update dropdown selections if they exist
-    if currencyDropdown then
-        UIDropDownMenu_SetSelectedValue(currencyDropdown, currentCurrencyId or 0)
-        UpdateCurrencyDropdownText(currencyDropdown, currentCurrencyId)
-    end
-    if serverDropdown and currentServer then
-        UIDropDownMenu_SetSelectedValue(serverDropdown, currentServer)
-    end
-    if characterDropdown and currentCharacter then
-        UIDropDownMenu_SetSelectedValue(characterDropdown, currentCharacter)
     end
 end
 

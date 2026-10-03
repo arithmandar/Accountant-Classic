@@ -1111,27 +1111,9 @@ function CurrencyTracker:ShowCurrencyData(command)
     end
 
     -- Whitelist filter (config-gated, default ON). Applies to /ct show.
-    local function CT_IsWhitelistEnabled()
-        if not EnsureSavedVariablesStructure or not GetCurrentServerAndCharacter then return true end
-        local server, character = GetCurrentServerAndCharacter()
-        local sv = _G.Accountant_ClassicSaveData
-        if not (sv and sv[server] and sv[server][character]) then return true end
-        local charData = sv[server][character]
-        local opt = charData.currencyOptions and charData.currencyOptions.whitelistFilter
-        if opt == nil then return true end
-        return opt and true or false
-    end
-
-    if CT_IsWhitelistEnabled() then
-        local wl = CurrencyTracker.Constants and CurrencyTracker.Constants.CurrencyWhitelist or nil
-        if wl and #wl > 0 then
-            local wlset = {}
-            for _, id in ipairs(wl) do wlset[id] = true end
-            if not wlset[currencyID] then
-                print(string.format("Currency %d is not in whitelist (filter ON); hiding from /ct show", currencyID))
-                return
-            end
-        end
+    if not self:IsCurrencyAllowed(currencyID) then
+        print(string.format("Currency %d is not in whitelist (filter ON); hiding from /ct show", currencyID))
+        return
     end
 
     -- Tracked filter: respect discovery tracked=false for single show as well
@@ -1235,26 +1217,7 @@ function CurrencyTracker:PrintCurrencyData(currencyID, timeframe, data)
             local income = transaction.income or 0
             local outgoing = transaction.outgoing or 0
             local net = income - outgoing
-            local label = tostring(transaction.source)
-            if type(transaction.source) == "number" then
-                local code = transaction.source
-                local token
-                if code >= 0 then
-                    token = CurrencyTracker.SourceCodeTokens and CurrencyTracker.SourceCodeTokens[code]
-                else
-                    local absCode = -code
-                    token = CurrencyTracker.DestroyReasonTokens and CurrencyTracker.DestroyReasonTokens[absCode]
-                end
-                if token then
-                    label = (L and L[token]) or token
-                else
-                    label = "S:" .. tostring(code)
-                end
-            end
-            -- Localize string labels for custom keys (e.g., "BaselinePrime", "Unknown")
-            if type(label) == "string" and L and L[label] then
-                label = L[label]
-            end
+            local label = self:FormatSourceLabel(transaction.source)
             local lblNet = CT_Lget("CT_LineNet", "net")
             print(string.format("  %s: +%d | -%d (%s: %s%d)",
                 label,
@@ -1292,29 +1255,9 @@ function CurrencyTracker:CollectMultipleCurrencies(timeframe, verbose)
         discovered = self.Storage:GetDiscoveredCurrencies() or {}
     end
 
-    -- Read whitelist toggle (default ON)
-    local whitelistEnabled = true
-    if EnsureSavedVariablesStructure and GetCurrentServerAndCharacter then
-        local server, character = GetCurrentServerAndCharacter()
-        local sv = _G.Accountant_ClassicSaveData
-        if sv and sv[server] and sv[server][character] then
-            local charData = sv[server][character]
-            local opt = charData.currencyOptions and charData.currencyOptions.whitelistFilter
-            if opt ~= nil then whitelistEnabled = opt and true or false end
-        end
-    end
-    local wlset = nil
-    if whitelistEnabled then
-        local wl = CurrencyTracker.Constants and CurrencyTracker.Constants.CurrencyWhitelist or nil
-        if wl and #wl > 0 then
-            wlset = {}
-            for _, id in ipairs(wl) do wlset[id] = true end
-        end
-    end
-
     for _, cid in ipairs(currencies) do
         -- Apply whitelist first (if enabled)
-        if not wlset or wlset[cid] then
+        if self:IsCurrencyAllowed(cid) then
             local meta = discovered[cid]
             local isTracked = (meta == nil) or (meta.tracked ~= false)
             if verbose or isTracked then

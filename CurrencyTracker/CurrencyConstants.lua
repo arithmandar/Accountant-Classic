@@ -334,6 +334,73 @@ CurrencyTracker.DestroyReasonTokens = CurrencyTracker.DestroyReasonTokens or {
     [14] = "AccountTransfer",
 }
 
+--- Resolve and format source token/label for child transactions
+-- @param source number|string The raw source code or string token
+-- @return string Localized display label
+function CurrencyTracker:FormatSourceLabel(source)
+    local label = tostring(source)
+    local L = LibStub and LibStub("AceLocale-3.0", true) and LibStub("AceLocale-3.0"):GetLocale("Accountant_Classic", true) or nil
+    local num = tonumber(source)
+    if num ~= nil then
+        local token
+        if num >= 0 then
+            token = self.SourceCodeTokens and self.SourceCodeTokens[num]
+        else
+            local absCode = -num
+            token = self.DestroyReasonTokens and self.DestroyReasonTokens[absCode]
+        end
+        if token then
+            label = (L and L[token]) or token
+        else
+            label = "S:" .. tostring(num)
+        end
+    elseif type(source) == "string" then
+        if L and L[source] then
+            label = L[source]
+        end
+    end
+    return label
+end
+
+--- Check whether a currency ID passes the whitelist filter
+-- @param currencyID number The currency ID to check
+-- @return boolean True if allowed, false if filtered out
+function CurrencyTracker:IsCurrencyAllowed(currencyID)
+    if not currencyID then return false end
+    currencyID = tonumber(currencyID)
+    if not currencyID then return false end
+
+    -- Read whitelist toggle (default ON)
+    local whitelistEnabled = true
+    if EnsureSavedVariablesStructure and GetCurrentServerAndCharacter then
+        local server, character = GetCurrentServerAndCharacter()
+        local sv = _G.Accountant_ClassicSaveData
+        if sv and sv[server] and sv[server][character] then
+            local charData = sv[server][character]
+            local opt = charData.currencyOptions and charData.currencyOptions.whitelistFilter
+            if opt ~= nil then whitelistEnabled = opt and true or false end
+        end
+    end
+
+    if not whitelistEnabled then
+        return true
+    end
+
+    if self.Constants and self.Constants.SupportedCurrencies and next(self.Constants.SupportedCurrencies) then
+        return self.Constants.SupportedCurrencies[currencyID] ~= nil
+    end
+
+    local wl = self.Constants and self.Constants.CurrencyWhitelist
+    if wl and #wl > 0 then
+        for _, id in ipairs(wl) do
+            if id == currencyID then return true end
+        end
+        return false
+    end
+
+    return true
+end
+
 -- Also export to addon table and global if available
 if addonTable then
     addonTable.CurrencyConstants = CurrencyConstants

@@ -92,6 +92,13 @@ local function HandleZeroChangeCurrency(self, currencyID, newQuantity, quantityC
         return src or "Unknown"
     end
 
+    -- Defer if live amount is reported as 0 but we already have a positive balance stored.
+    -- Battle.net entitlement cache is loaded asynchronously; do not overwrite with unready 0.
+    if (effectiveNew == nil or effectiveNew == 0) and hadLastKnown and lastKnown > 0 then
+        CurrencyTracker:LogDebug("[Account-wide %s] Deferred unready entitlement state (new=0, storeNet=%s)", tostring(currencyID), tostring(lastKnown))
+        return true
+    end
+
     -- First sighting in this session:
     -- Never record an in-session transaction on initial sighting/login/sync.
     -- Any discrepancy between effective live balance and stored Total.net is reconciled
@@ -107,55 +114,16 @@ local function HandleZeroChangeCurrency(self, currencyID, newQuantity, quantityC
         return true
     end
 
-
-    -- Subsequent events
-    -- For Trader's Tender, zero-change events should not create a transaction unless
-    -- the live amount actually differs from our snapshot. This covers cases where
-    -- login priming seeded an incorrect snapshot (e.g., read 0), and the first live
-    -- event arrives with quantityChange==0 but a different total. We reconcile based on
-    -- the inferred delta when that happens.
-    if quantityChange == nil or quantityChange == 0 then
-        local old = lastCurrencyAmounts[currencyID]
-        if hadLastKnown then
-            local storedNet = lastKnown or 0
-            if old == nil or math.abs((old or 0) - storedNet) > 0 then
-                -- Session snapshot drifted; trust persisted Total.net to avoid double counting full balances.
-                old = storedNet
-                lastCurrencyAmounts[currencyID] = storedNet
-                CurrencyTracker:LogDebug("[TT 2032] Snapshot drift corrected using Total.net id=%s store=%s", tostring(currencyID), tostring(storedNet))
-            end
-        end
-        old = old or 0
-        local inferred = (effectiveNew or 0) - old
-        if inferred == 0 then
-            lastCurrencyAmounts[currencyID] = effectiveNew or 0
-            primedCurrencies[currencyID] = true
-            CurrencyTracker:LogDebug("[TT 2032] Subsequent zero-change ignored id=%s old=%s new=%s", tostring(currencyID), tostring(old), tostring(effectiveNew))
-            return true
-        end
-
-        local sourceKey = GetSourceKey()
-        if CurrencyTracker.Storage and CurrencyTracker.Storage.RecordEventMetadata then
-            local sign = (inferred > 0) and 1 or -1
-            CurrencyTracker.Storage:RecordEventMetadata(currencyID, quantityGainSource, quantityLostSource, sign)
-        end
-        if CurrencyTracker.DataManager then
-            CurrencyTracker.DataManager:TrackCurrencyChange(currencyID, inferred, sourceKey)
-        end
-        CurrencyTracker:LogDebug("[TT 2032] Subsequent inferred delta logged id=%s old=%s new=%s delta=%+d src=%s",
-            tostring(currencyID), tostring(old), tostring(effectiveNew), inferred, tostring(sourceKey))
-
-        lastCurrencyAmounts[currencyID] = effectiveNew or 0
-        primedCurrencies[currencyID] = true
-        return true
+    -- Subsequent events: calculate delta between effective live balance and our session snapshot
+    local old = lastCurrencyAmounts[currencyID]
+    if hadLastKnown and (old == nil or (lastKnown and old ~= lastKnown and math.abs(old - lastKnown) > 0)) then
+        -- If session snapshot was lost or drifted, anchor to storeNet
+        old = lastKnown
     end
-
-    -- Otherwise, rely on inferred delta new - sessionLast
-    local old = lastCurrencyAmounts[currencyID] or 0
+    old = old or 0
     local delta = (effectiveNew or 0) - old
     if delta ~= 0 then
         local sourceKey = GetSourceKey()
-        -- Metadata (optional)
         if CurrencyTracker.Storage and CurrencyTracker.Storage.RecordEventMetadata then
             local sign = (delta > 0) and 1 or -1
             CurrencyTracker.Storage:RecordEventMetadata(currencyID, quantityGainSource, quantityLostSource, sign)
@@ -163,8 +131,11 @@ local function HandleZeroChangeCurrency(self, currencyID, newQuantity, quantityC
         if CurrencyTracker.DataManager then
             CurrencyTracker.DataManager:TrackCurrencyChange(currencyID, delta, sourceKey)
         end
-        CurrencyTracker:LogDebug("[TT 2032] Subsequent delta logged id=%s old=%s new=%s delta=%+d src=%s",
+        CurrencyTracker:LogDebug("[Account-wide %s] Subsequent delta logged old=%s new=%s delta=%+d src=%s",
             tostring(currencyID), tostring(old), tostring(effectiveNew), delta, tostring(sourceKey))
+    else
+        CurrencyTracker:LogDebug("[Account-wide %s] Subsequent zero delta ignored old=%s new=%s",
+            tostring(currencyID), tostring(old), tostring(effectiveNew))
     end
 
     lastCurrencyAmounts[currencyID] = effectiveNew or 0
@@ -374,6 +345,7 @@ function EventHandler:OnPlayerEnteringWorld(isInitialLogin, isReloadingUi)
         return
     end
     self:PrimeDiscoveredCurrenciesOnLogin()
+    self:ScanPlayerCurrencies()
     didLoginPrime = true
 end
 
@@ -404,32 +376,45 @@ function EventHandler:PrimeDiscoveredCurrenciesOnLogin()
     for id, _ in pairs(discovered) do
         local currencyID = tonumber(id)
         if currencyID then
-            checked = checked + 1
-            -- Read live and store (Total.net)
-            local liveAmt = self:GetCurrentCurrencyAmount(currencyID) or 0
-            local storeNet = 0
-            if CurrencyTracker.Storage and CurrencyTracker.Storage.GetCurrencyData then
-                local tdata = CurrencyTracker.Storage:GetCurrencyData(currencyID, "Total")
-                if tdata and type(tdata.net) == "number" then
-                    storeNet = tdata.net or 0
+            -- Skip account-wide / Battle.net entitlement currencies (e.g. Trader's Tender 2032).
+            -- Blizzard loads entitlement asynchronously after login; they are safely reconciled
+            -- on the first server event by HandleZeroChangeCurrency.
+            local isAccountWide = (currencyID == 2032)
+            if not isAccountWide and C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo then
+                local ok, info = pcall(C_CurrencyInfo.GetCurrencyInfo, currencyID)
+                if ok and type(info) == "table" and info.isAccountWide then
+                    isAccountWide = true
                 end
             end
-            local delta = (liveAmt or 0) - (storeNet or 0)
-            if delta ~= 0 then
-                if CurrencyTracker.Storage and CurrencyTracker.Storage.ApplyTotalOnlyBaselineDelta and CurrencyTracker.Storage:ApplyTotalOnlyBaselineDelta(currencyID, delta) then
-                    repaired = repaired + 1
-                    CurrencyTracker:LogDebug("[Login Prime Repair] id=%s store=%s live=%s applied=%+d", tostring(currencyID), tostring(storeNet), tostring(liveAmt), delta)
+
+            if not isAccountWide then
+                checked = checked + 1
+                -- Read live and store (Total.net)
+                local liveAmt = self:GetCurrentCurrencyAmount(currencyID) or 0
+                local storeNet = 0
+                if CurrencyTracker.Storage and CurrencyTracker.Storage.GetCurrencyData then
+                    local tdata = CurrencyTracker.Storage:GetCurrencyData(currencyID, "Total")
+                    if tdata and type(tdata.net) == "number" then
+                        storeNet = tdata.net or 0
+                    end
                 end
-            else
-                -- Ensure structures exist even if equal/zero
-                if CurrencyTracker.Storage and CurrencyTracker.Storage.InitializeCurrencyData then
-                    CurrencyTracker.Storage:InitializeCurrencyData(currencyID)
+                local delta = (liveAmt or 0) - (storeNet or 0)
+                if delta ~= 0 then
+                    if CurrencyTracker.Storage and CurrencyTracker.Storage.ApplyTotalOnlyBaselineDelta and CurrencyTracker.Storage:ApplyTotalOnlyBaselineDelta(currencyID, delta) then
+                        repaired = repaired + 1
+                        CurrencyTracker:LogDebug("[Login Prime Repair] id=%s store=%s live=%s applied=%+d", tostring(currencyID), tostring(storeNet), tostring(liveAmt), delta)
+                    end
+                else
+                    -- Ensure structures exist even if equal/zero
+                    if CurrencyTracker.Storage and CurrencyTracker.Storage.InitializeCurrencyData then
+                        CurrencyTracker.Storage:InitializeCurrencyData(currencyID)
+                    end
+                    ensured = ensured + 1
                 end
-                ensured = ensured + 1
+                -- Seed in-memory snapshot to live to prevent drift and 0-change events from causing spikes
+                lastCurrencyAmounts[currencyID] = liveAmt
+                primedCurrencies[currencyID] = true
             end
-            -- Seed in-memory snapshot to live to prevent drift and 0-change events from causing spikes
-            lastCurrencyAmounts[currencyID] = liveAmt
-            primedCurrencies[currencyID] = true
         end
     end
     -- Always print a concise summary
@@ -440,6 +425,69 @@ function EventHandler:PrimeDiscoveredCurrenciesOnLogin()
         print(msg)
     end
     CurrencyTracker:LogDebug(msg)
+end
+
+-- Actively scan player currencies held in inventory/currency tab on login.
+-- This ensures currencies the player already possesses (e.g. 3465 Venomblight Manaflux)
+-- are discovered and primed even if Blizzard never fires a CURRENCY_DISPLAY_UPDATE event during the session.
+function EventHandler:ScanPlayerCurrencies()
+    if not (CurrencyTracker and CurrencyTracker.Storage and CurrencyTracker.Storage.SaveDiscoveredCurrency) then
+        return
+    end
+
+    local scanned, discoveredCount = 0, 0
+    local curated = (CurrencyTracker.Constants and CurrencyTracker.Constants.Utils and CurrencyTracker.Constants.Utils.GetCuratedCurrencies and CurrencyTracker.Constants.Utils.GetCuratedCurrencies()) or {}
+
+    for _, cid in ipairs(curated) do
+        local currencyID = tonumber(cid)
+        if currencyID and not primedCurrencies[currencyID] and currencyID ~= 2032 then
+            if C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo then
+                local ok, info = pcall(C_CurrencyInfo.GetCurrencyInfo, currencyID)
+                if ok and type(info) == "table" and not info.isAccountWide and info.quantity and info.quantity > 0 then
+                    scanned = scanned + 1
+                    CurrencyTracker.Storage:SaveDiscoveredCurrency(currencyID)
+                    if IsCurrencyTotalEmpty and IsCurrencyTotalEmpty(currencyID) then
+                        if CurrencyTracker.Storage.ApplyTotalOnlyBaselineDelta then
+                            CurrencyTracker.Storage:ApplyTotalOnlyBaselineDelta(currencyID, info.quantity)
+                        end
+                        discoveredCount = discoveredCount + 1
+                        CurrencyTracker:LogDebug("[Active Scan] Discovered & primed held currency id=%s (%s) qty=%d", tostring(currencyID), tostring(info.name), info.quantity)
+                    end
+                    lastCurrencyAmounts[currencyID] = info.quantity
+                    primedCurrencies[currencyID] = true
+                end
+            end
+        end
+    end
+
+    -- Also check currency tab list if API is available (catches uncurated currencies if expanded)
+    if C_CurrencyInfo and C_CurrencyInfo.GetCurrencyListSize then
+        local listSize = C_CurrencyInfo.GetCurrencyListSize() or 0
+        for i = 1, listSize do
+            local link = C_CurrencyInfo.GetCurrencyListLink and C_CurrencyInfo.GetCurrencyListLink(i)
+            local cid = link and C_CurrencyInfo.GetCurrencyIDFromLink and C_CurrencyInfo.GetCurrencyIDFromLink(link)
+            if not cid and link then
+                cid = tonumber(string.match(link, "currency:(%d+)"))
+            end
+            if cid and not primedCurrencies[cid] and cid ~= 2032 then
+                local ok, info = pcall(C_CurrencyInfo.GetCurrencyInfo, cid)
+                if ok and type(info) == "table" and not info.isAccountWide and info.quantity and info.quantity > 0 then
+                    CurrencyTracker.Storage:SaveDiscoveredCurrency(cid)
+                    if IsCurrencyTotalEmpty and IsCurrencyTotalEmpty(cid) then
+                        if CurrencyTracker.Storage.ApplyTotalOnlyBaselineDelta then
+                            CurrencyTracker.Storage:ApplyTotalOnlyBaselineDelta(cid, info.quantity)
+                        end
+                    end
+                    lastCurrencyAmounts[cid] = info.quantity
+                    primedCurrencies[cid] = true
+                end
+            end
+        end
+    end
+
+    if scanned > 0 then
+        CurrencyTracker:LogDebug("[Active Scan] Completed: %d currencies held, %d newly discovered & primed", scanned, discoveredCount)
+    end
 end
 
 -- Handle player logout
