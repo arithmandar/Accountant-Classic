@@ -1,6 +1,3 @@
---[[
-$Id$
-]]
 -----------------------------------------------------------------------
 -- Description: Creates the reusable row templates used by the Accountant Classic UI.
 -- This file is used to build the data rows and their text columns for the main frame.

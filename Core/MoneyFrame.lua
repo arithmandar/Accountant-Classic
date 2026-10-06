@@ -1,15 +1,11 @@
---[[
-$Id$
-]]-----------------------------------------------------------------------
+-----------------------------------------------------------------------
 -- Upvalued Lua API.
 -----------------------------------------------------------------------
 local _G = getfenv(0)
 local GameTooltip = _G.GameTooltip
 local unpack = _G.unpack
-local GetBuildInfo = _G.GetBuildInfo
 
 -- Determine WoW client family
-local _, _, _, interfaceVersion = GetBuildInfo()
 local projectID = WOW_PROJECT_ID
 
 local PROJECT_MAINLINE = WOW_PROJECT_MAINLINE
@@ -17,24 +13,21 @@ local PROJECT_CLASSIC = WOW_PROJECT_CLASSIC
 local PROJECT_TBC = WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 local PROJECT_CATA = WOW_PROJECT_CATACLYSM_CLASSIC
 local PROJECT_MISTS = WOW_PROJECT_MISTS_CLASSIC
+local PROJECT_FOREVER = WOW_PROJECT_CAMELOT
 
--- Beta-only fallback:
--- Replace these bounds with values verified from the actual Forever client.
-local isForeverBeta = projectID == PROJECT_MAINLINE and interfaceVersion >= 10000 and interfaceVersion < 20000
-
-local isRetail = projectID == PROJECT_MAINLINE and not isForeverBeta
+local isRetail = projectID == PROJECT_MAINLINE
 local isClassicEra = projectID == PROJECT_CLASSIC
 local isAnniversaryTBC = PROJECT_TBC ~= nil and projectID == PROJECT_TBC
 local isCataclysmClassic = PROJECT_CATA ~= nil and projectID == PROJECT_CATA
 local isMistsClassic = PROJECT_MISTS ~= nil and projectID == PROJECT_MISTS
 local isProgressionClassic = isCataclysmClassic or isMistsClassic
-local isClassicForever = isForeverBeta
+local isClassicForever = projectID == PROJECT_FOREVER
 local isAnyClassic = isClassicEra or isAnniversaryTBC or isProgressionClassic
 
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
-local FOLDER_NAME, private = ...
+local _, private = ...
 local LibStub = _G.LibStub
 local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name)
 local MoneyFrame = addon:NewModule("MoneyFrame", "AceEvent-3.0")

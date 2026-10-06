@@ -1,6 +1,3 @@
---[[
-$Id$
-]]
 -----------------------------------------------------------------------
 -- Description: Creates and manages the main Accountant Classic window.
 -- This file is used for the addon's primary frame, labels, scroll list,

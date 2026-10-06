@@ -1,6 +1,3 @@
---[[
-$Id$
-]]
 -----------------------------------------------------------------------
 -- Description: Creates and manages the tab buttons for the Accountant Classic frame.
 -- This file is used to build the tab UI and handle tab switching behavior
