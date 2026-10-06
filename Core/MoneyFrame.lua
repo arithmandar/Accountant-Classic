@@ -5,25 +5,6 @@ local _G = getfenv(0)
 local GameTooltip = _G.GameTooltip
 local unpack = _G.unpack
 
--- Determine WoW client family
-local projectID = WOW_PROJECT_ID
-
-local PROJECT_MAINLINE = WOW_PROJECT_MAINLINE
-local PROJECT_CLASSIC = WOW_PROJECT_CLASSIC
-local PROJECT_TBC = WOW_PROJECT_BURNING_CRUSADE_CLASSIC
-local PROJECT_CATA = WOW_PROJECT_CATACLYSM_CLASSIC
-local PROJECT_MISTS = WOW_PROJECT_MISTS_CLASSIC
-local PROJECT_FOREVER = WOW_PROJECT_CAMELOT
-
-local isRetail = projectID == PROJECT_MAINLINE
-local isClassicEra = projectID == PROJECT_CLASSIC
-local isAnniversaryTBC = PROJECT_TBC ~= nil and projectID == PROJECT_TBC
-local isCataclysmClassic = PROJECT_CATA ~= nil and projectID == PROJECT_CATA
-local isMistsClassic = PROJECT_MISTS ~= nil and projectID == PROJECT_MISTS
-local isProgressionClassic = isCataclysmClassic or isMistsClassic
-local isClassicForever = projectID == PROJECT_FOREVER
-local isAnyClassic = isClassicEra or isAnniversaryTBC or isProgressionClassic
-
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
@@ -32,6 +13,8 @@ local LibStub = _G.LibStub
 local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name)
 local MoneyFrame = addon:NewModule("MoneyFrame", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
+
+local Client = private.Client
 
 local profile
 local isInLockdown = false
@@ -74,7 +57,7 @@ local function frame_OnEnter(self)
 	end
 
 	local tooltip
-	if (isAnyClassic) then
+	if (Client.isAnyClassic) then
 		tooltip = GameTooltip
 	else -- Retail
 		tooltip = GetAppropriateTooltip()

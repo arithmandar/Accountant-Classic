@@ -5,9 +5,11 @@
 Revision History:
 =================
 
-* v2.21.02 (Oct. 06, 2026)
+* v2.21.02 (Oct. 07, 2026)
 ==========================
 - Forever client now has its own WOW_PROJECT_ID which is WOW_PROJECT_CAMELOT
+- Create centralized Client table to detect game client version and check in all relevant code sections
+- Added auto-packaging for WoWInterface
 
 * v2.21.01 (Sep. 28, 2026)
 ==========================

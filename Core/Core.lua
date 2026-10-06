@@ -18,36 +18,18 @@ local C_AddOns = _G.C_AddOns
 local GetAddOnInfo, GetAddOnMetadata = C_AddOns.GetAddOnInfo, C_AddOns.GetAddOnMetadata
 local PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs = PanelTemplates_TabResize, PanelTemplates_SetNumTabs, PanelTemplates_SetTab, PanelTemplates_UpdateTabs
 local GetRealmName, UnitName, UnitFactionGroup, UnitClass = _G.GetRealmName, _G.UnitName, _G.UnitFactionGroup, _G.UnitClass
-local C_CurrencyInfo, GetBackpackCurrencyInfo, GetCurrencyInfo
+local C_CurrencyInfo, BlizzardGetBackpackCurrencyInfo, GetCurrencyInfo
 
--- Determine WoW client family
-local projectID = WOW_PROJECT_ID
+local Client = private.Client
+local AC_USE_MAINLINE_API = Client.isRetail or Client.isForever
 
-local PROJECT_MAINLINE = WOW_PROJECT_MAINLINE
-local PROJECT_CLASSIC = WOW_PROJECT_CLASSIC
-local PROJECT_TBC = WOW_PROJECT_BURNING_CRUSADE_CLASSIC
-local PROJECT_CATA = WOW_PROJECT_CATACLYSM_CLASSIC
-local PROJECT_MISTS = WOW_PROJECT_MISTS_CLASSIC
-local PROJECT_FOREVER = WOW_PROJECT_CAMELOT
-
-local isRetail = projectID == PROJECT_MAINLINE
-local isClassicEra = projectID == PROJECT_CLASSIC
-local isAnniversaryTBC = PROJECT_TBC ~= nil and projectID == PROJECT_TBC
-local isCataclysmClassic = PROJECT_CATA ~= nil and projectID == PROJECT_CATA
-local isMistsClassic = PROJECT_MISTS ~= nil and projectID == PROJECT_MISTS
-local isProgressionClassic = isCataclysmClassic or isMistsClassic
-local isClassicForever = projectID == PROJECT_FOREVER
-local isAnyClassic = isClassicEra or isAnniversaryTBC or isProgressionClassic
-
-private.WoWClassicFamily = isAnyClassic
-
-if isAnyClassic then
+if AC_USE_MAINLINE_API then
+	C_CurrencyInfo = _G.C_CurrencyInfo
+	BlizzardGetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
+	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+else
 	GetBackpackCurrencyInfo = _G.GetBackpackCurrencyInfo
 	GetCurrencyInfo = _G.GetCurrencyInfo
-else
-	C_CurrencyInfo = _G.C_CurrencyInfo
-	GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
-	GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 end
 
 -- ----------------------------------------------------------------------------
@@ -95,7 +77,6 @@ local AC_CURRMONEY = 0
 local AC_LASTSESSMONEY = 0
 local AC_LASTMONEY = 0
 local AC_CURRTAB = private.constants.currTab
---local AC_MONTHS = { CalendarGetMonthNames() }
 local AC_MONTHS = private.constants.months
 
 -- Number of Accountant Classic tabs; also the tab number of "All Character"
@@ -119,7 +100,7 @@ local function getPlayerStorageKey()
     local firstName, secondName = UnitName("player")
 	local storageKey = firstName
 
-    if isClassicForever and (secondName and secondName ~= "") then
+    if Client.isForever and (secondName and secondName ~= "") then
         storageKey = firstName .. "-" .. secondName
     end
 
@@ -539,7 +520,7 @@ local function setLabels()
 end
 
 local function settleTabText()
-	if (isAnyClassic) then
+	if (Client.isAnyClassic) then
 		local TabText = private.constants.tabText
 		for i = 1, AC_TABS do
 			local tab = _G["AccountantClassicFrameTab"..i]
@@ -548,7 +529,7 @@ local function settleTabText()
 		end
 	end
 
-	if (isRetail or isClassicForever) then
+	if (Client.isRetail or Client.isForever) then
 		AccountantClassicFrame.numTabs = AC_TABS
 	else
 		PanelTemplates_SetNumTabs(AccountantClassicFrame, AC_TABS)
@@ -654,7 +635,7 @@ end
 local function serverDropDownInit()
 	local info
 	local i = 1
-	for k, v in orderedpairs(Accountant_ClassicSaveData) do
+	for k in orderedpairs(Accountant_ClassicSaveData) do
 		info = LibDD:UIDropDownMenu_CreateInfo()
 		info.text = k
 		info.value = k
@@ -1259,13 +1240,13 @@ end
 
 local function getFormattedCurrency(currencyID)
 	local name, amount, icon
-	if (isAnyClassic) then
-		name, amount, icon = GetCurrencyInfo(currencyID)
-	else
+	if (AC_USE_MAINLINE_API) then
 		local info = GetCurrencyInfo(currencyID)
 		name = info.name
 		amount = info.quantity
 		icon = info.iconFileID
+	else
+		name, amount, icon = GetCurrencyInfo(currencyID)
 	end
 
 	if amount and amount > 0 then
@@ -1786,21 +1767,26 @@ function addon:CursorHasItem()
 	end
 end
 
-function addon:BackpackTokenFrame_Update()
-	if (isAnyClassic) then
-		-- do nothing
+local function getBackpackCurrencyInfo(index)
+	if (AC_USE_MAINLINE_API) then
+		local info = BlizzardGetBackpackCurrencyInfo(index)
+		return info and info.currencyTypesID or nil
 	else
-		local tokenstr = ""
-		for i = 1, 50 do
-			local info = GetBackpackCurrencyInfo(i)
-			if not info then
-				break
-			end
-
-			tokenstr = tokenstr .. getFormattedCurrency(info.currencyTypesID) .. " "
-		end
-		return tokenstr
+		local _, _, _, currencyID  = BlizzardGetBackpackCurrencyInfo(index)
+		return currencyID or nil
 	end
+end
+
+function addon:BackpackTokenFrame_Update()
+	local tokenstr = ""
+	for i = 1, 50 do
+		local currencyTypesID = getBackpackCurrencyInfo(i)
+		if not currencyTypesID then
+			break
+		end
+		tokenstr = tokenstr .. getFormattedCurrency(currencyTypesID) .. " "
+	end
+	return tokenstr
 end
 
 function addon:ShowNetMoney(logmode)
@@ -2097,22 +2083,22 @@ function AccountantClassicTabButtonMixin:OnLoad()
 	self.Text:SetText(TabText[i]);
 end
 
-function AccountantClassicTabButtonMixin:OnEvent(event, ...)
-	if self:IsVisible() then
-		if (isAnyClassic) then
-			PanelTemplates_TabResize(self, 0, nil, 36, 88);
-		else
-			PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
-		end
-	end
-end
-
-function AccountantClassicTabButtonMixin:OnShow()
-	if (isAnyClassic) then
+local function updateTabResize(self)
+	if (Client.isAnyClassic) then
 		PanelTemplates_TabResize(self, 0, nil, 36, 88);
 	else
 		PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
 	end
+end
+
+function AccountantClassicTabButtonMixin:OnEvent(event, ...)
+	if self:IsVisible() then
+		updateTabResize(self)
+	end
+end
+
+function AccountantClassicTabButtonMixin:OnShow()
+	updateTabResize(self)
 end
 
 function AccountantClassicTabButtonMixin:OnEnter()
