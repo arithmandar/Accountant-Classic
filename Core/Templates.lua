@@ -35,7 +35,8 @@ local function column_OnEnter(self)
 		-- Character rows: show the full "realm - character" text if it is cut off
 		if isTextTruncated(self.Text) then
 			GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
-			GameTooltip:SetText(self.fullText, 1, 1, 1, 1, true)
+			-- no wrap: CJK text would otherwise be broken mid-name by the tooltip width limit
+			GameTooltip:SetText(self.fullText, 1, 1, 1, 1, false)
 			GameTooltip:Show()
 		end
 		return
