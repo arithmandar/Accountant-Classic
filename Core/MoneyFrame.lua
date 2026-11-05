@@ -1,16 +1,16 @@
 -----------------------------------------------------------------------
--- Upvalued Lua API.
+-- Description: Creates and manages the floating money info frame 
+-- for Accountant Classic.
 -----------------------------------------------------------------------
 local _G = getfenv(0)
 local GameTooltip = _G.GameTooltip
 local unpack = _G.unpack
 
--- ----------------------------------------------------------------------------
--- AddOn namespace.
--- ----------------------------------------------------------------------------
 local _, private = ...
 local LibStub = _G.LibStub
+---@type ACAddon
 local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name)
+---@class MoneyFrameModule : AceAddon, AceEvent-3.0
 local MoneyFrame = addon:NewModule("MoneyFrame", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
 

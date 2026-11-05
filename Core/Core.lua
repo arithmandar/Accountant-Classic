@@ -39,7 +39,7 @@ local FOLDER_NAME = ...
 local LibStub = _G.LibStub
 if not LibStub then error(FOLDER_NAME .. " requires LibStub.") end
 
----@class AccountantClassicAddon : AceAddon
+---@class ACAddon : AceAddon-3.0, AceConsole-3.0, AceHook-3.0
 ---@field constants table
 ---@field Name string
 ---@field LocName string
@@ -47,6 +47,7 @@ if not LibStub then error(FOLDER_NAME .. " requires LibStub.") end
 ---@field Version string
 ---@field UpdateDate string
 ---@field Author string
+---@field GetFormattedValue fun(self: ACAddon, value: number): string
 local addon = LibStub("AceAddon-3.0"):NewAddon(private.addon_name, "AceConsole-3.0", "AceHook-3.0")
 
 addon.constants = private.constants
@@ -102,7 +103,8 @@ local AccountantClassic_Verbose = nil;
 
 local AC_SERVER -- server key
 local AC_PLAYER -- player key
--- Classic Forever now use so-called "Main Name" and "Secondary Name", it's more like the first and last name of the player. And both look to be mandatory. 
+-- Classic Forever now use so-called "Main Name" and "Secondary Name", 
+-- it's more like the first and last name of the player. And both look to be mandatory. 
 -- While in other game client, UnitName's second return value is actually the realmName
 local function getPlayerStorageKey()
     local firstName, secondName = UnitName("player")

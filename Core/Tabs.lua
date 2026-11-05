@@ -1,13 +1,13 @@
------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 -- Description: Creates and manages the tab buttons for the Accountant Classic frame.
--- This file is used to build the tab UI and handle tab switching behavior
--- within the main window.
------------------------------------------------------------------------
+-- This file is used to build the tab UI and handle tab switching behavior within the main window.
+-----------------------------------------------------------------------------------------------------
 
 local _G = getfenv(0)
 local _, private = ...
 
 local Client = private.Client
+
 local function createRetailTabTextures(tab)
 	local left = tab:CreateTexture(nil, "BACKGROUND")
 	left:SetAtlas("uiframe-tab-left", true)
