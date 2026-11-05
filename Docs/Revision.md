@@ -6,7 +6,7 @@
 
 ## Revision History
 
-### v2.21.04 (Nov. 05, 2026)
+### v2.30.00 (Nov. 05, 2026)
 
 - Bug fixes
   - Day / week / month / year logs now roll over without needing a /reload (dates were only read once at load time)
