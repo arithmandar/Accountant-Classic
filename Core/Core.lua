@@ -613,6 +613,8 @@ function addon:PopulateCharacterList(server, faction)
 	for j = 1, min(AC_CURR_LINES, AC_CHAR_LINES) do
 		if (not _G["AccountantClassicCharacterEntry"..j]) then
 			local f = AccountantClassic_CreateRow(AccountantClassicFrame, "AccountantClassicCharacterEntry"..j)
+			-- Keep the rows above the faux scroll frame (same parent) so they receive mouse-over
+			f:SetFrameLevel(AccountantClassicScrollBar:GetFrameLevel() + 2)
 			if j == 1 then
 				f:SetPoint("TOPLEFT", "AccountantClassicScrollBar", "TOPLEFT", 0, 0)
 			else
