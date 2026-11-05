@@ -525,13 +525,19 @@ local function setLabels()
 			AC_DATA[key].InPos = i
 			_G["AccountantClassicFrameRow"..i.."Title".."_Text"]:SetText(AC_DATA[key].Title)
 		end
+	end
+end
 
-		-- Set the header
-		local name = f:GetName()
-		local header = _G[name.."TitleText"]
-		if ( header ) then
-			header:SetText(L["Accountant Classic"])
-		end
+-- Window title, optionally followed by the character being viewed. Realm names can be
+-- very long (e.g. Forever "CAMWOW TW4 Realm 1 PvE"), which pushes the character name
+-- out of the character dropdown, so the selection is repeated in the title.
+local function setFrameTitle(suffix)
+	local header = _G["AccountantClassicFrameTitleText"]
+	if not header then return end
+	if suffix and suffix ~= "" then
+		header:SetText(L["Accountant Classic"].." - "..suffix)
+	else
+		header:SetText(L["Accountant Classic"])
 	end
 end
 
@@ -1458,7 +1464,16 @@ function AccountantClassic_OnShow(self)
 		_G["AccountantClassicFrameRow18In"].Text:SetText("")
 
 		updateExtraInfo(mode, selectedOptions)
+
+		if (isSession) then
+			setFrameTitle()
+		elseif (selectedChar) then
+			setFrameTitle(selectedChar)
+		else
+			setFrameTitle(L["All Chars"])
+		end
 	else
+		setFrameTitle()
 		-- all characters' tab
 		addon:PopulateCharacterList(AC_SELECTED_SERVER, AC_SELECTED_FACTION)
 		AccountantClassicFrameCharacterDropDown:Hide();
