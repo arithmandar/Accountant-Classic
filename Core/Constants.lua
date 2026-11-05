@@ -39,6 +39,17 @@ Client.isAnyClassic = Client.isClassicEra or Client.isTBCClassic or Client.isPro
 Client.isKnownProject = Client.isRetail or Client.isAnyClassic or Client.isForever
 private.Client = Client
 
+-- Returns the "|cAARRGGBB" colour prefix for a class token, or "" when the token is
+-- unknown to this client (e.g. data saved by another game flavour), instead of erroring
+-- on RAID_CLASS_COLORS[class] being nil.
+function private.GetClassColorPrefix(classToken)
+	local color = classToken and RAID_CLASS_COLORS and RAID_CLASS_COLORS[classToken]
+	if color and color.colorStr then
+		return "|c"..color.colorStr
+	end
+	return ""
+end
+
 -- Create constants table
 local constants = {}
 private.constants = constants
