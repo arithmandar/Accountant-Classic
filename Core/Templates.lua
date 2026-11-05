@@ -5,6 +5,31 @@
 
 local _, private = ...
 
+-- True when a FontString cannot display its whole text within its width
+local function isTextTruncated(fontString)
+	if fontString.IsTruncated then
+		return fontString:IsTruncated()
+	end
+	if fontString.GetUnboundedStringWidth then
+		return fontString:GetUnboundedStringWidth() > fontString:GetWidth() + 0.5
+	end
+	-- Unable to detect on this client: always offer the tooltip
+	return true
+end
+
+local function column_OnEnter(self)
+	if self.fullText then
+		-- Character rows: show the full "realm - character" text if it is cut off
+		if isTextTruncated(self.Text) then
+			GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+			GameTooltip:SetText(self.fullText, nil, nil, nil, nil, true)
+			GameTooltip:Show()
+		end
+		return
+	end
+	AccountantClassic_LogTypeOnShow(self)
+end
+
 local function createRowColumn(parent, key, width, offset, font, justify)
 	local button = CreateFrame("Button", parent:GetName()..key, parent)
 	button:SetSize(width, 19)
@@ -16,9 +41,7 @@ local function createRowColumn(parent, key, width, offset, font, justify)
 	if button.Text.SetNonSpaceWrap then
 		button.Text:SetNonSpaceWrap(true)
 	end
-	button:SetScript("OnEnter", function(self)
-		AccountantClassic_LogTypeOnShow(self)
-	end)
+	button:SetScript("OnEnter", column_OnEnter)
 	button:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)

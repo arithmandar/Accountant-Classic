@@ -1243,14 +1243,21 @@ function AccountantClassicScrollBar_Update()
 			local options = Accountant_ClassicSaveData[serverkey][charkey]["options"]
 
 			local factionstr = options.faction
-			local faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s" or "%s - %s"
+			local faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t" or ""
 			local class_color = getClassColorPrefix(options.class)
+			local color_end = (class_color ~= "") and "|r" or ""
 
-			if (class_color ~= "") then
-				f.Title.Text:SetText(format(class_color..faction_icon.."|r", serverkey, charkey))
+			-- When a single realm is selected the realm name is redundant (and Forever realm
+			-- names such as "CAMWOW TW4 Realm 1 PvE" are long), so only show the character.
+			local name
+			if (AC_SELECTED_SERVER == "All") then
+				name = serverkey.." - "..charkey
 			else
-				f.Title.Text:SetText(format(faction_icon, serverkey, charkey))
+				name = charkey
 			end
+			f.Title.Text:SetText(class_color..faction_icon..name..color_end)
+			-- Full "realm - character" text for the tooltip shown when the label is truncated
+			f.Title.fullText = class_color..serverkey.." - "..charkey..color_end
 
 			if options["totalcash"] ~= nil then
 				f.In.Text:SetText("|cFFFFFFFF"..addon:GetFormattedValue(options["totalcash"]))
