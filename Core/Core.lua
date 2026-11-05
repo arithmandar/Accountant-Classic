@@ -528,6 +528,35 @@ local function setLabels()
 	end
 end
 
+-- Portrait: the live portrait only exists for the logged-in character, so other
+-- characters get their class icon and the "All Chars" selection gets the addon icon.
+local CLASS_ICONS_TEXTURE = "Interface\\TargetingFrame\\UI-Classes-Circles"
+local function setFramePortrait(serverkey, charkey, options)
+	local portrait = _G["AccountantClassicFramePortrait"]
+	if not portrait then return end
+
+	if (serverkey == nil) then
+		-- "All Chars" selection
+		portrait:SetTexture(private.constants.iconTexture)
+		portrait:SetTexCoord(0, 1, 0, 1)
+		return
+	end
+
+	if (serverkey ~= AC_SERVER or charkey ~= AC_PLAYER) then
+		local class = options and options.class
+		local coords = class and CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[class]
+		if coords then
+			portrait:SetTexture(CLASS_ICONS_TEXTURE)
+			portrait:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+			return
+		end
+	end
+
+	-- Logged-in character (or unknown class): live portrait
+	portrait:SetTexCoord(0, 1, 0, 1)
+	SetPortraitTexture(portrait, "player")
+end
+
 -- Window title, optionally followed by the character being viewed. Realm names can be
 -- very long (e.g. Forever "CAMWOW TW4 Realm 1 PvE"), which pushes the character name
 -- out of the character dropdown, so the selection is repeated in the title.
@@ -1467,13 +1496,17 @@ function AccountantClassic_OnShow(self)
 
 		if (isSession) then
 			setFrameTitle()
+			setFramePortrait(AC_SERVER, AC_PLAYER)
 		elseif (selectedChar) then
 			setFrameTitle(selectedChar)
+			setFramePortrait(selectedServer, selectedChar, selectedOptions)
 		else
 			setFrameTitle(L["All Chars"])
+			setFramePortrait(nil)
 		end
 	else
 		setFrameTitle()
+		setFramePortrait(AC_SERVER, AC_PLAYER)
 		-- all characters' tab
 		addon:PopulateCharacterList(AC_SELECTED_SERVER, AC_SELECTED_FACTION)
 		AccountantClassicFrameCharacterDropDown:Hide();
@@ -1503,7 +1536,6 @@ function AccountantClassic_OnShow(self)
 		AccountantClassicFrame.Extra:SetText("")
 		AccountantClassicFrame.ExtraValue:SetText("")
 	end
-	SetPortraitTexture(AccountantClassicFramePortrait, "player")
 	PanelTemplates_SetTab(AccountantClassicFrame, AC_CURRTAB)
 end
 
