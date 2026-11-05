@@ -248,7 +248,7 @@ else
 
 	constants.logtypes = {
 		"TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD",
-		"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER" 
+		"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER"
 	}
 	constants.onlineData = {
 		["TRANSMO"] =	{ Title = TRANSMOGRIFY};
@@ -307,3 +307,9 @@ constants.tabTooltipText = {
 -- Maximum lines for characters to be displayed. 
 -- We have 18 lines of space but we are using the 18th line to present the total. 
 constants.maxCharLines = 17
+
+-- Maximum lines of tooltip
+constants.maxTooltipLines = 50
+
+-- icon texture
+constants.iconTexture = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantClassicButton-Up"

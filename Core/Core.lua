@@ -48,6 +48,9 @@ if not LibStub then error(FOLDER_NAME .. " requires LibStub.") end
 ---@field UpdateDate string
 ---@field Author string
 ---@field GetFormattedValue fun(self: ACAddon, value: number): string
+---@field OpenOptions fun(self: ACAddon)
+---@field SetupOptions fun(self: ACAddon)
+---@field PopulateCharacterList fun(self: ACAddon, server: string, faction: string)
 local addon = LibStub("AceAddon-3.0"):NewAddon(private.addon_name, "AceConsole-3.0", "AceHook-3.0")
 
 addon.constants = private.constants
@@ -57,6 +60,7 @@ addon.Name = FOLDER_NAME
 local _, locname, notes = GetAddOnInfo(addon.Name)
 addon.LocName = locname
 addon.Notes = notes
+addon.icon = private.constants.iconTexture
 -- ToC Metadata
 addon.Version 		= GetAddOnMetadata(addon.Name, "Version")
 addon.UpdateDate 	= GetAddOnMetadata(addon.Name, "X-Date")
@@ -1840,7 +1844,7 @@ function addon:ShowSessionToolTip()
 	local TotalIn = 0;
 	local TotalOut = 0;
 	local diff = 0;
-	for key,value in pairs(AC_DATA) do
+	for key in pairs(AC_DATA) do
 		TotalIn = TotalIn + AC_DATA[key]["Session"].In;
 		TotalOut = TotalOut + AC_DATA[key]["Session"].Out;
 	end
@@ -1865,7 +1869,7 @@ function addon:ShowSessionToolTip()
 	end
 end
 
-local AC_MAXTOOLTIPLINES = 50;
+local AC_MAXTOOLTIPLINES = private.constants.maxTooltipLines
 function AccountantClassic_LogTypeOnShow(self)
 	if (not private.constants.logmodes[AC_CURRTAB]) then
 		return;
@@ -1976,8 +1980,8 @@ function addon:OnInitialize()
 	LDB.type = "data source";
 	LDB.text = L["Accountant Classic"];
 	LDB.label = L["Accountant Classic"];
-	LDB.icon = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantClassicButton-Up";
-	LDB.OnClick = (function(self, button)
+	LDB.icon = addon.icon
+	LDB.OnClick = (function(_, button)
 		if button == "LeftButton" then
 			AccountantClassic_ButtonOnClick();
 		elseif button == "RightButton" then
