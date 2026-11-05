@@ -1,8 +1,8 @@
 package-as: Accountant_Classic
 
 manual-changelog:
-    filename: Docs/Revision.txt
-    markup-type: plain
+    filename: Docs/Revision.md
+    markup-type: markdown
 
 license-output: Docs/LICENSE.txt
 
