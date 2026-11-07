@@ -9,7 +9,8 @@ local UnitClass = _G.UnitClass
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
-local _, private = ...
+---@class ACNamespace
+local private = select(2, ...)
 private.addon_name = "Accountant_Classic"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
@@ -23,6 +24,7 @@ local function IsProject(id)
     return id ~= nil and projectID == id
 end
 
+---@class ACClient
 local Client = {
     projectID = projectID,
 
@@ -42,6 +44,8 @@ private.Client = Client
 -- Returns the "|cAARRGGBB" colour prefix for a class token, or "" when the token is
 -- unknown to this client (e.g. data saved by another game flavour), instead of erroring
 -- on RAID_CLASS_COLORS[class] being nil.
+---@param classToken string? Class token, e.g. "MAGE"
+---@return string prefix "|cAARRGGBB", or "" when the class is unknown
 function private.GetClassColorPrefix(classToken)
 	local color = classToken and RAID_CLASS_COLORS and RAID_CLASS_COLORS[classToken]
 	if color and color.colorStr then
@@ -51,6 +55,7 @@ function private.GetClassColorPrefix(classToken)
 end
 
 -- Create constants table
+---@class ACConstants
 local constants = {}
 private.constants = constants
 

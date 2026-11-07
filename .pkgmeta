@@ -46,4 +46,5 @@ externals:
 
 ignore:
     - Images/PSD
+    - Core/Annotations.lua
 

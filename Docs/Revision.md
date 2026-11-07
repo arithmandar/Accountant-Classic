@@ -18,6 +18,9 @@
   - Loot money is no longer counted twice when the balance is already updated before the loot message arrives
   - If a loot money message cannot be parsed, the following money change is still logged as Loot
   - Events missing on a client flavour are skipped instead of raising an error
+- Development
+  - Added Core/Annotations.lua with type declarations for the Lua language server / WoW API extension (namespace, constants, saved variables, profile, frames, LibUIDropDownMenu); not loaded in game and excluded from the package
+  - Annotated the functions in every Core file; no warnings with the WoW API extension
 
 ### v2.30.00 (Nov. 05, 2026)
 
