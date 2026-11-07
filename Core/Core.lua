@@ -355,9 +355,21 @@ end
 
 local setupServerDropDown, setupFactionDropDown, setupCharacterDropDown
 
+-- Not every event exists on every client flavour (e.g. PLAYER_INTERACTION_MANAGER_*),
+-- and registering an unknown event raises an error, so skip the ones this client lacks.
+local function isEventValid(event)
+	local C_EventUtils = _G.C_EventUtils
+	if C_EventUtils and C_EventUtils.IsEventValid then
+		return C_EventUtils.IsEventValid(event)
+	end
+	return true
+end
+
 function AccountantClassic_RegisterEvents(self)
 		for _, value in pairs( private.constants.events ) do
-			self:RegisterEvent( value );
+			if isEventValid(value) then
+				pcall(self.RegisterEvent, self, value)
+			end
 		end
 	--self:RegisterForDrag("LeftButton");
 end
@@ -1092,35 +1104,58 @@ local function detectAhMail()
 	end
 end
 
+-- Turns a Blizzard coin format string such as GOLD_AMOUNT ("%d Gold", "%d金幣") into a
+-- Lua pattern capturing the number. Returns nil for strings we cannot use, e.g. ones
+-- with grammar escapes ("|4singular:plural;") that never appear verbatim in chat.
+local function makeCoinPattern(fmt)
+	if type(fmt) ~= "string" or not strfind(fmt, "%d", 1, true) or strfind(fmt, "|4", 1, true) then
+		return nil
+	end
+	local pattern = gsub(fmt, "([%(%)%.%+%-%*%?%[%]%^%$])", "%%%1")
+	pattern = gsub(pattern, "%%d", "(%%d+)")
+	return pattern
+end
+
+-- Client strings first (they match what the client actually prints in this locale),
+-- then the addon's own translations as a fallback.
+local COIN_PATTERNS = {}
+for key, info in pairs({
+	gold   = { global = "GOLD_AMOUNT",   locale = "(%d+) Gold",   value = 10000 },
+	silver = { global = "SILVER_AMOUNT", locale = "(%d+) Silver", value = 100 },
+	copper = { global = "COPPER_AMOUNT", locale = "(%d+) Copper", value = 1 },
+}) do
+	local patterns = {}
+	local fromGlobal = makeCoinPattern(_G[info.global])
+	if fromGlobal then patterns[#patterns + 1] = fromGlobal end
+	if L[info.locale] and L[info.locale] ~= fromGlobal then patterns[#patterns + 1] = L[info.locale] end
+	COIN_PATTERNS[key] = { patterns = patterns, value = info.value }
+end
+
+local function parseMoneyMessage(msg)
+	if type(msg) ~= "string" then return 0 end
+	local money = 0
+	for _, coin in pairs(COIN_PATTERNS) do
+		for _, pattern in ipairs(coin.patterns) do
+			local _, _, amount = strfind(msg, pattern)
+			if amount then
+				money = money + (tonumber(amount) or 0) * coin.value
+				break
+			end
+		end
+	end
+	return money
+end
+
+-- Set when CHAT_MSG_MONEY arrives but its amount cannot be parsed; the next
+-- PLAYER_MONEY (shortly after) is then logged as loot.
+local AC_PENDING_LOOT
+local AC_PENDING_LOOT_WINDOW = 2
+
 local function onShareMoney(arg1)
 	local oldType = AC_LOGTYPE;
 	if (oldType == "LOOT") then
 		return;
 	end
-
-	local money;
-
-	-- Parse the message for money gained.
-	local _, _, gold = strfind(arg1, L["(%d+) Gold"])
-	local _, _, silver = strfind(arg1, L["(%d+) Silver"])
-	local _, _, copper = strfind(arg1, L["(%d+) Copper"])
-	if (gold) then
-		gold = tonumber(gold);
-	else
-		gold = 0;
-	end
-	if (silver) then
-		silver = tonumber(silver);
-	else
-		silver = 0;
-	end
-	if (copper) then
-		copper = tonumber(copper);
-	else
-		copper = 0;
-	end
-
-	money = copper + silver * 100 + gold * 10000
 	-- Updated by: kamusis
 	-- Baseline priming guard for first-load sessions
 	--
@@ -1139,6 +1174,24 @@ local function onShareMoney(arg1)
 
 	if (not AC_LASTMONEY) then
 		AC_LASTMONEY = 0;
+	end
+
+	-- The balance already includes the looted money (PLAYER_MONEY not handled yet):
+	-- log the actual difference as loot right away.
+	if GetMoney() ~= AC_LASTMONEY then
+		AC_PENDING_LOOT = nil
+		AC_LOGTYPE = "LOOT";
+		updateLog();
+		AC_LOGTYPE = oldType;
+		return
+	end
+
+	local money = parseMoneyMessage(arg1)
+	if money <= 0 then
+		-- Could not read the amount (unexpected message format or locale); let the
+		-- upcoming PLAYER_MONEY be logged as loot instead of the current log type.
+		AC_PENDING_LOOT = GetTime()
+		return
 	end
 
 	-- This will force a money update with calculated amount.
@@ -1310,6 +1363,19 @@ function AccountantClassicScrollBar_Update()
 	end
 end
 
+-- Player interaction types that open the (character / Warband) bank.
+local BANK_INTERACTIONS = {}
+do
+	local types = _G.Enum and _G.Enum.PlayerInteractionType
+	if types then
+		for _, name in ipairs({ "Banker", "AccountBanker", "CharacterBanker" }) do
+			if types[name] then
+				BANK_INTERACTIONS[types[name]] = true
+			end
+		end
+	end
+end
+
 function AccountantClassic_OnEvent(self, event, ...)
 	local arg1 = ...;
 	local oldType = AC_LOGTYPE;
@@ -1326,6 +1392,14 @@ function AccountantClassic_OnEvent(self, event, ...)
 	-- This event is supposed to be fired before PLAYER_MONEY.
 	elseif event == "CHAT_MSG_MONEY" then
 		onShareMoney(arg1)
+	elseif event == "PLAYER_INTERACTION_MANAGER_FRAME_SHOW" then
+		if BANK_INTERACTIONS[arg1] then
+			AC_LOGTYPE = "BANK"
+		end
+	elseif event == "PLAYER_INTERACTION_MANAGER_FRAME_HIDE" then
+		if BANK_INTERACTIONS[arg1] and AC_LOGTYPE == "BANK" then
+			AC_LOGTYPE = ""
+		end
 	elseif event == "PLAYER_MONEY" then
 		if not AC_LOG_PRIMED then
 			primeBaseline()
@@ -1333,7 +1407,15 @@ function AccountantClassic_OnEvent(self, event, ...)
 			if AccountantClassic_Verbose then
 				printMessage("Player money changed, starting to update money log ...")
 			end
-			updateLog()
+			local pendingLoot = AC_PENDING_LOOT
+			AC_PENDING_LOOT = nil
+			if pendingLoot and (GetTime() - pendingLoot) <= AC_PENDING_LOOT_WINDOW then
+				AC_LOGTYPE = "LOOT"
+				updateLog()
+				AC_LOGTYPE = oldType
+			else
+				updateLog()
+			end
 		end
 	end
 
@@ -1658,6 +1740,33 @@ function addon:CursorHasItem()
 	end
 end
 
+-- Bank: buying bank bag slots / bank tabs, and moving gold in or out of the Warband bank.
+-- Guild bank gold keeps its own GUILD log type.
+local function setBankLogType()
+	AC_LOGTYPE = "BANK"
+end
+
+local function onBankMoneyTransfer(bankType)
+	local bankTypes = _G.Enum and _G.Enum.BankType
+	if bankTypes and bankType == bankTypes.Guild then
+		AC_LOGTYPE = "GUILD"
+	else
+		AC_LOGTYPE = "BANK"
+	end
+end
+
+local function hookBankFunctions()
+	local C_Bank = _G.C_Bank
+	if C_Bank then
+		if C_Bank.PurchaseBankTab then addon:SecureHook(C_Bank, "PurchaseBankTab", setBankLogType) end
+		if C_Bank.DepositMoney then addon:SecureHook(C_Bank, "DepositMoney", onBankMoneyTransfer) end
+		if C_Bank.WithdrawMoney then addon:SecureHook(C_Bank, "WithdrawMoney", onBankMoneyTransfer) end
+	end
+	-- Classic bank bag slots and the old reagent bank unlock
+	if _G.PurchaseSlot then addon:SecureHook("PurchaseSlot", setBankLogType) end
+	if _G.BuyReagentBank then addon:SecureHook("BuyReagentBank", setBankLogType) end
+end
+
 local function getBackpackCurrencyInfo(index)
 	if (AC_USE_MAINLINE_API) then
 		local info = BlizzardGetBackpackCurrencyInfo(index)
@@ -1855,6 +1964,7 @@ function addon:OnEnable()
 
 	self:SecureHook("RepairAllItems")
 	self:SecureHook("CursorHasItem")
+	hookBankFunctions()
 	
 	loadData()
 	setLabels()
