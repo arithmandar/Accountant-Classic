@@ -357,6 +357,8 @@ local setupServerDropDown, setupFactionDropDown, setupCharacterDropDown
 
 -- Not every event exists on every client flavour (e.g. PLAYER_INTERACTION_MANAGER_*),
 -- and registering an unknown event raises an error, so skip the ones this client lacks.
+---@param event string Event name, e.g. "PLAYER_INTERACTION_MANAGER_FRAME_SHOW"
+---@return boolean valid True when this client knows the event (assumed true on clients without C_EventUtils)
 local function isEventValid(event)
 	local C_EventUtils = _G.C_EventUtils
 	if C_EventUtils and C_EventUtils.IsEventValid then
@@ -1107,6 +1109,8 @@ end
 -- Turns a Blizzard coin format string such as GOLD_AMOUNT ("%d Gold", "%d金幣") into a
 -- Lua pattern capturing the number. Returns nil for strings we cannot use, e.g. ones
 -- with grammar escapes ("|4singular:plural;") that never appear verbatim in chat.
+---@param fmt string? Coin format string from the client, e.g. GOLD_AMOUNT
+---@return string? pattern Lua pattern with one numeric capture, or nil when unusable
 local function makeCoinPattern(fmt)
 	if type(fmt) ~= "string" or not strfind(fmt, "%d", 1, true) or strfind(fmt, "|4", 1, true) then
 		return nil
@@ -1118,6 +1122,11 @@ end
 
 -- Client strings first (they match what the client actually prints in this locale),
 -- then the addon's own translations as a fallback.
+---@class ACCoinPattern
+---@field patterns string[] Lua patterns to try in order, each capturing the coin count
+---@field value integer Copper per coin (10000 gold, 100 silver, 1 copper)
+
+---@type table<"gold"|"silver"|"copper", ACCoinPattern>
 local COIN_PATTERNS = {}
 for key, info in pairs({
 	gold   = { global = "GOLD_AMOUNT",   locale = "(%d+) Gold",   value = 10000 },
@@ -1131,6 +1140,9 @@ for key, info in pairs({
 	COIN_PATTERNS[key] = { patterns = patterns, value = info.value }
 end
 
+---Reads the amount from a CHAT_MSG_MONEY text such as "You loot 1 Gold, 2 Silver".
+---@param msg string? Chat message text
+---@return integer copper Total amount in copper; 0 when nothing could be parsed
 local function parseMoneyMessage(msg)
 	if type(msg) ~= "string" then return 0 end
 	local money = 0
@@ -1148,9 +1160,13 @@ end
 
 -- Set when CHAT_MSG_MONEY arrives but its amount cannot be parsed; the next
 -- PLAYER_MONEY (shortly after) is then logged as loot.
+---@type number? GetTime() of the unparsed loot message, nil when nothing is pending
 local AC_PENDING_LOOT
+---@type number Seconds after the loot message during which PLAYER_MONEY counts as loot
 local AC_PENDING_LOOT_WINDOW = 2
 
+---Handles CHAT_MSG_MONEY (solo loot and shared party loot) so the money is logged as LOOT.
+---@param arg1 string Chat message text
 local function onShareMoney(arg1)
 	local oldType = AC_LOGTYPE;
 	if (oldType == "LOOT") then
@@ -1364,6 +1380,7 @@ function AccountantClassicScrollBar_Update()
 end
 
 -- Player interaction types that open the (character / Warband) bank.
+---@type table<Enum.PlayerInteractionType, true>
 local BANK_INTERACTIONS = {}
 do
 	local types = _G.Enum and _G.Enum.PlayerInteractionType
@@ -1742,10 +1759,13 @@ end
 
 -- Bank: buying bank bag slots / bank tabs, and moving gold in or out of the Warband bank.
 -- Guild bank gold keeps its own GUILD log type.
+---Post-hook for bank slot / bank tab purchases.
 local function setBankLogType()
 	AC_LOGTYPE = "BANK"
 end
 
+---Post-hook for C_Bank.DepositMoney / C_Bank.WithdrawMoney.
+---@param bankType Enum.BankType
 local function onBankMoneyTransfer(bankType)
 	local bankTypes = _G.Enum and _G.Enum.BankType
 	if bankTypes and bankType == bankTypes.Guild then
@@ -1755,6 +1775,7 @@ local function onBankMoneyTransfer(bankType)
 	end
 end
 
+---Hooks the bank purchase and money transfer functions that exist on this client.
 local function hookBankFunctions()
 	local C_Bank = _G.C_Bank
 	if C_Bank then
