@@ -6,7 +6,7 @@
 
 ## Revision History
 
-### Unreleased
+### v2.30.01 (Nov. 07, 2026)
 
 - New log type: Bank
   - Buying bank tabs (character and Warband bank), Classic bank bag slots and the reagent bank are logged as Bank
