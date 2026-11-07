@@ -1,0 +1,25 @@
+---@meta _
+-- ----------------------------------------------------------------------------
+-- Accountant-Classic Annotations for Lua Language Server
+--
+-- Annotations for lua-language-server and Ketho's WoW API extension for
+-- VS Code (https://github.com/Ketho/vscode-wow-api). This file is NOT loaded
+-- by the game (it is not listed in the TOC) and is excluded from packaging.
+--
+-- All shared types are declared here. The source files only keep a one line
+-- `---@class X` on the local where the object is created (so that methods
+-- defined there are attached to the class) plus @param / @return on functions.
+-- ----------------------------------------------------------------------------
+
+---@class ACAddon : AceAddon-3.0, AceConsole-3.0, AceHook-3.0
+---@field constants table
+---@field Name string
+---@field LocName string
+---@field Notes string
+---@field Version string
+---@field UpdateDate string
+---@field Author string
+---@field GetFormattedValue fun(self: ACAddon, value: number): string
+---@field OpenOptions fun(self: ACAddon)
+---@field SetupOptions fun(self: ACAddon)
+---@field PopulateCharacterList fun(self: ACAddon, server: string, faction: string)

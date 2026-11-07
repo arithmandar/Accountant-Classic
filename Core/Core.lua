@@ -39,18 +39,6 @@ local FOLDER_NAME = ...
 local LibStub = _G.LibStub
 if not LibStub then error(FOLDER_NAME .. " requires LibStub.") end
 
----@class ACAddon : AceAddon-3.0, AceConsole-3.0, AceHook-3.0
----@field constants table
----@field Name string
----@field LocName string
----@field Notes string
----@field Version string
----@field UpdateDate string
----@field Author string
----@field GetFormattedValue fun(self: ACAddon, value: number): string
----@field OpenOptions fun(self: ACAddon)
----@field SetupOptions fun(self: ACAddon)
----@field PopulateCharacterList fun(self: ACAddon, server: string, faction: string)
 local addon = LibStub("AceAddon-3.0"):NewAddon(private.addon_name, "AceConsole-3.0", "AceHook-3.0")
 
 addon.constants = private.constants
