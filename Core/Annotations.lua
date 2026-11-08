@@ -20,6 +20,7 @@
 ---@field Client ACClient Which game client flavour is running
 ---@field constants ACConstants Static tables shared by all files
 ---@field GetClassColorPrefix fun(classToken: string?): string Returns "|cAARRGGBB" for a class token, or "" when unknown
+---@field History ACHistory Long-lived history ledger (Core/History.lua)
 
 ---@class ACClient
 ---@field projectID integer WOW_PROJECT_ID of the running client
@@ -228,6 +229,92 @@ Accountant_ClassicSaveData = {}
 ---Optional zone breakdown of the money history.
 ---@type ACZoneDB
 Accountant_ClassicZoneDB = {}
+
+------------------------------------------------------------------------
+-- History ledger (Core/History.lua)
+------------------------------------------------------------------------
+
+---Totals of one category on one day (or summed over a range by GetTotals).
+---@class ACHistoryBucket
+---@field i integer Copper in
+---@field o integer Copper out
+---@field ni integer Number of money-in records
+---@field no integer Number of money-out records
+---@field mi integer Largest single money-in
+---@field mo integer Largest single money-out
+
+---Income / expense and online time of one hour. Transfers are not included.
+---@class ACHistoryHour
+---@field i integer Copper in
+---@field o integer Copper out
+---@field m integer Online minutes
+---@field a integer? AFK minutes (subset of m)
+
+---One day of one character: category buckets plus `h` (hours 0-23) and `bal`.
+---@alias ACHistoryDay table<string, ACHistoryBucket|table<integer, ACHistoryHour>|integer>
+
+---@class ACHistoryChar
+---@field server string
+---@field name string Same as the classic character key
+---@field guid string? Player GUID, used to tell a re-created character from the old one
+---@field since integer YYYYMMDD of the first tracked day
+---@field deleted integer? Time the classic data was removed while the history was kept
+---@field archivedFrom string? Original key when the name was reused by another character
+---@field faction string?
+---@field class string?
+---@field money integer? Last known balance
+---@field moneyAt integer? Time of that balance
+---@field days table<integer, ACHistoryDay> By YYYYMMDD
+
+---Recent money change for drill-down. Consecutive LOOT records are merged.
+---@class ACHistoryRecent
+---@field t integer Time
+---@field c string charKey ("Server|Name")
+---@field k string Category
+---@field a integer Signed copper amount
+---@field n integer? Number of merged LOOT records
+---@field z integer? uiMapID
+---@field s string? English sub-zone key (LibBabble-SubZone)
+---@field sr string? Raw sub-zone text when no unique key was found
+---@field sl string? Locale of sr
+
+---@class ACHistoryDB
+---@field schema integer
+---@field created integer
+---@field settings { recentMax: integer, recentDays: integer }
+---@field chars table<string, ACHistoryChar> By charKey
+---@field warband { money: integer, moneyAt: integer, days: table<integer, integer> }?
+---@field recent ACHistoryRecent[]
+
+---Filter for the query functions. "All" or nil means no filter.
+---@class ACHistoryScope
+---@field char string? charKey
+---@field server string?
+---@field faction string?
+---@field excludeDeleted boolean?
+
+---@class ACHistorySummary
+---@field income integer
+---@field expense integer
+---@field net integer
+---@field transferIn integer
+---@field transferOut integer
+---@field since integer? Earliest tracked day in scope
+
+---@class ACHistoryDailyPoint
+---@field day integer YYYYMMDD (first day of the period for AggregateBy)
+---@field income integer
+---@field expense integer
+---@field net integer
+---@field transferIn integer
+---@field transferOut integer
+---@field minutes integer
+---@field afk integer
+---@field noData boolean Before tracking began
+
+---History ledger saved variable.
+---@type ACHistoryDB
+Accountant_ClassicHistory = {}
 
 ---Raw AceDB storage behind addon.db.
 ---@type table
