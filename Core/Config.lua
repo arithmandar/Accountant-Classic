@@ -80,10 +80,16 @@ local function confirmCharacterRemoval(value)
 	-- Using native StaticPopupDialogs to show the confirm box.
 	StaticPopupDialogs["ACCOUNTANT_CLASSIC_CONFIRM_REMOVE"] = {
 		text = L["The selected character is about to be removed.\nAre you sure you want to remove the following character from Accountant Classic?"].."\n|r"..faction_icon..class_color..selected_srv.." - "..selected_char,
-		button1 = OKAY,
+		-- button1 keeps the history ledger (marked as a deleted character),
+		-- button3 also deletes it, button2 cancels.
+		button1 = L["Remove, keep history"],
+		button3 = L["Remove with history"],
 		button2 = CANCEL,
 		OnAccept = function()
-			addon:CharacterRemovalProceed(selected_srv, selected_char)
+			addon:CharacterRemovalProceed(selected_srv, selected_char, false)
+		end,
+		OnAlt = function()
+			addon:CharacterRemovalProceed(selected_srv, selected_char, true)
 		end,
 		timeout = 0,
 		whileDead = true,
