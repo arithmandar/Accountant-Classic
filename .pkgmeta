@@ -40,6 +40,8 @@ externals:
         url: https://repos.curseforge.com/wow/libstub/trunk
     Libs/LibUIDropDownMenu: 
         url: https://repos.curseforge.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
+    Libs/LibBabble-SubZone-3.0: 
+        url: https://repos.wowace.com/wow/libbabble-subzone-3-0/trunk
 # Git
     Libs/LibDataBroker-1.1: 
         url: https://repos.curseforge.com/wow/libdatabroker-1-1
