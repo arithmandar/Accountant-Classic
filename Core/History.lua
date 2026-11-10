@@ -26,7 +26,7 @@ local _G = getfenv(0)
 local pairs, ipairs, next, type, tonumber, tostring = _G.pairs, _G.ipairs, _G.next, _G.type, _G.tonumber, _G.tostring
 local format = string.format
 local floor = math.floor
-local tsort = table.sort
+local tsort, tconcat = table.sort, table.concat
 local time, date = _G.time, _G.date
 local LibStub = _G.LibStub
 
@@ -307,26 +307,47 @@ local function getLBSZ()
 	return LBSZ
 end
 
+-- Separator of an ambiguous sub-zone key: "English A;English B". No English key
+-- contains ";", and unlike "|" it is not an escape character in WoW text.
+local AMBIGUOUS_SEPARATOR = ";"
+History.AMBIGUOUS_SEPARATOR = AMBIGUOUS_SEPARATOR
+
 ---Turns the localized sub-zone text into LibBabble-SubZone's English key.
 ---The lookup has to happen now: the library only knows the running locale, so a
 ---localized string saved today could not be resolved after a locale switch.
+---When several English names share the translation (mostly spelling variants such
+---as "The Scribe's Sacellum" / "The Scribes' Sacellum"), all of them are kept,
+---sorted and joined with ";", so the key stays stable and locale independent and
+---can still be matched to the single English key recorded by an enUS client.
 ---@param text string Localized text from GetSubZoneText()
----@return string? key English key, nil when unknown or ambiguous
+---@return string? key English key (or joined candidates), nil when unknown
 local function resolveSubZoneKey(text)
 	if text == lastSubZoneText then return lastSubZoneKey end
 	lastSubZoneText, lastSubZoneKey = text, nil
 	local lib = getLBSZ()
 	if lib and lib.GetReverseIterator then
-		local count, first = 0, nil
+		local keys = {}
 		for key in lib:GetReverseIterator(text) do
-			count = count + 1
-			first = first or key
-			if count > 1 then break end
+			keys[#keys + 1] = key
 		end
-		-- Several English names share this translation: do not guess.
-		if count == 1 then lastSubZoneKey = first end
+		if #keys == 1 then
+			lastSubZoneKey = keys[1]
+		elseif #keys > 1 then
+			tsort(keys)
+			lastSubZoneKey = tconcat(keys, AMBIGUOUS_SEPARATOR)
+		end
 	end
 	return lastSubZoneKey
+end
+
+---Localized name of a stored English sub-zone key (or joined candidates).
+---@param key string
+---@return string
+local function subZoneKeyName(key)
+	local lib = getLBSZ()
+	local first = key:match("^([^;]+)") or key
+	local name = lib and lib:GetLookupTable()[first]
+	return name or first
 end
 
 ---@return integer? mapID uiMapID of the player
@@ -364,8 +385,7 @@ function History:GetLocationName(record)
 		zone = info and info.name
 	end
 	if record.s then
-		local lib = getLBSZ()
-		subZone = lib and lib:GetLookupTable()[record.s] or record.s
+		subZone = subZoneKeyName(record.s)
 	elseif record.sr then
 		-- No English key was found when this was recorded; the raw text is shown as
 		-- saved (it may be in another locale, see record.sl).
@@ -625,20 +645,25 @@ function History:RegisterEvents()
 	eventFrame = _G.CreateFrame("Frame")
 	eventFrame:SetScript("OnEvent", function(_, event)
 		if event == "PLAYER_LOGOUT" then
-			if current and _G.GetMoney then History:SetBalance(_G.GetMoney()) end
+			-- GetMoney() reports 0 while logging out, so the balance is not read here;
+			-- the last value written by Record() / PLAYER_ENTERING_WORLD is kept.
 			History:TrimRecent()
+		elseif event == "PLAYER_ENTERING_WORLD" then
+			-- GetMoney() is reliable from here on; it may still be 0 at PLAYER_LOGIN.
+			if current and _G.GetMoney then History:SetBalance(_G.GetMoney()) end
+			History:UpdateWarband()
 		else
 			History:UpdateWarband()
 		end
 	end)
 	eventFrame:RegisterEvent("PLAYER_LOGOUT")
+	eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	local bankTypes = _G.Enum and _G.Enum.BankType
 	if _G.C_Bank and _G.C_Bank.FetchDepositedMoney and bankTypes and bankTypes.Account then
 		-- ACCOUNT_MONEY does not exist on clients without a Warband bank. The balance
 		-- itself may not be available yet this early, so only the API is checked.
 		pcall(eventFrame.RegisterEvent, eventFrame, "ACCOUNT_MONEY")
 		eventFrame:RegisterEvent("BANKFRAME_OPENED")
-		eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end
 
@@ -875,8 +900,7 @@ function History:GetLocationKeyName(mapID, subKey)
 		if subKey:sub(1, 1) == RAW_SUBZONE_PREFIX then
 			subZone = subKey:match("^#[^:]*:(.*)$") or subKey
 		else
-			local lib = getLBSZ()
-			subZone = lib and lib:GetLookupTable()[subKey] or subKey
+			subZone = subZoneKeyName(subKey)
 		end
 	end
 	return zone, subZone
