@@ -172,11 +172,6 @@ local function getOptions()
 					get = optGetter,
 					set = optSetter,
 					args = {
-						intro = {
-							order = 0,
-							type = "description",
-							name = addon.Notes,
-						},
 						group1 = {
 							order = 10,
 							type = "group",
