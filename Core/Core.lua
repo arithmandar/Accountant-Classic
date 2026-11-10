@@ -1140,7 +1140,11 @@ local function updateLog()
 	-- History ledger: same decision as the classic data, except the WARBAND refinement.
 	local historyType = (logtype == "BANK" and AC_HISTORY_TYPE) or logtype
 	AC_HISTORY_TYPE = nil
-	History:Record(AC_SERVER, AC_PLAYER, historyType, diff, AC_CURRMONEY)
+	-- An error in the history ledger must never break the classic logging above.
+	local ok, err = pcall(History.Record, History, AC_SERVER, AC_PLAYER, historyType, diff, AC_CURRMONEY)
+	if not ok and AccountantClassic_Verbose then
+		printMessage("History error: "..tostring(err))
+	end
 
 	if AccountantClassic_Verbose then
 		printMessage(((diff > 0) and "Gained " or "Lost ")..niceCash(amount).." from "..logtype
@@ -1222,16 +1226,31 @@ historySlash = function(sub)
 			end
 			printMessage(L["Resetting the Day tab also causes differences; the history ledger is never reset with it."])
 		end
+	elseif sub == "zones" then
+		local today = History.DayKey()
+		local zones = History:GetLocationTotals({ char = History.CharKey(AC_SERVER, AC_PLAYER) }, today, today)
+		local list = {}
+		for mapID, zt in pairs(zones) do list[#list + 1] = { mapID = mapID, t = zt } end
+		tsort(list, function(a, b) return (a.t.i + a.t.o) > (b.t.i + b.t.o) end)
+		printMessage(format("History zones %d - %s", today, AC_PLAYER))
+		for _, entry in ipairs(list) do
+			local zt = entry.t
+			printMessage(format("  %s (%d): in %s, out %s", History:GetLocationKeyName(entry.mapID), entry.mapID, fmtc(zt.i), fmtc(zt.o)))
+			for subKey, st in pairs(zt.subZones) do
+				local _, subName = History:GetLocationKeyName(entry.mapID, subKey)
+				printMessage(format("    - %s: in %s, out %s", subName or subKey, fmtc(st.i), fmtc(st.o)))
+			end
+		end
 	elseif sub == "stats" then
 		local st = History:GetStats()
 		local total, _, warband = History:GetNetWorth()
-		printMessage(format("History: %d characters (%d deleted), %d days, %d category buckets, %d hours, %d recent records, ~%.1f KB",
-			st.chars, st.deleted, st.days, st.buckets, st.hours, st.recent, st.bytes / 1024))
+		printMessage(format("History: %d characters (%d deleted), %d days, %d category buckets, %d hours, %d location buckets, %d recent records, ~%.1f KB",
+			st.chars, st.deleted, st.days, st.buckets, st.hours, st.locations, st.recent, st.bytes / 1024))
 		printMessage(format("Net worth: %s%s", fmtc(total), warband and (" (Warband "..fmtc(warband.money)..")") or ""))
 	elseif sub == "wipe" then
 		StaticPopup_Show("ACCOUNTANT_CLASSIC_HISTORY_WIPE")
 	else
-		printMessage("/accountant history today | verify | stats | wipe")
+		printMessage("/accountant history today | zones | verify | stats | wipe")
 	end
 end
 
@@ -1262,7 +1281,7 @@ local function accountantSlash(msg)
 		historySlash(args[2])
 	else
 		printMessage("/accountant log\n")
-		printMessage("/accountant history [today | verify | stats | wipe]")
+		printMessage("/accountant history [today | zones | verify | stats | wipe]")
 	end
 end
 

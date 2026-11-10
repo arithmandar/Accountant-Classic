@@ -9,6 +9,8 @@
 --     .chars[charKey].days[YYYYMMDD][category] = { i, o, ni, no, mi, mo }
 --     .chars[charKey].days[YYYYMMDD].h[hour]   = { i, o, m, a }
 --     .chars[charKey].days[YYYYMMDD].bal       = closing balance of the day
+--     .chars[charKey].days[YYYYMMDD].z[uiMapID][category]          = { i, o, ni, no }
+--     .chars[charKey].days[YYYYMMDD].s[uiMapID][subZone][category] = { i, o, ni, no }
 --     .warband                                  = Warband bank balance (Retail)
 --     .recent                                   = bounded list of recent records
 --
@@ -103,6 +105,18 @@ History.CharKey = charKey
 local function newBucket()
 	return { i = 0, o = 0, ni = 0, no = 0, mi = 0, mo = 0 }
 end
+
+local function newLocationBucket()
+	return { i = 0, o = 0, ni = 0, no = 0 }
+end
+
+-- uiMapID used when the map is unknown (e.g. during a loading screen).
+local UNKNOWN_MAP = 0
+-- Prefix of a sub-zone key that holds raw text (no English key was found):
+-- "#<locale>:<text>", so it can be resolved again later on a client of that locale.
+local RAW_SUBZONE_PREFIX = "#"
+History.UNKNOWN_MAP = UNKNOWN_MAP
+History.RAW_SUBZONE_PREFIX = RAW_SUBZONE_PREFIX
 
 -----------------------------------------------------------------------
 -- Database
@@ -367,9 +381,12 @@ end
 ---@param key string charKey
 ---@param category string
 ---@param diff integer Signed amount
-function History:PushRecent(now, key, category, diff)
+---@param z integer? uiMapID
+---@param s string? English sub-zone key
+---@param sr string? Raw sub-zone text
+---@param sl string? Locale of sr
+function History:PushRecent(now, key, category, diff, z, s, sr, sl)
 	local recent = db.recent
-	local z, s, sr, sl = getLocation()
 	local last = recent[#recent]
 	if category == "LOOT" and diff > 0 and last and last.k == "LOOT" and last.c == key
 		and last.z == z and last.s == s and last.sr == sr
@@ -466,7 +483,71 @@ function History:Record(server, name, category, diff, balance)
 		node.money, node.moneyAt = balance, now
 	end
 
-	self:PushRecent(now, key, category, diff)
+	local z, s, sr, sl = getLocation()
+	if not TRANSFER_CATEGORIES[category] then
+		self:AddLocation(d, category, diff, z, s, sr, sl)
+	end
+	self:PushRecent(now, key, category, diff, z, s, sr, sl)
+end
+
+---Adds a money change to the day's per zone and per sub-zone buckets. These are kept
+---as long as the daily buckets, so location analysis is not limited to the recent list.
+---Transfers are left out, same as the hourly buckets.
+---@param d ACHistoryDay
+---@param category string
+---@param diff integer
+---@param z integer?
+---@param s string?
+---@param sr string?
+---@param sl string?
+function History:AddLocation(d, category, diff, z, s, sr, sl)
+	local mapID = z or UNKNOWN_MAP
+	local amount = diff > 0 and diff or -diff
+
+	local function add(byCategory)
+		local b = byCategory[category]
+		if not b then
+			b = newLocationBucket()
+			byCategory[category] = b
+		end
+		if diff > 0 then
+			b.i, b.ni = b.i + amount, b.ni + 1
+		else
+			b.o, b.no = b.o + amount, b.no + 1
+		end
+	end
+
+	local zones = d.z
+	if not zones then
+		zones = {}
+		d.z = zones
+	end
+	local zone = zones[mapID]
+	if not zone then
+		zone = {}
+		zones[mapID] = zone
+	end
+	add(zone)
+
+	local subKey = s or (sr and (RAW_SUBZONE_PREFIX .. (sl or "") .. ":" .. sr))
+	if subKey then
+		local subs = d.s
+		if not subs then
+			subs = {}
+			d.s = subs
+		end
+		local byMap = subs[mapID]
+		if not byMap then
+			byMap = {}
+			subs[mapID] = byMap
+		end
+		local sub = byMap[subKey]
+		if not sub then
+			sub = {}
+			byMap[subKey] = sub
+		end
+		add(sub)
+	end
 end
 
 -----------------------------------------------------------------------
@@ -717,6 +798,90 @@ function History:AggregateBy(series, unit, weekstart)
 	return out
 end
 
+---Totals by location over a range of days. Transfers are never included.
+---@param scope ACHistoryScope?
+---@param fromDay integer
+---@param toDay integer
+---@return table<integer, ACHistoryLocationTotal> zones By uiMapID (UNKNOWN_MAP when unknown)
+function History:GetLocationTotals(scope, fromDay, toDay)
+	local zones = {}
+	local function merge(target, byCategory)
+		for category, b in pairs(byCategory) do
+			local c = target.categories[category]
+			if not c then
+				c = newLocationBucket()
+				target.categories[category] = c
+			end
+			c.i, c.o, c.ni, c.no = c.i + b.i, c.o + b.o, c.ni + b.ni, c.no + b.no
+			target.i, target.o = target.i + b.i, target.o + b.o
+			target.ni, target.no = target.ni + b.ni, target.no + b.no
+		end
+	end
+	local function newTotal()
+		return { i = 0, o = 0, ni = 0, no = 0, categories = {} }
+	end
+	for _, node in self:IterateChars(scope) do
+		for day, d in pairs(node.days) do
+			if day >= fromDay and day <= toDay then
+				if d.z then
+					for mapID, byCategory in pairs(d.z) do
+						local zt = zones[mapID]
+						if not zt then
+							zt = newTotal()
+							zt.subZones = {}
+							zones[mapID] = zt
+						end
+						merge(zt, byCategory)
+					end
+				end
+				if d.s then
+					for mapID, bySub in pairs(d.s) do
+						local zt = zones[mapID]
+						if not zt then
+							zt = newTotal()
+							zt.subZones = {}
+							zones[mapID] = zt
+						end
+						for subKey, byCategory in pairs(bySub) do
+							local st = zt.subZones[subKey]
+							if not st then
+								st = newTotal()
+								zt.subZones[subKey] = st
+							end
+							merge(st, byCategory)
+						end
+					end
+				end
+			end
+		end
+	end
+	return zones
+end
+
+---Display names for a uiMapID and a stored sub-zone key, in the running locale.
+---@param mapID integer
+---@param subKey string?
+---@return string zone
+---@return string? subZone
+function History:GetLocationKeyName(mapID, subKey)
+	local zone
+	if mapID ~= UNKNOWN_MAP and C_Map and C_Map.GetMapInfo then
+		local info = C_Map.GetMapInfo(mapID)
+		zone = info and info.name
+	end
+	zone = zone or ("#" .. tostring(mapID))
+	local subZone
+	if subKey then
+		if subKey:sub(1, 1) == RAW_SUBZONE_PREFIX then
+			subZone = subKey:match("^#[^:]*:(.*)$") or subKey
+		else
+			local lib = getLBSZ()
+			subZone = lib and lib:GetLookupTable()[subKey] or subKey
+		end
+	end
+	return zone, subZone
+end
+
 ---Sum of every character's last known cash plus the Warband bank.
 ---@param scope ACHistoryScope?
 ---@return integer total
@@ -740,9 +905,9 @@ end
 -----------------------------------------------------------------------
 -- Diagnostics (slash commands)
 -----------------------------------------------------------------------
----@return { chars: integer, deleted: integer, days: integer, buckets: integer, hours: integer, recent: integer, bytes: integer }
+---@return { chars: integer, deleted: integer, days: integer, buckets: integer, hours: integer, locations: integer, recent: integer, bytes: integer }
 function History:GetStats()
-	local s = { chars = 0, deleted = 0, days = 0, buckets = 0, hours = 0, recent = 0, bytes = 0 }
+	local s = { chars = 0, deleted = 0, days = 0, buckets = 0, hours = 0, locations = 0, recent = 0, bytes = 0 }
 	if not db then return s end
 	for _, node in pairs(db.chars) do
 		s.chars = s.chars + 1
@@ -755,11 +920,23 @@ function History:GetStats()
 			if d.h then
 				for _ in pairs(d.h) do s.hours = s.hours + 1 end
 			end
+			if d.z then
+				for _, byCategory in pairs(d.z) do
+					for _ in pairs(byCategory) do s.locations = s.locations + 1 end
+				end
+			end
+			if d.s then
+				for _, bySub in pairs(d.s) do
+					for _, byCategory in pairs(bySub) do
+						for _ in pairs(byCategory) do s.locations = s.locations + 1 end
+					end
+				end
+			end
 		end
 	end
 	s.recent = #db.recent
 	-- Rough size of the serialized SavedVariables text, from measured averages.
-	s.bytes = s.days * 40 + s.buckets * 75 + s.hours * 45 + s.recent * 110
+	s.bytes = s.days * 40 + s.buckets * 75 + s.hours * 45 + s.locations * 70 + s.recent * 110
 	return s
 end
 

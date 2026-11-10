@@ -250,7 +250,8 @@ Accountant_ClassicZoneDB = {}
 ---@field m integer Online minutes
 ---@field a integer? AFK minutes (subset of m)
 
----One day of one character: category buckets plus `h` (hours 0-23) and `bal`.
+---One day of one character: category buckets plus `h` (hours 0-23), `bal`,
+---`z[uiMapID][category]` and `s[uiMapID][subZone][category]` (ACHistoryLocationBucket).
 ---@alias ACHistoryDay table<string, ACHistoryBucket|table<integer, ACHistoryHour>|integer>
 
 ---@class ACHistoryChar
@@ -277,6 +278,18 @@ Accountant_ClassicZoneDB = {}
 ---@field s string? English sub-zone key (LibBabble-SubZone)
 ---@field sr string? Raw sub-zone text when no unique key was found
 ---@field sl string? Locale of sr
+
+---Money of one category in one location on one day. Transfers are not included.
+---@class ACHistoryLocationBucket
+---@field i integer Copper in
+---@field o integer Copper out
+---@field ni integer Number of money-in records
+---@field no integer Number of money-out records
+
+---Location totals returned by History:GetLocationTotals.
+---@class ACHistoryLocationTotal: ACHistoryLocationBucket
+---@field categories table<string, ACHistoryLocationBucket>
+---@field subZones table<string, ACHistoryLocationTotal>? By English sub-zone key, or "#<locale>:<raw text>"
 
 ---@class ACHistoryDB
 ---@field schema integer
