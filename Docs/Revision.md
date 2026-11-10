@@ -10,6 +10,7 @@
 
 - Improvements
   - Options: the settings are now split into separate sub-pages (General and Data Display Format, Minimap Button, LDB Display, Scale and Transparency, Character Data's Removal) instead of one long page
+  - Removing a character now offers three choices: remove and keep its history (default), remove together with its history, or cancel. A kept history is marked as belonging to a removed character
 - Development
   - Groundwork for an upcoming feature: a new saved variable (Accountant_ClassicHistory) and the embedded library LibBabble-SubZone-3.0. The existing logs, windows and saved data are unchanged
 
