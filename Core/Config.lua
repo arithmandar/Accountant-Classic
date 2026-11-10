@@ -181,7 +181,7 @@ local function getOptions()
 							order = 10,
 							type = "group",
 							name = L["General and Data Display Format Settings"],
-							inline = true,
+							inline = false,
 							args = {
 								showmoneyinfo = {
 									order = 12,
@@ -300,7 +300,7 @@ local function getOptions()
 							order = 20,
 							type = "group",
 							name = L["Minimap Button Settings"],
-							inline = true,
+							inline = false,
 							args = {
 								minimapButton = {
 									order = 22,
@@ -331,7 +331,7 @@ local function getOptions()
 							order = 30,
 							type = "group",
 							name = L["LDB Display Settings"],
-							inline = true,
+							inline = false,
 							args = {
 								ldbDisplayType = {
 									order = 32,
@@ -355,7 +355,7 @@ local function getOptions()
 							order = 40,
 							type = "group",
 							name = L["Scale and Transparency"],
-							inline = true,
+							inline = false,
 							args = {
 								group41 = {
 									order = 41,
@@ -412,7 +412,7 @@ local function getOptions()
 							order = 50,
 							type = "group",
 							name = L["Character Data's Removal"],
-							inline = true,
+							inline = false,
 							args = {
 								deleteData = {
 									order = 52,
