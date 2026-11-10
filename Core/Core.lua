@@ -81,6 +81,8 @@ local AC_LOGTYPE = ""
 -- records them as WARBAND transfers instead. Used once by updateLog(), then cleared.
 ---@type string?
 local AC_HISTORY_TYPE
+-- Set while logging the money change found at login (not made in a tracked session).
+local AC_HISTORY_UNTRACKED
 ---@type ACHistory
 local History = private.History
 ---@type integer Copper on the character right now
@@ -1140,8 +1142,10 @@ local function updateLog()
 	-- History ledger: same decision as the classic data, except the WARBAND refinement.
 	local historyType = (logtype == "BANK" and AC_HISTORY_TYPE) or logtype
 	AC_HISTORY_TYPE = nil
+	local untracked = AC_HISTORY_UNTRACKED
+	AC_HISTORY_UNTRACKED = nil
 	-- An error in the history ledger must never break the classic logging above.
-	local ok, err = pcall(History.Record, History, AC_SERVER, AC_PLAYER, historyType, diff, AC_CURRMONEY)
+	local ok, err = pcall(History.Record, History, AC_SERVER, AC_PLAYER, historyType, diff, AC_CURRMONEY, untracked)
 	if not ok and AccountantClassic_Verbose then
 		printMessage("History error: "..tostring(err))
 	end
@@ -2277,7 +2281,9 @@ function addon:OnEnable()
 	if (AC_LASTSESSMONEY and AC_LASTSESSMONEY ~= AC_CURRMONEY) then
 		AC_LOGTYPE = "OTHER"
 		AC_LASTMONEY = AC_LASTSESSMONEY
+		AC_HISTORY_UNTRACKED = true
 		updateLog()
+		AC_HISTORY_UNTRACKED = nil
 	end
 	AC_LASTMONEY = AC_CURRMONEY
 	

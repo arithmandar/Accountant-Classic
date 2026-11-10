@@ -14,6 +14,11 @@
 --     .warband                                  = Warband bank balance (Retail)
 --     .recent                                   = bounded list of recent records
 --
+-- A money change found at login (between the last logout and this login, e.g. played
+-- without the addon) is "untracked": it is counted in the day's category bucket so the
+-- totals still match the classic data, but it has no hour and no place, so it is left
+-- out of the hourly and location buckets and its recent record carries u = 1.
+--
 -- The daily buckets are the only source for reports; the recent list exists for
 -- drill-down and debugging and can be trimmed or wiped without changing any total.
 -----------------------------------------------------------------------
@@ -408,17 +413,21 @@ end
 ---@param s string? English sub-zone key
 ---@param sr string? Raw sub-zone text
 ---@param sl string? Locale of sr
-function History:PushRecent(now, key, category, diff, z, s, sr, sl)
+---@param untracked boolean? Money change found at login (no place, never merged)
+function History:PushRecent(now, key, category, diff, z, s, sr, sl, untracked)
 	local recent = db.recent
 	local last = recent[#recent]
-	if MERGE_CATEGORIES[category] and diff > 0 and last and last.k == category and last.c == key
+	if untracked then
+		recent[#recent + 1] = { t = now, c = key, k = category, a = diff, u = 1 }
+	elseif MERGE_CATEGORIES[category] and diff > 0 and last and not last.u and last.k == category and last.c == key
 		and last.a > 0 and last.z == z and last.s == s and last.sr == sr
 		and (now - last.t) <= RECENT_MERGE_SECONDS then
 		last.a = last.a + diff
 		last.n = (last.n or 1) + 1
 		return
+	else
+		recent[#recent + 1] = { t = now, c = key, k = category, a = diff, z = z, s = s, sr = sr, sl = sl }
 	end
-	recent[#recent + 1] = { t = now, c = key, k = category, a = diff, z = z, s = s, sr = sr, sl = sl }
 	if #recent > db.settings.recentMax + RECENT_SLACK then
 		self:TrimRecent()
 	end
@@ -457,7 +466,8 @@ end
 ---@param category string Classic log type, or a history-only category such as WARBAND
 ---@param diff integer Signed copper amount, positive for money in
 ---@param balance integer? Balance after the change
-function History:Record(server, name, category, diff, balance)
+---@param untracked boolean? The change happened outside the tracked sessions (see top)
+function History:Record(server, name, category, diff, balance, untracked)
 	if not db or readOnly or not isUsableNumber(diff) or diff == 0 then return end
 	local key = charKey(server, name)
 	local node = (key == currentKey and current) or self:GetChar(server, name)
@@ -486,7 +496,8 @@ function History:Record(server, name, category, diff, balance)
 		if amount > b.mo then b.mo = amount end
 	end
 
-	if not TRANSFER_CATEGORIES[category] then
+	local placed = not TRANSFER_CATEGORIES[category] and not untracked
+	if placed then
 		local hr = tonumber(date("%H", now)) --[[@as integer]]
 		local h = d.h
 		if not h then
@@ -506,8 +517,12 @@ function History:Record(server, name, category, diff, balance)
 		node.money, node.moneyAt = balance, now
 	end
 
+	if untracked then
+		self:PushRecent(now, key, category, diff, nil, nil, nil, nil, true)
+		return
+	end
 	local z, s, sr, sl = getLocation()
-	if not TRANSFER_CATEGORIES[category] then
+	if placed then
 		self:AddLocation(d, category, diff, z, s, sr, sl)
 	end
 	self:PushRecent(now, key, category, diff, z, s, sr, sl)

@@ -267,17 +267,18 @@ Accountant_ClassicZoneDB = {}
 ---@field moneyAt integer? Time of that balance
 ---@field days table<integer, ACHistoryDay> By YYYYMMDD
 
----Recent money change for drill-down. Consecutive LOOT records are merged.
+---Recent money change for drill-down. Consecutive LOOT and MERCH income records are merged.
 ---@class ACHistoryRecent
 ---@field t integer Time
 ---@field c string charKey ("Server|Name")
 ---@field k string Category
 ---@field a integer Signed copper amount
----@field n integer? Number of merged LOOT records
+---@field n integer? Number of merged records
 ---@field z integer? uiMapID
 ---@field s string? English sub-zone key (LibBabble-SubZone)
----@field sr string? Raw sub-zone text when no unique key was found
+---@field sr string? Raw sub-zone text when no key was found
 ---@field sl string? Locale of sr
+---@field u integer? 1 when found at login (change outside the tracked sessions); no location
 
 ---Money of one category in one location on one day. Transfers are not included.
 ---@class ACHistoryLocationBucket
