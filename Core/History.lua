@@ -43,9 +43,12 @@ local DEFAULT_RECENT_DAYS = 30
 -- The recent list may grow this far past its limit during a session before it is
 -- trimmed again, so trimming is a rare bulk operation instead of a per-record one.
 local RECENT_SLACK = 200
--- Consecutive LOOT records of one character in one place within this many seconds
--- of the first one are merged into a single recent record.
-local LOOT_MERGE_SECONDS = 60
+-- Consecutive income records of a mergeable category, by one character in one place
+-- within this many seconds of the first one, are merged into a single recent record.
+local RECENT_MERGE_SECONDS = 60
+-- Categories whose income records are merged (looting, selling to a merchant).
+-- Spending is never merged, so every purchase or repair keeps its own record.
+local MERGE_CATEGORIES = { LOOT = true, MERCH = true }
 local ONLINE_TICK_SECONDS = 60
 local SECONDS_PER_DAY = 86400
 
@@ -408,9 +411,9 @@ end
 function History:PushRecent(now, key, category, diff, z, s, sr, sl)
 	local recent = db.recent
 	local last = recent[#recent]
-	if category == "LOOT" and diff > 0 and last and last.k == "LOOT" and last.c == key
-		and last.z == z and last.s == s and last.sr == sr
-		and (now - last.t) <= LOOT_MERGE_SECONDS then
+	if MERGE_CATEGORIES[category] and diff > 0 and last and last.k == category and last.c == key
+		and last.a > 0 and last.z == z and last.s == s and last.sr == sr
+		and (now - last.t) <= RECENT_MERGE_SECONDS then
 		last.a = last.a + diff
 		last.n = (last.n or 1) + 1
 		return
