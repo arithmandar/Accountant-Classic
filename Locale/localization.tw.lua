@@ -1,4 +1,4 @@
--- $Id$ 
+-- Traditional Chinese localization for Accountant Classic
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Accountant_Classic", "zhTW", false)
 
