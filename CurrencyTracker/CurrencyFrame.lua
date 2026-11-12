@@ -1287,6 +1287,8 @@ local function OnEvent(frame, event, ...)
     -- Handle events if needed
 end
 
+local MAX_TOOLTIP_WIDTH = 280
+
 -- Row hover tooltip handlers using LibCurrencyInfo
 local function OnRowEnter(row)
     if not row or not row.currencyId then return end
@@ -1295,7 +1297,25 @@ local function OnRowEnter(row)
         local tip = lib:GetCurrencyTokenStrings(row.currencyId)
         if tip and tip ~= "" then
             GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
-            GameTooltip:SetText(tip)
+            local lines = { strsplit("\n", tip) }
+            for i, line in ipairs(lines) do
+                line = line:gsub("\r", "")
+                if i == 1 then
+                    GameTooltip:SetText(line, 1, 1, 1, 1, false)
+                elseif line == "" then
+                    GameTooltip:AddLine(" ")
+                else
+                    GameTooltip:AddLine(line, 1, 1, 1, true)
+                    local lineIdx = GameTooltip:NumLines()
+                    local fontString = _G["GameTooltipTextLeft" .. lineIdx]
+                    if fontString then
+                        fontString:SetWidth(MAX_TOOLTIP_WIDTH)
+                        if fontString.SetNonSpaceWrap then
+                            fontString:SetNonSpaceWrap(true)
+                        end
+                    end
+                end
+            end
             GameTooltip:Show()
             return
         end
@@ -1308,7 +1328,7 @@ local function OnRowEnter(row)
         else
             local ci = C_CurrencyInfo.GetCurrencyInfo(row.currencyId)
             if ci and ci.name then
-                GameTooltip:SetText(ci.name)
+                GameTooltip:SetText(ci.name, 1, 1, 1, 1, false)
             end
         end
         GameTooltip:Show()
@@ -1316,6 +1336,12 @@ local function OnRowEnter(row)
 end
 
 local function OnRowLeave(row)
+    for j = 1, GameTooltip:NumLines() do
+        local fs = _G["GameTooltipTextLeft" .. j]
+        if fs then
+            fs:SetWidth(0)
+        end
+    end
     GameTooltip:Hide()
 end
 
