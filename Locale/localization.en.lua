@@ -1,7 +1,7 @@
--- $Id$ 
+-- English localization for Accountant Classic
 
-local AceLocale = LibStub:GetLibrary("AceLocale-3.0");
-local L = AceLocale:NewLocale("Accountant_Classic", "enUS", true, true);
+local AceLocale = LibStub:GetLibrary("AceLocale-3.0")
+local L = AceLocale:NewLocale("Accountant_Classic", "enUS", true, true)
 
 if not L then return end
 -- Header
