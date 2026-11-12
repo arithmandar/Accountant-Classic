@@ -1,21 +1,21 @@
---[[
-$Id: Config.lua 11 2017-04-12 12:10:11Z arith $
-]]
 -----------------------------------------------------------------------
 -- Upvalued Lua API.
 -----------------------------------------------------------------------
 -- Functions
 local _G = getfenv(0)
 local pairs = _G.pairs
+local wipe = _G.wipe
 -- Libraries
 local string = _G.string
 local format = string.format
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
-local _, private = ...
+---@class ACNamespace
+local private = select(2, ...)
 local LibStub = _G.LibStub
-local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name)
+---@class ACAddon
+local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name) --[[@as ACAddon]]
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
 
 local OpenSettingsPanel = C_SettingsUtil and C_SettingsUtil.OpenSettingsPanel
@@ -38,19 +38,22 @@ do
 	end
 end
 
+---@type ACCharacterRef[] Characters listed in the removal dropdown
 local character_data_list = {}
+---Fills character_data_list and returns the matching display names.
+---@return string[] names Colored "server - character" entries, same index as character_data_list
 local function getCharacterDataListMenu()
 	local list = {}
+	wipe(character_data_list)
 	local factionstr, faction_icon, colorCode
 	local i = 1
 	
 	for serverkey in pairs(Accountant_ClassicSaveData) do
 		for charkey in pairs(Accountant_ClassicSaveData[serverkey]) do
-			factionstr = Accountant_ClassicSaveData[serverkey][charkey]["options"].faction or nil
+			local charOptions = Accountant_ClassicSaveData[serverkey][charkey]["options"] or {}
+			factionstr = charOptions.faction
 			faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t%s - %s" or "%s - %s"
-
-			local class = Accountant_ClassicSaveData[serverkey][charkey]["options"].class or nil
-			colorCode = class and "|c"..RAID_CLASS_COLORS[class]["colorStr"] or ""
+			colorCode = private.GetClassColorPrefix(charOptions.class)
 
 			list[i] = format(colorCode..faction_icon.."|r", serverkey, charkey)
 			character_data_list[i] = { serverkey, charkey }
@@ -61,24 +64,32 @@ local function getCharacterDataListMenu()
 	return list
 end
 
+---@param value integer Index into character_data_list
 local function confirmCharacterRemoval(value)
-	local selected_srv  = character_data_list[value][1]
-	local selected_char  = character_data_list[value][2]
-	local faction_icon, class_color
+	local entry = character_data_list[value]
+	if not entry then return end
+	local selected_srv, selected_char = entry[1], entry[2]
+	local charData = Accountant_ClassicSaveData[selected_srv] and Accountant_ClassicSaveData[selected_srv][selected_char]
+	if not charData then return end
 
-	local factionstr = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].faction or nil
-	faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t" or ""
-
-	local classToken = Accountant_ClassicSaveData[selected_srv][selected_char]["options"].class or nil
-	class_color = classToken and "|c"..RAID_CLASS_COLORS[classToken]["colorStr"] or ""
+	local options = charData["options"] or {}
+	local factionstr = options.faction
+	local faction_icon = factionstr and "|TInterface\\PVPFrame\\PVP-Currency-"..factionstr..":0:0|t" or ""
+	local class_color = private.GetClassColorPrefix(options.class)
 
 	-- Using native StaticPopupDialogs to show the confirm box.
 	StaticPopupDialogs["ACCOUNTANT_CLASSIC_CONFIRM_REMOVE"] = {
 		text = L["The selected character is about to be removed.\nAre you sure you want to remove the following character from Accountant Classic?"].."\n|r"..faction_icon..class_color..selected_srv.." - "..selected_char,
-		button1 = OKAY,
+		-- button1 keeps the history ledger (marked as a deleted character),
+		-- button3 also deletes it, button2 cancels.
+		button1 = L["Remove, keep history"],
+		button3 = L["Remove with history"],
 		button2 = CANCEL,
 		OnAccept = function()
-			addon:CharacterRemovalProceed(selected_srv, selected_char)
+			addon:CharacterRemovalProceed(selected_srv, selected_char, false)
+		end,
+		OnAlt = function()
+			addon:CharacterRemovalProceed(selected_srv, selected_char, true)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -90,6 +101,7 @@ local function confirmCharacterRemoval(value)
 end
 
 local aboutPanel, options, moduleOptions = nil, nil, {}
+---@return AceConfig.OptionsTable
 local function getAboutPanel()
 	if not aboutPanel then
 		aboutPanel = {
@@ -146,6 +158,7 @@ local function getAboutPanel()
 end
 
 
+---@return AceConfig.OptionsTable
 local function getOptions()
 	if not options then
 		options = {
@@ -159,16 +172,11 @@ local function getOptions()
 					get = optGetter,
 					set = optSetter,
 					args = {
-						intro = {
-							order = 0,
-							type = "description",
-							name = addon.Notes,
-						},
 						group1 = {
 							order = 10,
 							type = "group",
 							name = L["General and Data Display Format Settings"],
-							inline = true,
+							inline = false,
 							args = {
 								showmoneyinfo = {
 									order = 12,
@@ -183,7 +191,12 @@ local function getOptions()
 									desc = L["Reset money frame's position"],
 									--width = "full",
 									func = function()
-										AccountantClassicMoneyInfoFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 10, -80)
+										-- Persist the default position too, otherwise the frame jumps back on reload
+										addon.db.profile.MnyFramePoint = { "TOPLEFT", "UIParent", "TOPLEFT", 10, -80 }
+										local moneyFrame = addon:GetModule("MoneyFrame", true) --[[@as ACMoneyFrameModule?]]
+										if moneyFrame then
+											moneyFrame:ArrangeMoneyInfoFrame()
+										end
 									end,
 									disabled = function() return not addon.db.profile.showmoneyinfo end,
 								},
@@ -282,7 +295,7 @@ local function getOptions()
 							order = 20,
 							type = "group",
 							name = L["Minimap Button Settings"],
-							inline = true,
+							inline = false,
 							args = {
 								minimapButton = {
 									order = 22,
@@ -313,7 +326,7 @@ local function getOptions()
 							order = 30,
 							type = "group",
 							name = L["LDB Display Settings"],
-							inline = true,
+							inline = false,
 							args = {
 								ldbDisplayType = {
 									order = 32,
@@ -337,7 +350,7 @@ local function getOptions()
 							order = 40,
 							type = "group",
 							name = L["Scale and Transparency"],
-							inline = true,
+							inline = false,
 							args = {
 								group41 = {
 									order = 41,
@@ -394,7 +407,7 @@ local function getOptions()
 							order = 50,
 							type = "group",
 							name = L["Character Data's Removal"],
-							inline = true,
+							inline = false,
 							args = {
 								deleteData = {
 									order = 52,
@@ -408,7 +421,10 @@ local function getOptions()
 									end,
 									set = function(info, value)
 										confirmCharacterRemoval(value)
-										InterfaceOptionsFrame:Hide()
+										-- InterfaceOptionsFrame no longer exists on clients using the new Settings UI
+										if InterfaceOptionsFrame then
+											InterfaceOptionsFrame:Hide()
+										end
 									end,
 								},
 							},
@@ -422,6 +438,7 @@ local function getOptions()
 	return options
 end
 
+---Opens the addon options in the Blizzard settings.
 function addon:OpenOptions()
 	local frames = addon.optionsFrames or {}
 	local frameRefs = addon.optionsFrameRefs or {}
@@ -448,10 +465,12 @@ function addon:OpenOptions()
 	end
 end
 
+---@return AceConfig.OptionsTable
 local function giveProfiles()
 	return AceDBOptions:GetOptionsTable(addon.db)
 end
 
+---Registers the options tables with AceConfig.
 function addon:SetupOptions()
 	self.optionsFrames = {}
 	self.optionsFrameRefs = {}
@@ -474,6 +493,10 @@ end
 --		optionsTable	: the sub-table to insert
 --		displayName	: the name to display in the config interface for this set of options
 -- Output: None.
+---Adds an options sub-category.
+---@param name string Key in optionsFrames / optionsFrameRefs
+---@param optionTbl AceConfig.OptionsTable|fun(): AceConfig.OptionsTable
+---@param displayName string Category title
 function addon:RegisterModuleOptions(name, optionTbl, displayName)
 	moduleOptions[name] = optionTbl
 	local frame, categoryID = AceConfigDialog:AddToBlizOptions(addon.LocName, displayName, addon.LocName, name)

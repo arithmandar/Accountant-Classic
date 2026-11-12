@@ -1,15 +1,16 @@
---[[
-$Id$
-]]
------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 -- Description: Creates and manages the tab buttons for the Accountant Classic frame.
--- This file is used to build the tab UI and handle tab switching behavior
--- within the main window.
------------------------------------------------------------------------
+-- This file is used to build the tab UI and handle tab switching behavior within the main window.
+-----------------------------------------------------------------------------------------------------
 
 local _G = getfenv(0)
-local _, private = ...
+---@class ACNamespace
+local private = select(2, ...)
 
+local Client = private.Client
+
+---Builds the retail tab textures (no XML template on mainline).
+---@param tab ACTab
 local function createRetailTabTextures(tab)
 	local left = tab:CreateTexture(nil, "BACKGROUND")
 	left:SetAtlas("uiframe-tab-left", true)
@@ -50,13 +51,17 @@ local function createRetailTabTextures(tab)
 	tab.Text = text
 end
 
+---@param parent ACMainFrame
+---@param index integer
+---@param text string
+---@return ACTab
 local function createTab(parent, index, text)
 	local template
-	if private.WoWClassicFamily then
+	if Client.isAnyClassic then
 		template = "CharacterFrameTabButtonTemplate"
 	end
 
-	local tab = CreateFrame("Button", parent:GetName().."Tab"..index, parent, template)
+	local tab = CreateFrame("Button", parent:GetName().."Tab"..index, parent, template) --[[@as ACTab]]
 	tab:SetID(index)
 	tab:SetSize(10, 32)
 	if not template then
@@ -76,6 +81,9 @@ local function createTab(parent, index, text)
 	return tab
 end
 
+---Creates and anchors the bottom tabs.
+---@param parent ACMainFrame
+---@return ACTab[]
 function AccountantClassic_CreateTabs(parent)
 	local tabText = private.constants.tabText
 	local tabs = {}
@@ -84,14 +92,13 @@ function AccountantClassic_CreateTabs(parent)
 	end
 
 	local firstTab = tabs[1]
-	firstTab:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", private.WoWClassicFamily and 5 or 15, -20)
+	firstTab:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", Client.isAnyClassic and 5 or 15, -20)
 	for index = 2, 10 do
-		local row = index % 2 == 0 and 1 or 2
 		local previous = tabs[index == 2 and 1 or index - 2]
-		local offset = private.WoWClassicFamily and -20 or 5
-		local y = index == 3 and (private.WoWClassicFamily and -26 or -32) or 0
+		local offset = Client.isAnyClassic and -20 or 5
+		local y = index == 3 and (Client.isAnyClassic and -26 or -32) or 0
 		tabs[index]:SetPoint("LEFT", previous, "RIGHT", offset, y)
 	end
-	tabs[11]:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", private.WoWClassicFamily and 0 or -5, -20)
+	tabs[11]:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", Client.isAnyClassic and 0 or -5, -20)
 	return tabs
 end

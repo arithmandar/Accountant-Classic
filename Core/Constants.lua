@@ -1,49 +1,63 @@
--- $Id: Constants.lua 10 2017-04-12 09:58:16Z arith $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
 -- Functions
 local _G = getfenv(0)
-local GetBuildInfo = _G.GetBuildInfo
-
--- Libraries
-
--- Determine WoW client family
-local _, _, _, interfaceVersion = GetBuildInfo()
-local projectID = WOW_PROJECT_ID
-
-local PROJECT_MAINLINE = WOW_PROJECT_MAINLINE
-local PROJECT_CLASSIC = WOW_PROJECT_CLASSIC
-local PROJECT_TBC = WOW_PROJECT_BURNING_CRUSADE_CLASSIC
-local PROJECT_CATA = WOW_PROJECT_CATACLYSM_CLASSIC
-local PROJECT_MISTS = WOW_PROJECT_MISTS_CLASSIC
-
--- Beta-only fallback:
--- Replace these bounds with values verified from the actual Forever client.
-local isForeverBeta = projectID == PROJECT_MAINLINE and interfaceVersion >= 10000 and interfaceVersion < 20000
-
-local isRetail = projectID == PROJECT_MAINLINE and not isForeverBeta
-local isClassicEra = projectID == PROJECT_CLASSIC
-local isAnniversaryTBC = PROJECT_TBC ~= nil and projectID == PROJECT_TBC
-local isCataclysmClassic = PROJECT_CATA ~= nil and projectID == PROJECT_CATA
-local isMistsClassic = PROJECT_MISTS ~= nil and projectID == PROJECT_MISTS
-local isProgressionClassic = isCataclysmClassic or isMistsClassic
-local isClassicForever = isForeverBeta
-local isAnyClassic = isClassicEra or isAnniversaryTBC or isProgressionClassic
+local LibStub = _G.LibStub
+local UnitFactionGroup = _G.UnitFactionGroup
+local UnitClass = _G.UnitClass
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
-local FOLDER_NAME, private = ...
+---@class ACNamespace
+local private = select(2, ...)
 private.addon_name = "Accountant_Classic"
 
-local LibStub = _G.LibStub
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
-
-local constants = {}
-private.constants = constants
-
 local playerFaction = UnitFactionGroup("player")
 local _, playerClass = UnitClass("player")
+
+-- Determine WoW client family
+local projectID = WOW_PROJECT_ID
+
+local function IsProject(id)
+    return id ~= nil and projectID == id
+end
+
+---@class ACClient
+local Client = {
+    projectID = projectID,
+
+    isRetail = IsProject(WOW_PROJECT_MAINLINE),
+    isClassicEra = IsProject(WOW_PROJECT_CLASSIC),
+    isTBCClassic = IsProject(WOW_PROJECT_BURNING_CRUSADE_CLASSIC),
+    isCataclysmClassic = IsProject(WOW_PROJECT_CATACLYSM_CLASSIC),
+    isMistsClassic = IsProject(WOW_PROJECT_MISTS_CLASSIC),
+    isForever = IsProject(WOW_PROJECT_CAMELOT),
+}
+
+Client.isProgressionClassic = Client.isCataclysmClassic or Client.isMistsClassic
+Client.isAnyClassic = Client.isClassicEra or Client.isTBCClassic or Client.isProgressionClassic
+Client.isKnownProject = Client.isRetail or Client.isAnyClassic or Client.isForever
+private.Client = Client
+
+-- Returns the "|cAARRGGBB" colour prefix for a class token, or "" when the token is
+-- unknown to this client (e.g. data saved by another game flavour), instead of erroring
+-- on RAID_CLASS_COLORS[class] being nil.
+---@param classToken string? Class token, e.g. "MAGE"
+---@return string prefix "|cAARRGGBB", or "" when the class is unknown
+function private.GetClassColorPrefix(classToken)
+	local color = classToken and RAID_CLASS_COLORS and RAID_CLASS_COLORS[classToken]
+	if color and color.colorStr then
+		return "|c"..color.colorStr
+	end
+	return ""
+end
+
+-- Create constants table
+---@class ACConstants
+local constants = {}
+private.constants = constants
 
 constants.defaults = {
 	profile = {
@@ -108,9 +122,12 @@ constants.eventLogTypes = {
 	CONFIRM_TALENT_WIPE = "TRAIN",
 	AUCTION_HOUSE_SHOW = "AH",
 	AUCTION_HOUSE_CLOSED = "",
+	-- Bank (bank bag slots / bank tab purchases, Warband bank gold deposits / withdrawals)
+	BANKFRAME_OPENED = "BANK",
+	BANKFRAME_CLOSED = "",
 }
 
-if (isAnyClassic) then 
+if (Client.isAnyClassic) then 
 	constants.events = {
 		-- Barber shop
 		"BARBER_SHOP_APPEARANCE_APPLIED",
@@ -129,6 +146,11 @@ if (isAnyClassic) then
 		"GUILDBANKFRAME_CLOSED",
 		"GUILDBANK_UPDATE_MONEY",
 		"GUILDBANK_UPDATE_WITHDRAWMONEY",
+		-- Bank
+		"BANKFRAME_OPENED",
+		"BANKFRAME_CLOSED",
+		"PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
+		"PLAYER_INTERACTION_MANAGER_FRAME_HIDE",
 		-- Talent
 		"CONFIRM_TALENT_WIPE",
 		-- Merchant
@@ -161,7 +183,7 @@ if (isAnyClassic) then
 		"PLAYER_MONEY",
 	}
 	constants.logtypes = {
-		"TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD",
+		"TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD", "BANK",
 		"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER" 
 	}
 	constants.onlineData = {
@@ -169,6 +191,7 @@ if (isAnyClassic) then
 		["LFG"] =		{ Title = L["LFD, LFR and Scen."]};
 		["BARBER"] =	{ Title = BARBERSHOP};
 		["GUILD"] =		{ Title = GUILD};
+		["BANK"] =		{ Title = BANK};
 		["TRAIN"] = 	{ Title = L["Training Costs"]};
 		["TAXI"] = 		{ Title = L["Taxi Fares"]};
 		["TRADE"] = 	{ Title = L["Trade Window"]};
@@ -183,14 +206,17 @@ if (isAnyClassic) then
 else
 	constants.events = {
 		-- Garrison
-		"GARRISON_MISSION_FINISHED",
+		-- Only events caused by the player interacting with a garrison / order hall NPC
+		-- switch the log type. GARRISON_UPDATE and GARRISON_MISSION_FINISHED fire in the
+		-- background (missions completing, garrison data refreshes), so using them left
+		-- the log type stuck on GARRISON and unrelated money (bank tab purchases, loot)
+		-- was logged there.
 		"GARRISON_ARCHITECT_OPENED",
 		"GARRISON_ARCHITECT_CLOSED",
 		"GARRISON_MISSION_NPC_OPENED",
 		"GARRISON_MISSION_NPC_CLOSED",
 		"GARRISON_SHIPYARD_NPC_OPENED",
 		"GARRISON_SHIPYARD_NPC_CLOSED",
-		"GARRISON_UPDATE",
 		-- Barber shop
 		"BARBER_SHOP_APPEARANCE_APPLIED",
 		"BARBER_SHOP_OPEN",
@@ -208,6 +234,11 @@ else
 		"GUILDBANKFRAME_CLOSED",
 		"GUILDBANK_UPDATE_MONEY",
 		"GUILDBANK_UPDATE_WITHDRAWMONEY",
+		-- Bank
+		"BANKFRAME_OPENED",
+		"BANKFRAME_CLOSED",
+		"PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
+		"PLAYER_INTERACTION_MANAGER_FRAME_HIDE",
 		-- Talent
 		"CONFIRM_TALENT_WIPE",
 		-- Merchant
@@ -239,8 +270,6 @@ else
 		"CHAT_MSG_MONEY",
 		"PLAYER_MONEY",
 	}
-	constants.eventLogTypes.GARRISON_MISSION_FINISHED = "GARRISON"
-	constants.eventLogTypes.GARRISON_UPDATE = "GARRISON"
 	constants.eventLogTypes.GARRISON_ARCHITECT_OPENED = "GARRISON"
 	constants.eventLogTypes.GARRISON_MISSION_NPC_OPENED = "GARRISON"
 	constants.eventLogTypes.GARRISON_SHIPYARD_NPC_OPENED = "GARRISON"
@@ -249,8 +278,8 @@ else
 	constants.eventLogTypes.GARRISON_SHIPYARD_NPC_CLOSED = ""
 
 	constants.logtypes = {
-		"TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD",
-		"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER" 
+		"TRANSMO", "GARRISON", "LFG", "BARBER", "GUILD", "BANK",
+		"TRAIN", "TAXI", "TRADE", "AH", "MERCH", "REPAIRS", "MAIL", "QUEST", "LOOT", "OTHER"
 	}
 	constants.onlineData = {
 		["TRANSMO"] =	{ Title = TRANSMOGRIFY};
@@ -258,6 +287,7 @@ else
 		["LFG"] =		{ Title = L["LFD, LFR and Scen."]};
 		["BARBER"] =	{ Title = BARBERSHOP};
 		["GUILD"] =		{ Title = GUILD};
+		["BANK"] =		{ Title = BANK};
 
 		["TRAIN"] = 	{ Title = L["Training Costs"]};
 		["TAXI"] = 		{ Title = L["Taxi Fares"]};
@@ -309,3 +339,9 @@ constants.tabTooltipText = {
 -- Maximum lines for characters to be displayed. 
 -- We have 18 lines of space but we are using the 18th line to present the total. 
 constants.maxCharLines = 17
+
+-- Maximum lines of tooltip
+constants.maxTooltipLines = 50
+
+-- icon texture
+constants.iconTexture = "Interface\\AddOns\\Accountant_Classic\\Images\\AccountantClassicButton-Up"

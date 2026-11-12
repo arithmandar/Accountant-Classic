@@ -1,6 +1,3 @@
-<!--
-$Id$
--->
 <Bindings>
 	<Binding name="ACCOUNTANT_CLASSIC_TOGGLE" header="ACCOUNTANT_CLASSIC_TITLE" category="ADDONS">
 		AccountantClassic_ButtonOnClick();
