@@ -6,7 +6,7 @@
 
 ## Revision History
 
-### v2.30.03 (Unreleased)
+### v2.30.03 (Nov. 12, 2026)
 
 - Bug fixes
   - Fixed a Lua error "attempt to perform boolean test on a secret boolean value" from the history module every minute: on 12.0 UnitIsAFK() can return a secret value, which is now treated as not AFK (issue #7)
