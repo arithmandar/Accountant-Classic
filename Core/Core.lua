@@ -459,24 +459,15 @@ local function createACFrames()
 	if not f.HeaderSource then
 		local function makeHeaderButton(name, x, width)
 			local button = CreateFrame("Button", name, f)
-			button:SetSize(width, 19)
+			button:SetSize(width, 20)
 			button:SetPoint("TOPLEFT", f, "TOPLEFT", x, -91)
-			button:SetFrameStrata("HIGH")
-			button:SetScript("OnEnter", function(self)
-				if self.highlightTexture then
-					self.highlightTexture:Show()
-				else
-					self.highlightTexture = self:CreateTexture(nil, "BACKGROUND")
-					self.highlightTexture:SetAllPoints(self)
-					self.highlightTexture:SetColorTexture(1, 1, 1, 0.2)
-					self.highlightTexture:Show()
-				end
-			end)
-			button:SetScript("OnLeave", function(self)
-				if self.highlightTexture then
-					self.highlightTexture:Hide()
-				end
-			end)
+			button:SetFrameLevel(f:GetFrameLevel() + 5)
+			local hl = button:CreateTexture(nil, "HIGHLIGHT")
+			hl:SetAllPoints(button)
+			hl:SetColorTexture(1, 1, 1, 0.18)
+			hl:SetBlendMode("ADD")
+			button:SetHighlightTexture(hl)
+			button:Hide()
 			return button
 		end
 
@@ -492,13 +483,13 @@ local function createACFrames()
 			end
 		end
 
-		f.HeaderSource = makeHeaderButton(parentName.."HeaderSource", 21, 280)
+		f.HeaderSource = makeHeaderButton(parentName.."HeaderSource", 20, 288)
 		f.HeaderSource:SetScript("OnClick", function() toggleSort("name") end)
 
-		f.HeaderIn = makeHeaderButton(parentName.."HeaderIn", 294, 160)
+		f.HeaderIn = makeHeaderButton(parentName.."HeaderIn", 309, 159)
 		f.HeaderIn:SetScript("OnClick", function() toggleSort("money") end)
 
-		f.HeaderOut = makeHeaderButton(parentName.."HeaderOut", 455, 160)
+		f.HeaderOut = makeHeaderButton(parentName.."HeaderOut", 469, 160)
 		f.HeaderOut:SetScript("OnClick", function() toggleSort("date") end)
 	end
 	
@@ -561,6 +552,9 @@ local function setLabels()
 	-- if current tab is All Chars tab
 	if (AC_CURRTAB == AC_TABS) then
 		AccountantClassicFrameResetButton:Hide()
+		if f.HeaderSource then f.HeaderSource:Show() end
+		if f.HeaderIn then f.HeaderIn:Show() end
+		if f.HeaderOut then f.HeaderOut:Show() end
 
 		f.Source:SetText(L["Character"])
 		f.In:SetText(L["Money"])
@@ -590,6 +584,9 @@ local function setLabels()
 		return
 	else
 		AccountantClassicFrameResetButton:Show()
+		if f.HeaderSource then f.HeaderSource:Hide() end
+		if f.HeaderIn then f.HeaderIn:Hide() end
+		if f.HeaderOut then f.HeaderOut:Hide() end
 
 		f.Source:SetText(L["Source"])
 		f.In:SetText(L["Incomings"])
