@@ -267,3 +267,11 @@ L["CT_Header_TotalMax"] = "总上限"
 L["CT_Header_Income"]   = "收入"
 L["CT_Header_Outgoing"] = "支出"
 L["CT_Header_Net"]      = "净值"
+
+-- 区域排行
+L["Zone Breakdown"] = "区域排行"
+L["Sub-zone Breakdown"] = "子区域明细"
+L["Click to view zone breakdown"] = "点击查看区域排行"
+L["No zone data recorded for this category."] = "该分类在此期间无区域明细记录。"
+L["Zones"] = "个区域"
+L["General"] = "通用/本地图"

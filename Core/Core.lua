@@ -56,6 +56,7 @@ addon.Version 		= GetAddOnMetadata(addon.Name, "Version")
 addon.UpdateDate 	= GetAddOnMetadata(addon.Name, "X-Date")
 addon.Author 		= GetAddOnMetadata(addon.Name, "Author")
 _G.Accountant_Classic = addon
+private.addon = addon
 
 -- UIDropDownMenu
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0") --[[@as ACLibUIDropDownMenu]]
@@ -1813,9 +1814,11 @@ function AccountantClassic_OnShow(self)
 		local TotalIn = 0
 		local TotalOut = 0
 		for _, key in ipairs(AC_LOGTYPE_ORDER) do
+			local colTitle = _G["AccountantClassicFrameRow"..AC_DATA[key].InPos.."Title"]
 			local colIn = _G["AccountantClassicFrameRow"..AC_DATA[key].InPos.."In"]
 			local colOut = _G["AccountantClassicFrameRow"..AC_DATA[key].InPos.."Out"]
 
+			colTitle.logType = key
 			colIn.logType = key
 			colOut.logType = key
 			colIn.cashflow = "In"
@@ -1834,6 +1837,9 @@ function AccountantClassic_OnShow(self)
 				mIn, mOut = sumAllCharacters(allCharsServer, key, mode)
 			end
 
+			colTitle.mIn = mIn
+			colTitle.mOut = mOut
+
 			TotalIn = TotalIn + mIn
 			TotalOut = TotalOut + mOut
 
@@ -1841,6 +1847,10 @@ function AccountantClassic_OnShow(self)
 			colOut.Text:SetText(addon:GetFormattedValue(mOut))
 		end
 		setTotals(TotalIn, TotalOut)
+
+		if private.ZoneBreakdown and private.ZoneBreakdown.RefreshCurrent then
+			private.ZoneBreakdown:RefreshCurrent()
+		end
 
 		-- Set row 18 to be empty so that the total row from all characters will be clean out
 		_G["AccountantClassicFrameRow18Title"].Text:SetText("")
@@ -1891,6 +1901,9 @@ function AccountantClassic_OnShow(self)
 		AccountantClassicFrame.ExtraValue:SetText("")
 	end
 	PanelTemplates_SetTab(AccountantClassicFrame, AC_CURRTAB)
+	if private.ZoneBreakdown and private.ZoneBreakdown.UpdatePosition then
+		private.ZoneBreakdown:UpdatePosition()
+	end
 end
 
 ---@param self ACMainFrame
@@ -1908,6 +1921,9 @@ function AccountantClassic_OnMouseUp(self, button)
 	self:StopMovingOrSizing();
 	local a, b, c, d, e = self:GetPoint()
 	profile.AcFramePoint = { a, b, c, d, e }
+	if private.ZoneBreakdown and private.ZoneBreakdown.UpdatePosition then
+		private.ZoneBreakdown:UpdatePosition()
+	end
 end
 
 ---@param msg string
@@ -2164,11 +2180,33 @@ function addon:ShowSessionToolTip()
 	end
 end
 
+---Returns the current view's server, character, and logmode.
+---@return string serverkey
+---@return string? charkey Nil when "All Chars" is selected
+---@return string logmode
+function addon:GetCurrentViewContext()
+	local tab = PanelTemplates_GetSelectedTab(AccountantClassicFrame) or AC_CURRTAB or 1
+	local logmode = private.constants.logmodes[tab] or "Session"
+	local serverkey, charkey
+	if (logmode == "Session") then
+		serverkey, charkey = AC_SERVER, AC_PLAYER
+	else
+		local index = AC_SELECTED_CHAR_NUM or resolveSelectedCharacter()
+		local entry = index and AC_CHARSCROLL_LIST and AC_CHARSCROLL_LIST[index]
+		if entry then
+			serverkey, charkey = entry[1], entry[2]
+		else
+			serverkey = AC_SERVER
+		end
+	end
+	return serverkey, charkey, logmode
+end
+
 local AC_MAXTOOLTIPLINES = private.constants.maxTooltipLines
 ---Shows the zone breakdown tooltip of a row cell.
 ---@param self ACRowColumn
 function AccountantClassic_LogTypeOnShow(self)
-	local logmode = private.constants.logmodes[AC_CURRTAB]
+	local serverkey, charkey, logmode = addon:GetCurrentViewContext()
 	if (not logmode) then
 		return;
 	end
@@ -2176,17 +2214,13 @@ function AccountantClassic_LogTypeOnShow(self)
 		return
 	end
 
-	local serverkey, charkey
-	if (logmode == "Session") then
-		serverkey, charkey = AC_SERVER, AC_PLAYER
-	else
-		local index = AC_SELECTED_CHAR_NUM or resolveSelectedCharacter()
-		local entry = AC_CHARSCROLL_LIST[index]
-		if not entry then
-			-- "All Chars" selection: per-zone breakdown across characters is not supported
-			return
-		end
-		serverkey, charkey = entry[1], entry[2]
+	if private.ZoneBreakdown and private.ZoneBreakdown.IsShownFor and private.ZoneBreakdown:IsShownFor(self.logType, self.cashflow) then
+		return
+	end
+
+	if not charkey then
+		-- "All Chars" selection: per-zone breakdown across characters is not supported
+		return
 	end
 
 	local serverData = Accountant_ClassicZoneDB and Accountant_ClassicZoneDB[serverkey]
@@ -2209,6 +2243,7 @@ function AccountantClassic_LogTypeOnShow(self)
 	end
 
 	if #lines == 0 then return end
+	lines[#lines + 1] = "|cFF00FF00<" .. (L["Click to view zone breakdown"] or "Click to view zone breakdown") .. ">|r"
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:AddLine(table.concat(lines, "\n"), nil, nil, nil, false);
 	GameTooltip:Show();

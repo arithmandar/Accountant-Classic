@@ -268,3 +268,11 @@ L["CT_Header_Income"]   = "Income"
 L["CT_Header_Outgoing"] = "Outgoing"
 L["CT_Header_Net"]      = "Net"
 
+-- Zone Breakdown
+L["Zone Breakdown"] = "Zone Breakdown"
+L["Sub-zone Breakdown"] = "Sub-zone Breakdown"
+L["Click to view zone breakdown"] = "Click to view zone breakdown"
+L["No zone data recorded for this category."] = "No zone data recorded for this category."
+L["Zones"] = "Zones"
+L["General"] = "General"
+

@@ -271,3 +271,11 @@ L["CT_Header_Income"]   = "收入"
 L["CT_Header_Outgoing"] = "支出"
 L["CT_Header_Net"]      = "淨值"
 
+-- 區域排行
+L["Zone Breakdown"] = "區域排行"
+L["Sub-zone Breakdown"] = "子區域明細"
+L["Click to view zone breakdown"] = "點擊查看區域排行"
+L["No zone data recorded for this category."] = "該分類在此期間無區域明細記錄。"
+L["Zones"] = "個區域"
+L["General"] = "通用/本地圖"
+
