@@ -132,6 +132,25 @@ local function getPlayerStorageKey()
 
     return storageKey
 end
+private.GetPlayerStorageKey = getPlayerStorageKey
+
+---Returns the storage key for the current character.
+---@return string
+function addon:GetPlayerStorageKey()
+	return getPlayerStorageKey()
+end
+
+---Returns the active player key.
+---@return string
+function addon:GetCurrentPlayer()
+	return AC_PLAYER or getPlayerStorageKey()
+end
+
+---Returns the active server key.
+---@return string
+function addon:GetCurrentServer()
+	return AC_SERVER or GetRealmName()
+end
 
 local AC_FACTION = UnitFactionGroup("player")
 local _, AC_CLASS = UnitClass("player")
@@ -2249,6 +2268,10 @@ end
 function addon:OnEnable()
 	AC_SERVER = GetRealmName()
 	AC_PLAYER = getPlayerStorageKey()
+	_G.AC_SERVER = AC_SERVER
+	_G.AC_PLAYER = AC_PLAYER
+	private.AC_SERVER = AC_SERVER
+	private.AC_PLAYER = AC_PLAYER
 	initOptions()
 	copyOptions()
 

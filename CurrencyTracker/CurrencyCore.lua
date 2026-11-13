@@ -105,8 +105,13 @@ function CurrencyTracker:MetaShow(sub)
         print("Usage: /ct meta show <timeframe> <id>")
         return
     end
-    local server = _G.AC_SERVER or GetRealmName()
-    local character = _G.AC_PLAYER or UnitName("player")
+    local server, character
+    if GetCurrentServerAndCharacter then
+        server, character = GetCurrentServerAndCharacter()
+    else
+        server = _G.AC_SERVER or GetRealmName()
+        character = _G.AC_PLAYER or UnitName("player")
+    end
     local sv = _G.Accountant_ClassicSaveData
     if not (server and character and sv and sv[server] and sv[server][character]) then
         print("No saved data available")

@@ -214,9 +214,7 @@ end
 
 -- Clear the Session period for all currencies (called on login/initialize)
 function Storage:ResetSession()
-    -- Avoid relying on helper functions during very early init.
-    local server = _G.AC_SERVER or GetRealmName()
-    local character = _G.AC_PLAYER or UnitName("player")
+    local server, character = GetCurrentServerAndCharacter()
     if not (server and character) then return false end
     if not _G.Accountant_ClassicSaveData then return true end
     if not _G.Accountant_ClassicSaveData[server] then return true end
@@ -396,9 +394,17 @@ local TIME_PERIODS = {
 
 -- Helper function to get current server and character
 function GetCurrentServerAndCharacter()
-    -- These globals are set by the main addon
-    local server = AC_SERVER or GetRealmName()
-    local character = AC_PLAYER or UnitName("player")
+    local ac = _G.Accountant_Classic
+    local server = (ac and ac.GetCurrentServer and ac:GetCurrentServer()) or _G.AC_SERVER or GetRealmName()
+    local character = (ac and ac.GetCurrentPlayer and ac:GetCurrentPlayer()) or (ac and ac.GetPlayerStorageKey and ac:GetPlayerStorageKey()) or _G.AC_PLAYER
+    if not character or character == "" then
+        local firstName, secondName = UnitName("player")
+        if secondName and secondName ~= "" then
+            character = firstName .. "-" .. secondName
+        else
+            character = firstName
+        end
+    end
     return server, character
 end
 
@@ -431,12 +437,79 @@ function EnsureSavedVariablesStructure()
     return true
 end
 
+---Migrates currency data from mistakenly truncated character keys (e.g. "Aru" instead of "Aru-Karu" on Forever)
+---and removes the empty phantom character from Accountant_ClassicSaveData.
+function Storage:MigrateOrphanCharacters()
+    if not _G.Accountant_ClassicSaveData then return end
+    local server, character = GetCurrentServerAndCharacter()
+    if not (server and character) then return end
+    local svServer = _G.Accountant_ClassicSaveData[server]
+    if not svServer then return end
+
+    -- Check if current character is compound/hyphenated (e.g. "Aru-Karu")
+    local firstName = character:match("^(.-)%-")
+    if not firstName or firstName == "" or firstName == character then return end
+
+    local orphan = svServer[firstName]
+    if not orphan then return end
+
+    -- Verify the orphan was only created by CurrencyTracker (i.e. has no real gold data)
+    local hasRealGoldData = false
+    if orphan.data and type(orphan.data) == "table" then
+        for _, modeTable in pairs(orphan.data) do
+            if type(modeTable) == "table" then
+                for _, period in pairs(modeTable) do
+                    if type(period) == "table" and ((period.In and period.In > 0) or (period.Out and period.Out > 0)) then
+                        hasRealGoldData = true
+                        break
+                    end
+                end
+            end
+            if hasRealGoldData then break end
+        end
+    end
+
+    if not hasRealGoldData then
+        -- Ensure target character structure exists
+        if not svServer[character] then
+            svServer[character] = {
+                options = orphan.options or {},
+                data = {}
+            }
+        end
+
+        local target = svServer[character]
+        if target then
+            if orphan.currencyData and (not target.currencyData or not next(target.currencyData)) then
+                target.currencyData = orphan.currencyData
+            end
+            if orphan.currencyOptions and (not target.currencyOptions or not next(target.currencyOptions)) then
+                target.currencyOptions = orphan.currencyOptions
+            end
+            if orphan.currencyMeta and (not target.currencyMeta or not next(target.currencyMeta)) then
+                target.currencyMeta = orphan.currencyMeta
+            end
+        end
+
+        svServer[firstName] = nil
+        SafeLogDebug("Removed phantom character '%s' and migrated currency data to '%s'", firstName, character)
+
+        local ac = _G.Accountant_Classic
+        if ac and ac.PopulateCharacterList then
+            ac:PopulateCharacterList()
+        end
+    end
+end
+
 -- Core interface implementation
 function Storage:Initialize()
     if isInitialized then
         return true
     end
     
+    -- Clean up any phantom orphan character and migrate its currency data
+    self:MigrateOrphanCharacters()
+
     -- Ensure SavedVariables structure exists
     if not EnsureSavedVariablesStructure() then
         return false

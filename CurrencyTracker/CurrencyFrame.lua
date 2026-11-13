@@ -177,6 +177,24 @@ local characterDropdown = nil
 local currentServer = nil
 local currentCharacter = nil
 
+---Returns the full active character key (handles Forever First-Second naming).
+local function getActiveCharacter()
+    if GetCurrentServerAndCharacter then
+        local _, charKey = GetCurrentServerAndCharacter()
+        if charKey and charKey ~= "" then
+            return charKey
+        end
+    end
+    if _G.AC_PLAYER and _G.AC_PLAYER ~= "" then
+        return _G.AC_PLAYER
+    end
+    local fName, sName = UnitName("player")
+    if sName and sName ~= "" then
+        return fName .. "-" .. sName
+    end
+    return fName
+end
+
 -- State persistence
 local function SaveUIState()
     if not CurrencyTracker or not CurrencyTracker.Storage then return end
@@ -215,6 +233,11 @@ local function LoadUIState()
     
     if CurrencyTracker.Storage.currencyOptions.lastCharacter then
         currentCharacter = CurrencyTracker.Storage.currencyOptions.lastCharacter
+        -- If lastCharacter was saved as the truncated first-name on Forever, correct it
+        local activeChar = getActiveCharacter()
+        if activeChar and activeChar:find("%-") and currentCharacter == activeChar:match("^(.-)%-") then
+            currentCharacter = activeChar
+        end
     end
 end
 
@@ -513,7 +536,8 @@ local function UpdateScrollFrame()
             oldServer = _G.AC_SERVER
             _G.AC_SERVER = currentServer
         end
-        if currentCharacter and currentCharacter ~= UnitName("player") then
+        local activeChar = getActiveCharacter()
+        if currentCharacter and currentCharacter ~= activeChar then
             oldPlayer = _G.AC_PLAYER
             _G.AC_PLAYER = currentCharacter
         end
@@ -848,9 +872,10 @@ local function InitializeCharacterDropdown(dropdown)
         local sv = _G.Accountant_ClassicSaveData
         if not sv or not currentServer or not sv[currentServer] then return end
         
+        local activeChar = getActiveCharacter()
         -- Get current character if not set
         if not currentCharacter then
-            currentCharacter = UnitName("player")
+            currentCharacter = activeChar
         end
         
         -- Add characters with data for this server
@@ -874,7 +899,8 @@ local function InitializeCharacterDropdown(dropdown)
     UIDropDownMenu_Initialize(dropdown, CharacterDropdown_Initialize)
     UIDropDownMenu_SetWidth(dropdown, 160)
     UIDropDownMenu_SetButtonWidth(dropdown, 174)
-    UIDropDownMenu_SetSelectedValue(dropdown, currentCharacter or UnitName("player"))
+    local activeChar = getActiveCharacter()
+    UIDropDownMenu_SetSelectedValue(dropdown, currentCharacter or activeChar)
     UIDropDownMenu_JustifyText(dropdown, "LEFT")
     
     -- Set label
