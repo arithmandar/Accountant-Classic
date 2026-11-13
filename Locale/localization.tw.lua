@@ -164,3 +164,11 @@ L["History matches today's classic data (%d categories)."] = "歷史帳本與今
 L["%d categories differ from today's classic data."] = "有 %d 個類別與今日的原有資料不一致。"
 L["History tracking started today, so money logged earlier today exists only in the classic data."] = "歷史帳本今天才開始記錄，今天稍早的金流只存在於原有資料中。"
 L["Resetting the Day tab also causes differences; the history ledger is never reset with it."] = "重置「今日」分頁也會造成差異；歷史帳本不會跟著重置。"
+
+-- 區域排行
+L["Zone Breakdown"] = "區域排行"
+L["Sub-zone Breakdown"] = "子區域明細"
+L["Click to view zone breakdown"] = "點擊查看區域排行"
+L["No zone data recorded for this category."] = "該分類在此期間無區域明細記錄。"
+L["Zones"] = "個區域"
+L["General"] = "通用/本地圖"
