@@ -6,7 +6,7 @@
 
 ## Revision History
 
-### v2.30.04 (Unreleased)
+### v2.30.04 (Nov. 21, 2026)
 
 - Bug fixes
   - WoW Forever: since the November 20, 2026 hotfix the game no longer tells add-ons the realm name (GetRealmName() returns an empty string), so every Forever character was saved again under an empty realm, as if it were a new character
