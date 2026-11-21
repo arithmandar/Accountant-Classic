@@ -809,7 +809,8 @@ function EventHandler:ProcessCurrencyChange(currencyID, newQuantity, quantityCha
                             -- Localize name via AceLocale if available
                             if L and L[name] then name = L[name] end
                             -- Localized warning template (fallback to English)
-                            local tmpl = (L and L["CT_WarnNearCap"] and L["CT_WarnNearCap"] ~= "CT_WarnNearCap") or "Warning: %s has reached or exceeded 90%% of total cap (%d)"
+                            local rawTmpl = L and L["CT_WarnNearCap"]
+                            local tmpl = (type(rawTmpl) == "string" and rawTmpl ~= "CT_WarnNearCap") and rawTmpl or "Warning: %s has reached or exceeded 90%% of total cap (%d)"
                             local msg = string.format(tmpl, tostring(name), cap)
                             if UIErrorsFrame and UIErrorsFrame.AddMessage then
                                 -- Apply configured timings
