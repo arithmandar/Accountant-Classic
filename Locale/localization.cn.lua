@@ -121,6 +121,9 @@ L["Enable to show all characters' money info from all factions. Disable to only 
 L["Enhanced Tracking Options"] = "增强追踪选项"
 L["All Factions"] = "所有阵营"
 L["All Servers"] = "所有服务器"
+L["Unknown Realm"] = "未知服务器"
+L["Restored the realm of %d character(s) saved without a realm after the WoW Forever update."] = "已将 WoW Forever 更新后没有服务器信息的 %d 个角色记录还原到原来的服务器。"
+L["%d character(s) saved without a realm will be restored when they log in."] = "另有 %d 个没有服务器信息的角色记录，会在该角色登录时还原。"
 
 -- Misc
 L["Are you sure you want to reset the \"%s\" data?"] = "是否确定要将「%s」页签的资料归零?"
