@@ -50,6 +50,7 @@
 Libs\Libs.xml
 Locale\Locales.xml
 Core\Constants.lua
+Core\Realm.lua
 Core\History.lua
 Core\Templates.lua
 Core\UI.lua
