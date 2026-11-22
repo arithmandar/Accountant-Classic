@@ -1,6 +1,5 @@
-﻿-- Accountant Classic core logic. See Readme.md for project history and acknowledgements.
------------------------------------------------------------------------
--- Upvalued Lua API.
+﻿-----------------------------------------------------------------------
+-- Accountant Classic core logic
 -----------------------------------------------------------------------
 ---@class ACNamespace
 local private = select(2, ...)

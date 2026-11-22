@@ -1,14 +1,11 @@
 -- ----------------------------------------------------------------------------
--- Localized Lua globals.
+-- Accountant Classic constants and client detection
 -- ----------------------------------------------------------------------------
--- Functions
 local _G = getfenv(0)
 local LibStub = _G.LibStub
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitClass = _G.UnitClass
--- ----------------------------------------------------------------------------
--- AddOn namespace.
--- ----------------------------------------------------------------------------
+
 ---@class ACNamespace
 local private = select(2, ...)
 private.addon_name = "Accountant_Classic"
