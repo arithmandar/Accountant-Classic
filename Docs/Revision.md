@@ -6,6 +6,12 @@
 
 ## Revision History
 
+### v2.30.05 (Nov. 22, 2026)
+
+- Bug fixes
+  - Changing the "Start of Week" option no longer starts a new week: before, the running week of every character was moved into "Prv. Week" and "This Week" started again from zero (issue #13). The week start is now only relabelled, and the week rolls over once the week that was running has really ended
+  - Repair of the weeks moved by that bug: on login the amounts are moved back from "Prv. Week" into "This Week" (zone data included). The previous week they replaced can't be recovered, so "Prv. Week" stays empty until the next week change
+
 ### v2.30.04 (Nov. 21, 2026)
 
 - Bug fixes

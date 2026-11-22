@@ -953,6 +953,106 @@ local function rollAmounts(logData, mode, prvMode)
 	cur.In, cur.Out = 0, 0
 end
 
+---@param s string? Week start as stored in options.dateweek ("mm/dd/yy", see addon:WeekStart())
+---@return integer? time Noon of that day, nil when the value can't be parsed
+local function parseWeekDate(s)
+	if type(s) ~= "string" then return nil end
+	local mm, dd, yy = s:match("^(%d%d)/(%d%d)/(%d%d)$")
+	if not mm then return nil end
+	return time({ year = 2000 + tonumber(yy), month = tonumber(mm), day = tonumber(dd), hour = 12 })
+end
+
+---@param fromWeek string? "mm/dd/yy"
+---@param toWeek string? "mm/dd/yy"
+---@return integer? days Whole days from fromWeek to toWeek, nil when either can't be parsed
+local function weekDaysBetween(fromWeek, toWeek)
+	local a, b = parseWeekDate(fromWeek), parseWeekDate(toWeek)
+	if not (a and b) then return nil end
+	return floor((b - a) / 86400 + 0.5) -- rounded, so a DST change doesn't matter
+end
+
+---Whether the week that started on the stored date is over. Changing the "Start of
+---Week" option changes addon:WeekStart() in the middle of a week; that alone must not
+---start a new week (issue #13).
+---@param stored string Stored week start ("mm/dd/yy")
+---@return boolean
+local function hasWeekEnded(stored)
+	local days = weekDaysBetween(stored, date("%m/%d/%y"))
+	return days == nil or days < 0 or days >= 7
+end
+
+---Adds the amounts of prvMode back into mode and clears prvMode.
+---@param logData ACLogTypeHistory
+---@param mode ACLogMode
+---@param prvMode ACLogMode
+local function unrollAmounts(logData, mode, prvMode)
+	local prv = logData[prvMode]
+	if not prv then return end
+	local cur = logData[mode]
+	if not cur then
+		cur = { In = 0, Out = 0 }
+		logData[mode] = cur
+	end
+	cur.In = (cur.In or 0) + (prv.In or 0)
+	cur.Out = (cur.Out or 0) + (prv.Out or 0)
+	prv.In, prv.Out = 0, 0
+end
+
+-- v2.30.04 and older started a new week whenever the "Start of Week" option was
+-- changed, moving the running week of every character into "Prv. Week" (issue #13).
+-- Such a roll left a previous week less than 7 days before the current one, which a
+-- real week change never does; move those amounts back into the current week. The
+-- previous week they replaced can't be recovered, so it stays empty.
+---@param serverkey string
+---@param charkey string
+---@param charData ACCharacterData
+local function repairWeekStartRoll(serverkey, charkey, charData)
+	local options = charData.options
+	local days = weekDaysBetween(options.prvdateweek, options.dateweek)
+	if not (days and days ~= 0 and days > -7 and days < 7) then return end
+
+	for _, logData in pairs(charData.data) do
+		unrollAmounts(logData, "Week", "PrvWeek")
+	end
+	if (serverkey == AC_SERVER and charkey == AC_PLAYER) then
+		for _, logData in pairs(AC_DATA) do
+			if logData.Week then
+				unrollAmounts(logData, "Week", "PrvWeek")
+			end
+		end
+	end
+
+	local zoneServer = Accountant_ClassicZoneDB and Accountant_ClassicZoneDB[serverkey]
+	local zoneChar = zoneServer and zoneServer[charkey]
+	local zoneData = zoneChar and zoneChar.data
+	if (zoneData and zoneData.PrvWeek) then
+		local week = zoneData.Week
+		if not week then
+			week = newZoneModeTable()
+			zoneData.Week = week
+		end
+		for logtype, zones in pairs(zoneData.PrvWeek) do
+			local target = week[logtype]
+			if not target then
+				target = {}
+				week[logtype] = target
+			end
+			for zone, amounts in pairs(zones) do
+				local entry = target[zone]
+				if not entry then
+					entry = { In = 0, Out = 0 }
+					target[zone] = entry
+				end
+				entry.In = (entry.In or 0) + (amounts.In or 0)
+				entry.Out = (entry.Out or 0) + (amounts.Out or 0)
+			end
+		end
+		zoneData.PrvWeek = newZoneModeTable()
+	end
+
+	options.prvdateweek = nil
+end
+
 ---@param serverkey string
 ---@param charkey string
 ---@param charData ACCharacterData
@@ -961,6 +1061,15 @@ end
 local function rollPeriod(serverkey, charkey, charData, period, current)
 	local optKey, prvOptKey, mode, prvMode = period[1], period[2], period[3], period[4]
 	local options = charData.options
+	if (optKey == "dateweek") then
+		repairWeekStartRoll(serverkey, charkey, charData)
+		local stored = options.dateweek
+		-- Same week, only the "Start of Week" option changed: relabel, don't roll
+		if (stored and stored ~= current and not hasWeekEnded(stored)) then
+			options.dateweek = current
+			return
+		end
+	end
 	if options[optKey] == current then return end
 
 	options[prvOptKey] = options[optKey]
