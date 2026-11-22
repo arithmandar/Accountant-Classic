@@ -75,6 +75,7 @@ constants.defaults = {
 		breakupnumbers = true,
 		weekstart = 1,
 		ldbDisplayType = 2,
+		tooltipDisplayType = 1,
 		dateformat = 1,
 		scale = 1,
 		alpha = 1,
@@ -303,6 +304,9 @@ end
 constants.currTab = 1
 
 constants.ldbDisplayTypes = { "Total", "Session", "Day", "Week", "Month" }
+
+-- Period of the income / expense lines in the minimap / LDB tooltip
+constants.tooltipDisplayTypes = { "Session", "Day", "Week", "Month" }
 
 constants.dateformats = { "mm/dd/yy", "dd/mm/yy", "yy/mm/dd", }
 
