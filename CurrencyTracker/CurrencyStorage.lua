@@ -271,29 +271,83 @@ function Storage:AdjustCurrencyAggregates(currencyID, delta, sourceKey)
     return true
 end
 
--- Perform rollover of Day/Week/Month/Year into Prv* for currency data
--- Week-start parity with gold: use per-character options.weekstart and compute a WeekStart string like addon:WeekStart()
-function Storage:ShiftCurrencyLogs()
-    if not EnsureSavedVariablesStructure() then
-        return false
-    end
+local function parseWeekDate(s)
+    if type(s) ~= "string" then return nil end
+    local mm, dd, yy = s:match("^(%d%d)/(%d%d)/(%d%d)$")
+    if not mm then return nil end
+    return time({ year = 2000 + tonumber(yy), month = tonumber(mm), day = tonumber(dd), hour = 12 })
+end
 
-    local server, character = GetCurrentServerAndCharacter()
-    local charData = Accountant_ClassicSaveData[server][character]
-    if not charData then return false end
+local function weekDaysBetween(fromWeek, toWeek)
+    local a, b = parseWeekDate(fromWeek), parseWeekDate(toWeek)
+    if not (a and b) then return nil end
+    return math.floor((b - a) / 86400 + 0.5)
+end
+
+local function hasWeekEnded(stored, now)
+    local days = weekDaysBetween(stored, date("%m/%d/%y", now))
+    return days == nil or days < 0 or days >= 7
+end
+
+local function shallowCopyBucket(tbl)
+    local out = {}
+    for k, v in pairs(tbl or {}) do
+        if type(v) == "table" then
+            out[k] = { In = v.In or 0, Out = v.Out or 0 }
+        else
+            out[k] = v
+        end
+    end
+    return out
+end
+
+local function addBucketAmounts(srcBucket, dstBucket, skipBaselineWhenPresent)
+    if type(srcBucket) ~= "table" then return end
+    for sourceKey, rec in pairs(srcBucket) do
+        if type(rec) == "table" then
+            local dstRec = dstBucket[sourceKey]
+            local skip = skipBaselineWhenPresent and sourceKey == "BaselinePrime"
+                and type(dstRec) == "table" and ((dstRec.In or 0) > 0 or (dstRec.Out or 0) > 0)
+            if not skip then
+                if type(dstRec) ~= "table" then
+                    dstRec = { In = 0, Out = 0 }
+                    dstBucket[sourceKey] = dstRec
+                end
+                dstRec.In = (dstRec.In or 0) + (rec.In or 0)
+                dstRec.Out = (dstRec.Out or 0) + (rec.Out or 0)
+            end
+        end
+    end
+end
+
+local function isBucketEmpty(bucket)
+    if type(bucket) ~= "table" then return true end
+    for _, rec in pairs(bucket) do
+        if type(rec) == "table" and ((rec.In or 0) > 0 or (rec.Out or 0) > 0) then
+            return false
+        end
+    end
+    return true
+end
+
+---Rolls one character's currencyData periods over to the current day / week / month / year.
+---Preserves the current week when only the Start of Week option changed mid-week.
+---@param charData table
+---@return boolean
+local function shiftCharCurrencyData(charData)
+    if type(charData) ~= "table" then return false end
+    local currencies = charData.currencyData
+    if type(currencies) ~= "table" then return true end
 
     charData.currencyOptions = charData.currencyOptions or {}
     local opts = charData.currencyOptions
-    local currencies = charData.currencyData
-    if not currencies then return true end
 
     local now = time()
     local cdate = date("%d/%m/%y", now)
     local cmonth = date("%m", now)
     local cyear = date("%Y", now)
 
-    -- Compute week start string respecting user's weekstart setting (1=Sunday, per WoW wday semantics)
-    local function ComputeWeekStartString(weekstart)
+    local function computeWeekStartString(weekstart)
         local oneday = 86400
         local ct = now
         local dt = date("*t", ct)
@@ -304,39 +358,49 @@ function Storage:ShiftCurrencyLogs()
             dt = date("*t", ct)
             thisDay = dt.wday
         end
-        -- Format mm/dd/yy then trim to 8 chars (parity with gold)
-        local wdate = date("%m/%d/%y", ct)
-        return string.sub(wdate, 1, 8)
+        return string.sub(date("%m/%d/%y", ct), 1, 8)
     end
 
-    local weekstartSetting = (Accountant_ClassicSaveData[server][character]
-        and Accountant_ClassicSaveData[server][character].options
-        and Accountant_ClassicSaveData[server][character].options.weekstart) or 1
-    local cweek = ComputeWeekStartString(weekstartSetting)
+    local weekstartSetting = (charData.options and charData.options.weekstart) or 1
+    local cweek = computeWeekStartString(weekstartSetting)
 
-    -- Initialize on first run to avoid unintended shifts
     if not opts.date or not opts.dateweek or not opts.month or not opts.curryear then
         opts.date = cdate
         opts.dateweek = cweek
         opts.month = cmonth
         opts.curryear = cyear
-        opts.lastUpdate = now
+        opts.lastUpdate = opts.lastUpdate or now
         return true
     end
 
+    -- Repair any prior mid-week roll caused by changing Start of Week (< 7 days between prvdateweek and dateweek).
+    local prvDays = weekDaysBetween(opts.prvdateweek, opts.dateweek)
+    if prvDays and prvDays ~= 0 and prvDays > -7 and prvDays < 7 then
+        for _, periods in pairs(currencies) do
+            if type(periods) == "table" and type(periods.PrvWeek) == "table" then
+                periods.Week = periods.Week or {}
+                addBucketAmounts(periods.PrvWeek, periods.Week, false)
+                periods.PrvWeek = {}
+            end
+        end
+        opts.prvdateweek = nil
+    end
+
     local dayChanged = (opts.date ~= cdate)
-    local weekChanged = (opts.dateweek ~= cweek)
+    local weekChanged = false
+    if opts.dateweek ~= cweek then
+        if hasWeekEnded(opts.dateweek, now) then
+            weekChanged = true
+        else
+            -- Same week, only Start of Week option changed: relabel without rolling.
+            opts.dateweek = cweek
+        end
+    end
     local monthChanged = (opts.month ~= cmonth)
     local yearChanged = (opts.curryear ~= cyear)
 
     if not (dayChanged or weekChanged or monthChanged or yearChanged) then
         return true
-    end
-
-    local function shallowCopy(tbl)
-        local out = {}
-        for k, v in pairs(tbl or {}) do out[k] = v end
-        return out
     end
 
     for _, periods in pairs(currencies) do
@@ -353,31 +417,147 @@ function Storage:ShiftCurrencyLogs()
             periods.Total = periods.Total or {}
 
             if dayChanged then
-                periods.PrvDay = shallowCopy(periods.Day)
+                periods.PrvDay = shallowCopyBucket(periods.Day)
                 periods.Day = {}
             end
             if weekChanged then
-                periods.PrvWeek = shallowCopy(periods.Week)
+                periods.PrvWeek = shallowCopyBucket(periods.Week)
                 periods.Week = {}
             end
             if monthChanged then
-                periods.PrvMonth = shallowCopy(periods.Month)
+                periods.PrvMonth = shallowCopyBucket(periods.Month)
                 periods.Month = {}
             end
             if yearChanged then
-                periods.PrvYear = shallowCopy(periods.Year)
+                periods.PrvYear = shallowCopyBucket(periods.Year)
                 periods.Year = {}
             end
         end
     end
 
-    -- Update tracking fields to current
+    if dayChanged then opts.prvday = opts.date end
+    if weekChanged then opts.prvdateweek = opts.dateweek end
+    if monthChanged then opts.prvmonth = opts.month end
+    if yearChanged then opts.prvyear = opts.curryear end
+
     opts.date = cdate
     opts.dateweek = cweek
     opts.month = cmonth
     opts.curryear = cyear
     opts.lastUpdate = now
     return true
+end
+
+-- Perform rollover of Day/Week/Month/Year into Prv* for currency data
+-- Week-start parity with gold: use per-character options.weekstart and compute a WeekStart string like addon:WeekStart()
+function Storage:ShiftCurrencyLogs()
+    if not EnsureSavedVariablesStructure() then
+        return false
+    end
+
+    local server, character = GetCurrentServerAndCharacter()
+    local charData = Accountant_ClassicSaveData[server][character]
+    return shiftCharCurrencyData(charData)
+end
+
+---Merges currencyData, currencyOptions, and currencyMeta from a hidden-realm character record into dst.
+---Both records are rolled to current periods before summing, and existing dst BaselinePrime entries are preserved.
+---@param src table
+---@param dst table
+function Storage:MergeCharacterData(src, dst)
+    if type(src) ~= "table" or type(dst) ~= "table" then return end
+
+    shiftCharCurrencyData(src)
+    shiftCharCurrencyData(dst)
+
+    local sOpts = type(src.currencyOptions) == "table" and src.currencyOptions or {}
+    local dOpts = type(dst.currencyOptions) == "table" and dst.currencyOptions or nil
+    if not dOpts then
+        dOpts = {}
+        dst.currencyOptions = dOpts
+    end
+    local srcNewer = (tonumber(sOpts.lastUpdate) or 0) >= (tonumber(dOpts.lastUpdate) or 0)
+
+    if type(src.currencyData) == "table" then
+        dst.currencyData = dst.currencyData or {}
+        local activePeriods = { "Day", "Week", "Month", "Year", "Total" }
+        local prvRules = {
+            { mode = "PrvDay",   opt = "prvday" },
+            { mode = "PrvWeek",  opt = "prvdateweek" },
+            { mode = "PrvMonth", opt = "prvmonth" },
+            { mode = "PrvYear",  opt = "prvyear" },
+        }
+
+        for currencyID, sPeriods in pairs(src.currencyData) do
+            if type(sPeriods) == "table" then
+                local dPeriods = dst.currencyData[currencyID]
+                if type(dPeriods) ~= "table" then
+                    dst.currencyData[currencyID] = sPeriods
+                else
+                    for _, mode in ipairs(activePeriods) do
+                        if type(sPeriods[mode]) == "table" then
+                            dPeriods[mode] = dPeriods[mode] or {}
+                            addBucketAmounts(sPeriods[mode], dPeriods[mode], true)
+                        end
+                    end
+                    for _, rule in ipairs(prvRules) do
+                        local mode, optKey = rule.mode, rule.opt
+                        local sBucket, dBucket = sPeriods[mode], dPeriods[mode]
+                        if not isBucketEmpty(sBucket) then
+                            if isBucketEmpty(dBucket) then
+                                dPeriods[mode] = shallowCopyBucket(sBucket)
+                            elseif sOpts[optKey] ~= nil and sOpts[optKey] == dOpts[optKey] then
+                                addBucketAmounts(sBucket, dBucket, true)
+                            elseif srcNewer then
+                                dPeriods[mode] = shallowCopyBucket(sBucket)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if srcNewer then
+        if sOpts.lastUpdate ~= nil then dOpts.lastUpdate = sOpts.lastUpdate end
+        if sOpts.selectedCurrency ~= nil then dOpts.selectedCurrency = sOpts.selectedCurrency end
+    end
+    for k, v in pairs(sOpts) do
+        if dOpts[k] == nil then dOpts[k] = v end
+    end
+
+    if type(src.currencyMeta) == "table" then
+        dst.currencyMeta = dst.currencyMeta or {}
+        for currencyID, sMeta in pairs(src.currencyMeta) do
+            if type(sMeta) == "table" then
+                local dMeta = dst.currencyMeta[currencyID]
+                if type(dMeta) ~= "table" then
+                    dst.currencyMeta[currencyID] = sMeta
+                else
+                    local sTot = sMeta.Total
+                    if type(sTot) == "table" then
+                        dMeta.Total = dMeta.Total or {}
+                        local dTot = dMeta.Total
+                        for _, dir in ipairs({ "gain", "lost" }) do
+                            if type(sTot[dir]) == "table" then
+                                dTot[dir] = dTot[dir] or {}
+                                for reason, cnt in pairs(sTot[dir]) do
+                                    dTot[dir][reason] = (dTot[dir][reason] or 0) + (tonumber(cnt) or 0)
+                                end
+                            end
+                        end
+                        if type(sTot.last) == "table" then
+                            local sTime = tonumber(sTot.last.t) or 0
+                            local dTime = (type(dTot.last) == "table" and tonumber(dTot.last.t)) or 0
+                            if sTime >= dTime then
+                                dTot.last = sTot.last
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
 
 -- Module state

@@ -21,6 +21,7 @@
 ---@field constants ACConstants Static tables shared by all files
 ---@field GetClassColorPrefix fun(classToken: string?): string Returns "|cAARRGGBB" for a class token, or "" when unknown
 ---@field History ACHistory Long-lived history ledger (Core/History.lua)
+---@field Realm ACRealm Realm keys and the repair of the hidden Forever realm (Core/Realm.lua)
 
 ---@class ACClient
 ---@field projectID integer WOW_PROJECT_ID of the running client
@@ -110,6 +111,28 @@
 ---@field [2] "prvday"|"prvdateweek"|"prvmonth"|"prvyear"
 ---@field [3] ACLogMode
 ---@field [4] ACLogMode
+
+------------------------------------------------------------------------
+-- Realm keys (Core/Realm.lua)
+------------------------------------------------------------------------
+
+---Input of Realm.RepairHidden().
+---@class ACRealmRepairContext
+---@field saveData table<string, table<string, ACCharacterData>> Accountant_ClassicSaveData
+---@field zoneDB table<string, table<string, table>>? Accountant_ClassicZoneDB
+---@field historyChars table<string, ACHistoryChar>? Accountant_ClassicHistory.chars
+---@field history ACHistory? Used to move the history nodes
+---@field player string Classic key of the logged-in character
+---@field server string Resolved realm key of the logged-in character
+---@field periods ACPeriodRule[] Period rollover rules
+---@field roll fun(server: string, name: string, charData: ACCharacterData) Rolls a record over to the current periods
+---@field mergeExtra? fun(src: ACCharacterData, dst: ACCharacterData) Optional hook to merge module-specific fields before src is removed
+
+---Result of Realm.RepairHidden().
+---@class ACRealmRepairResult
+---@field merged integer Characters merged into an existing record under their realm
+---@field moved integer Characters moved to a realm key that had no record of them
+---@field pending string[] Characters left under the hidden realm until they log in
 
 ------------------------------------------------------------------------
 -- Constants (Core/Constants.lua)

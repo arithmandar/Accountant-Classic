@@ -123,6 +123,9 @@ L["Enable to show all characters' money info from all factions. Disable to only 
 L["Enhanced Tracking Options"] = "Enhanced Tracking Options"
 L["All Factions"] = "All Factions"
 L["All Servers"] = "All Servers"
+L["Unknown Realm"] = "Unknown Realm"
+L["Restored the realm of %d character(s) saved without a realm after the WoW Forever update."] = "Restored the realm of %d character(s) saved without a realm after the WoW Forever update."
+L["%d character(s) saved without a realm will be restored when they log in."] = "%d character(s) saved without a realm will be restored when they log in."
 
 -- Misc
 L["Are you sure you want to reset the \"%s\" data?"] = "Are you sure you want to reset the \"%s\" data?" -- %s would be the log mode, for example, Session, Day, Week, etc.
@@ -275,4 +278,3 @@ L["Click to view zone breakdown"] = "Click to view zone breakdown"
 L["No zone data recorded for this category."] = "No zone data recorded for this category."
 L["Zones"] = "Zones"
 L["General"] = "General"
-

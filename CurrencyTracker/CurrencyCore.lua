@@ -109,8 +109,9 @@ function CurrencyTracker:MetaShow(sub)
     if GetCurrentServerAndCharacter then
         server, character = GetCurrentServerAndCharacter()
     else
-        server = _G.AC_SERVER or GetRealmName()
-        character = _G.AC_PLAYER or UnitName("player")
+        local ac = _G.Accountant_Classic
+        server = (ac and ac.GetCurrentServer and ac:GetCurrentServer()) or _G.AC_SERVER or GetRealmName()
+        character = (ac and ac.GetCurrentPlayer and ac:GetCurrentPlayer()) or _G.AC_PLAYER or UnitName("player")
     end
     local sv = _G.Accountant_ClassicSaveData
     if not (server and character and sv and sv[server] and sv[server][character]) then

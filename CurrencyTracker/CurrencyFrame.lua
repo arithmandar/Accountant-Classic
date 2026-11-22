@@ -177,6 +177,43 @@ local characterDropdown = nil
 local currentServer = nil
 local currentCharacter = nil
 
+---Returns the active server key (uses resolved realm on Classic Forever).
+---@return string?
+local function getActiveServer()
+    local ac = _G.Accountant_Classic
+    if ac and ac.GetCurrentServer then
+        local srv = ac:GetCurrentServer()
+        if srv and srv ~= "" then
+            return srv
+        end
+    end
+    if GetCurrentServerAndCharacter then
+        local srv = GetCurrentServerAndCharacter()
+        if srv and srv ~= "" then
+            return srv
+        end
+    end
+    if _G.AC_SERVER and _G.AC_SERVER ~= "" then
+        return _G.AC_SERVER
+    end
+    return GetRealmName()
+end
+
+---Returns the user-facing realm label for a stored realm key.
+---@param serverKey string?
+---@return string
+local function getServerDisplayName(serverKey)
+    if not serverKey then return "" end
+    local ac = _G.Accountant_Classic
+    if ac and ac.GetRealmDisplayName then
+        return ac:GetRealmDisplayName(serverKey)
+    end
+    if serverKey == "" then
+        return "Unknown Realm"
+    end
+    return serverKey
+end
+
 ---Returns the full active character key (handles Forever First-Second naming).
 local function getActiveCharacter()
     if GetCurrentServerAndCharacter then
@@ -227,8 +264,16 @@ local function LoadUIState()
         currentCurrencyId = CurrencyTracker.Storage.currencyOptions.lastCurrencyId
     end
     
-    if CurrencyTracker.Storage.currencyOptions.lastServer then
-        currentServer = CurrencyTracker.Storage.currencyOptions.lastServer
+    local savedServer = CurrencyTracker.Storage.currencyOptions.lastServer
+    if savedServer and savedServer ~= "" then
+        local sv = _G.Accountant_ClassicSaveData
+        if not sv or sv[savedServer] then
+            currentServer = savedServer
+        else
+            currentServer = getActiveServer()
+        end
+    elseif savedServer == "" then
+        currentServer = getActiveServer()
     end
     
     if CurrencyTracker.Storage.currencyOptions.lastCharacter then
@@ -532,7 +577,8 @@ local function UpdateScrollFrame()
         
         -- Set context for data retrieval if we have server/character selections
         local oldServer, oldPlayer
-        if currentServer and currentServer ~= GetRealmName() then
+        local activeServer = getActiveServer()
+        if currentServer and currentServer ~= activeServer then
             oldServer = _G.AC_SERVER
             _G.AC_SERVER = currentServer
         end
@@ -797,6 +843,17 @@ local function InitializeServerDropdown(dropdown)
         
         currentServer = arg1
         UIDropDownMenu_SetSelectedValue(dropdown, arg1)
+
+        -- Reset character selection if the previously selected character does not exist on the new server
+        local sv = _G.Accountant_ClassicSaveData
+        if sv and sv[currentServer] and currentCharacter and not sv[currentServer][currentCharacter] then
+            local activeChar = getActiveCharacter()
+            if activeChar and sv[currentServer][activeChar] then
+                currentCharacter = activeChar
+            else
+                currentCharacter = nil
+            end
+        end
         
         -- Update character dropdown when server changes
         if characterDropdown then
@@ -816,7 +873,7 @@ local function InitializeServerDropdown(dropdown)
         
         -- Get current server if not set
         if not currentServer then
-            currentServer = GetRealmName()
+            currentServer = getActiveServer()
         end
         
         -- Add servers with data
@@ -828,7 +885,7 @@ local function InitializeServerDropdown(dropdown)
         table.sort(servers)
         
         for _, server in ipairs(servers) do
-            info.text = server
+            info.text = getServerDisplayName(server)
             info.value = server
             info.arg1 = server
             info.func = ServerDropdown_OnClick
@@ -840,7 +897,7 @@ local function InitializeServerDropdown(dropdown)
     UIDropDownMenu_Initialize(dropdown, ServerDropdown_Initialize)
     UIDropDownMenu_SetWidth(dropdown, 160)
     UIDropDownMenu_SetButtonWidth(dropdown, 174)
-    UIDropDownMenu_SetSelectedValue(dropdown, currentServer or GetRealmName())
+    UIDropDownMenu_SetSelectedValue(dropdown, currentServer or getActiveServer())
     UIDropDownMenu_JustifyText(dropdown, "LEFT")
     
     -- Set label
@@ -872,12 +929,6 @@ local function InitializeCharacterDropdown(dropdown)
         local sv = _G.Accountant_ClassicSaveData
         if not sv or not currentServer or not sv[currentServer] then return end
         
-        local activeChar = getActiveCharacter()
-        -- Get current character if not set
-        if not currentCharacter then
-            currentCharacter = activeChar
-        end
-        
         -- Add characters with data for this server
         local characters = {}
         for character in pairs(sv[currentServer]) do
@@ -885,6 +936,11 @@ local function InitializeCharacterDropdown(dropdown)
         end
         
         table.sort(characters)
+
+        local activeChar = getActiveCharacter()
+        if not currentCharacter or not sv[currentServer][currentCharacter] then
+            currentCharacter = (activeChar and sv[currentServer][activeChar]) and activeChar or characters[1]
+        end
         
         for _, character in ipairs(characters) do
             info.text = character

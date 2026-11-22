@@ -1,4 +1,4 @@
-## Interface: 11509, 16001, 20506, 50504, 120105
+﻿## Interface: 11509, 16001, 20506, 50504, 120105
 ## Title: Accountant Classic
 ## Notes: Tracks gold earned and spent across your characters
 ## Title-deDE: Accountant Classic
@@ -50,6 +50,7 @@
 Libs\Libs.xml
 Locale\Locales.xml
 Core\Constants.lua
+Core\Realm.lua
 Core\History.lua
 Core\Templates.lua
 Core\UI.lua

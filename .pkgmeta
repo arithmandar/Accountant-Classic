@@ -45,7 +45,7 @@ externals:
         url: https://repos.curseforge.com/wow/libdatabroker-1-1
     Libs/LibBabble-SubZone-3.0: 
         url: https://github.com/arithmandar/LibBabble-SubZone-3.0
-    Libs-release/LibCurrencyInfo: 
+    Libs/LibCurrencyInfo: 
         url: https://github.com/arithmandar/LibCurrencyInfo
 
 ignore:
