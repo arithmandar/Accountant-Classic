@@ -2292,16 +2292,32 @@ updateLDBText = function()
 	LDB.text = addon:ShowNetMoney(private.constants.ldbDisplayTypes[profile.ldbDisplayType]) or ""
 end
 
----@return string? text Session income and expense lines
-function addon:ShowSessionToolTip()
+---Returns the period of the minimap / LDB tooltip.
+---@return ACLogMode logmode
+---@return string label Localized period name
+function addon:GetTooltipPeriod()
+	local types = private.constants.tooltipDisplayTypes
+	local index = profile and profile.tooltipDisplayType or 1
+	local logmode = types[index] or "Session"
+	local labels = { Session = L["This Session"], Day = L["Today"], Week = L["This Week"], Month = L["This Month"] }
+	return logmode, labels[logmode] or L["This Session"]
+end
+
+---@param logmode ACLogMode? Period to sum up (default: Session)
+---@return string? text Income and expense lines of the period
+function addon:ShowSessionToolTip(logmode)
+	logmode = logmode or "Session"
 	local amoney_str = "";
 
 	local TotalIn = 0;
 	local TotalOut = 0;
 	local diff = 0;
 	for key in pairs(AC_DATA) do
-		TotalIn = TotalIn + AC_DATA[key]["Session"].In;
-		TotalOut = TotalOut + AC_DATA[key]["Session"].Out;
+		local data = AC_DATA[key][logmode]
+		if data then
+			TotalIn = TotalIn + (data.In or 0);
+			TotalOut = TotalOut + (data.Out or 0);
+		end
 	end
 	amoney_str = "|cFFFFFFFF"..L["Total Incomings"]..": "..addon:GetFormattedValue(TotalIn).."\n";
 	amoney_str = amoney_str.."|cFFFFFFFF"..L["Total Outgoings"]..": "..addon:GetFormattedValue(TotalOut).."\n";
@@ -2424,7 +2440,9 @@ function addon:OnInitialize()
 		end
 		tooltip:AddLine(title);
 		if (profile and profile.showsessiononbutton == true) then
-			tooltip:AddLine(addon:ShowSessionToolTip());
+			local logmode, label = addon:GetTooltipPeriod()
+			tooltip:AddLine(label, 1, 0.82, 0);
+			tooltip:AddLine(addon:ShowSessionToolTip(logmode));
 		end
 		if (profile and profile.showintrotip == true) then
 			tooltip:AddLine(L["Left-Click to open Accountant Classic.\nRight-Click for Accountant Classic options.\nLeft-click and drag to move this button."]);
