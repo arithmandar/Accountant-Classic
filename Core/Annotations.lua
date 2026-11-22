@@ -150,6 +150,7 @@
 ---@field eventLogTypes table<string, ACActiveLogType> Event name to the log type it switches to
 ---@field events string[] Events registered by the main frame
 ---@field ldbDisplayTypes ACLogMode[] LDB / minimap text period, indexed by profile.ldbDisplayType
+---@field tooltipDisplayTypes ACLogMode[] Minimap / LDB tooltip period, indexed by profile.tooltipDisplayType
 ---@field dateformats string[] Date formats offered in the options, indexed by profile.dateformat
 ---@field maxCharLines integer Rows in the character list (All Chars tab)
 ---@field maxTooltipLines integer Maximum zone lines in a row tooltip
@@ -171,13 +172,14 @@
 ---@field showmoneyinfo boolean Show the floating money frame
 ---@field showmoneyonbutton boolean Show net money on the minimap / LDB button
 ---@field showintrotip boolean Show the intro text in the minimap tooltip
----@field showsessiononbutton boolean Show session income / expense in the minimap tooltip
+---@field showsessiononbutton boolean Show the income / expense of the tooltip period in the minimap tooltip
 ---@field cross_server boolean Show characters of every realm
 ---@field show_allFactions boolean Show characters of both factions
 ---@field trackzone boolean Record which zone money changed in
 ---@field tracksubzone boolean Include the sub-zone when tracking zones
 ---@field breakupnumbers boolean Use thousand separators for gold
 ---@field ldbDisplayType integer Index into constants.ldbDisplayTypes
+---@field tooltipDisplayType integer Index into constants.tooltipDisplayTypes
 ---@field dateformat integer Index into constants.dateformats
 ---@field weekstart integer First day of the week (1 = Sunday)
 ---@field AcFramePoint table? Saved anchor of the main window
