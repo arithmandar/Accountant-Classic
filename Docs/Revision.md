@@ -6,7 +6,7 @@
 
 ## Revision History
 
-### v2.30.06 (Unreleased)
+### v2.30.06 (Nov. 23, 2026)
 
 - New feature: Zone breakdown drawer (PR #16, by kamusis)
   - Left-click a category row in the main window to open a side drawer listing where that money was earned or spent, by zone, with the sub-zones in each zone's tooltip. Zones are sorted by amount and shown with the total and the number of zones
@@ -20,6 +20,11 @@
 - Bug fixes
   - All Chars tab: the sortable column headers (Source / In / Out) are now aligned with their columns, use a standard highlight, and are only shown on the All Chars tab, so they can no longer be hovered or clicked by accident on the other tabs (PR #15, by kamusis)
   - WoW Forever on Battle.net Asia: a new character on a Taiwan realm (e.g. "CAMWOW TW4 Realm 1 PvE") is now joined to its saved realm even when the client reports the region as KR. An exact region match still comes first; only then is a single saved KR / TW realm of the same ruleset used (PR #17, by kamusis)
+- Enhancement
+  - Removed the following rows from Forever:
+    - Garrison / Class Order Hall Missions
+    - LFG / LFD / LFR / Scenarios
+    - Bank
 - Development
   - Cleaned up the file header comments (replaced the old SVN $Id$ keywords)
 

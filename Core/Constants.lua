@@ -281,11 +281,11 @@ else
 	}
 	constants.onlineData = {
 		["TRANSMO"] =	{ Title = TRANSMOGRIFY};
-		["GARRISON"] =	{ Title = GARRISON_LOCATION_TOOLTIP.." / "..ORDER_HALL_MISSIONS };
-		["LFG"] =		{ Title = L["LFD, LFR and Scen."]};
+		--["GARRISON"] =	{ Title = GARRISON_LOCATION_TOOLTIP.." / "..ORDER_HALL_MISSIONS };
+		--["LFG"] =		{ Title = L["LFD, LFR and Scen."]};
 		["BARBER"] =	{ Title = BARBERSHOP};
 		["GUILD"] =		{ Title = GUILD};
-		["BANK"] =		{ Title = BANK};
+		--["BANK"] =		{ Title = BANK};
 
 		["TRAIN"] = 	{ Title = L["Training Costs"]};
 		["TAXI"] = 		{ Title = L["Taxi Fares"]};
@@ -298,6 +298,12 @@ else
 		["LOOT"] = 		{ Title = LOOT};
 		["OTHER"] = 	{ Title = L["Unknown"]};
 	}
+	if (Client.isRetail) then
+		-- Retail-specific constants or adjustments can go here
+		constants.onlineData["GARRISON"] = { Title = GARRISON_LOCATION_TOOLTIP.." / "..ORDER_HALL_MISSIONS }
+		constants.onlineData["LFG"] = { Title = L["LFD, LFR and Scen."] }
+		constants.onlineData["Bank"] = { Title = BANK }
+	end
 end
 
 
