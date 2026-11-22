@@ -1,16 +1,12 @@
 -----------------------------------------------------------------------
--- Upvalued Lua API.
+-- Accountant Classic configuration logic
 -----------------------------------------------------------------------
--- Functions
 local _G = getfenv(0)
 local pairs = _G.pairs
 local wipe = _G.wipe
--- Libraries
 local string = _G.string
 local format = string.format
--- ----------------------------------------------------------------------------
--- AddOn namespace.
--- ----------------------------------------------------------------------------
+
 ---@class ACNamespace
 local private = select(2, ...)
 local LibStub = _G.LibStub

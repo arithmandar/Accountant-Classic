@@ -59,3 +59,4 @@ Core\Core.lua
 Core\Tabs.lua
 Core\MoneyFrame.lua
 Core\Config.lua
+Core\ZoneBreakdown.lua
