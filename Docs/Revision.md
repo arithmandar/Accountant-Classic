@@ -6,6 +6,9 @@
 
 ## Revision History
 
+### v2.30.08 (Unleased)
+- Enhancement: Tweaking the Close button's position for mainline and forever game client
+
 ### v2.30.07 (Nov. 23, 2026)
 - Bug Fix: 
   - PR #22 (by kamusis):
