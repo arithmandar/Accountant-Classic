@@ -95,7 +95,7 @@ scroll:SetScript("OnShow", function()
 end)
 
 local close = CreateFrame("Button", "AccountantClassicFrameCloseButton", frame, "UIPanelCloseButton")
-close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", classic and 0 or 3, -16)
+close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", classic and 3 or 0, classic and -12 or -16)
 
 ---@param name string
 ---@param text string
@@ -108,7 +108,7 @@ close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", classic and 0 or 3, -16)
 ---@param click fun(self: Button, button: string, down: boolean)
 ---@return Button
 local function createActionButton(name, text, width, point, relative, relativePoint, x, y, click)
-	local button = CreateFrame("Button", name, frame, "UIPanelButtonTemplate")
+	local button = CreateFrame("Button", name, frame, "UIPanelButtonTemplate") --[[@as Button]]
 	button:SetSize(width, 22)
 	button:SetText(text)
 	button:SetPoint(point, relative, relativePoint, x, y)
