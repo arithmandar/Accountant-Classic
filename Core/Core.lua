@@ -1141,47 +1141,53 @@ local function rollToCurrent(serverkey, charkey, charData)
 	end
 end
 
--- WoW Forever hides the realm from add-ons since the November 20, 2026 hotfix
--- (GetRealmName() returns ""), so v2.30.03 and older saved Forever characters under the
--- realm key "". Merge those records back into their realm (see Core/Realm.lua).
-local function repairHiddenRealm()
-	if AC_SERVER == Realm.HIDDEN_KEY or type(Accountant_ClassicSaveData) ~= "table" then return end
-	local historyDB = History:GetDB()
-	local historyChars = historyDB and historyDB.chars
-	local hasHidden = Accountant_ClassicSaveData[Realm.HIDDEN_KEY] ~= nil
-		or (type(Accountant_ClassicZoneDB) == "table" and Accountant_ClassicZoneDB[Realm.HIDDEN_KEY] ~= nil)
-	if not hasHidden and historyChars then
-		for _, node in pairs(historyChars) do
-			if type(node) == "table" and node.server == Realm.HIDDEN_KEY then
-				hasHidden = true
-				break
-			end
-		end
-	end
-	if not hasHidden then return end
+-- Region of the current character on WoW Forever, stored in options.region.
+---@type string?
+local AC_REGION
 
-	local ok, result = pcall(Realm.RepairHidden, {
+-- On WoW Forever the realm key is the ruleset ("PvE", "PvP", "RP", ...), see
+-- Core/Realm.lua. Older versions saved Forever characters under the realm name
+-- ("CAMWOW TW4 Realm 1 PvE"), "" or "Forever <region> <ruleset>"; merge those records
+-- into the ruleset keys.
+local function migrateRealmKeys()
+	if type(Accountant_ClassicSaveData) ~= "table" or not Realm.ParseRulesetKey(AC_SERVER) then return end
+	local historyDB = History:GetDB()
+	local ctx = {
 		saveData = Accountant_ClassicSaveData,
 		zoneDB = type(Accountant_ClassicZoneDB) == "table" and Accountant_ClassicZoneDB or nil,
-		historyChars = historyChars,
+		historyChars = historyDB and historyDB.chars,
 		history = History,
 		player = AC_PLAYER,
 		server = AC_SERVER,
+		region = AC_REGION,
 		periods = AC_PERIODS,
 		roll = rollToCurrent,
-	})
+	}
+	if not Realm.NeedsMigration(ctx) then return end
+
+	local ok, result = pcall(Realm.MigrateToRuleset, ctx)
 	if not ok then
-		printMessage("|cffff2020"..L["Accountant Classic"]..": realm repair failed: "..tostring(result).."|r")
+		printMessage("|cffff2020"..L["Accountant Classic"]..": realm migration failed: "..tostring(result).."|r")
 		return
 	end
+
+	-- Remembered character selection ("server\tcharacter") in every profile.
+	local profiles = addon.db and addon.db.profiles
+	for _, p in pairs(profiles or {}) do
+		local selected = type(p) == "table" and p.selectedCharacterKey
+		if selected and result.renamed[selected] then
+			p.selectedCharacterKey = result.renamed[selected]
+		end
+	end
+
 	local fixed = result.merged + result.moved
 	if fixed > 0 then
 		printMessage(format("|cffffd200[%s]: %s|r", L["Accountant Classic"],
-			format(L["Restored the realm of %d character(s) saved without a realm after the WoW Forever update."], fixed)))
-	end
-	if #result.pending > 0 then
-		printMessage(format("|cffffd200[%s]: %s|r", L["Accountant Classic"],
-			format(L["%d character(s) saved without a realm will be restored when they log in."], #result.pending)))
+			format(L["Moved %d WoW Forever character record(s) to their ruleset (PvE, PvP, RP, ...)."], fixed)))
+		if #result.pending > 0 then
+			printMessage(format("|cffffd200[%s]: %s|r", L["Accountant Classic"],
+				format(L["%d character(s) will be moved to their ruleset when they log in."], #result.pending)))
+		end
 	end
 end
 
@@ -2464,13 +2470,14 @@ end
 
 function addon:OnEnable()
 	AC_PLAYER = getPlayerStorageKey()
-	-- The history ledger is read to pick the realm key on Forever, so load it first.
+	-- The history ledger is migrated together with the realm keys, so load it first.
 	History:InitDB()
-	local historyDB = History:GetDB()
-	AC_SERVER = Realm.Resolve(Accountant_ClassicSaveData, historyDB and historyDB.chars,
-		AC_PLAYER, UnitGUID("player"), Client.isForever)
-	repairHiddenRealm()
+	AC_SERVER, AC_REGION = Realm.Resolve(Accountant_ClassicSaveData, AC_PLAYER, Client.isForever)
+	migrateRealmKeys()
 	initOptions()
+	if AC_REGION then
+		AccountantClassic_Profile["options"].region = AC_REGION
+	end
 	copyOptions()
 
 	self:SecureHook("RepairAllItems")
