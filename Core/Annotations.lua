@@ -21,7 +21,7 @@
 ---@field constants ACConstants Static tables shared by all files
 ---@field GetClassColorPrefix fun(classToken: string?): string Returns "|cAARRGGBB" for a class token, or "" when unknown
 ---@field History ACHistory Long-lived history ledger (Core/History.lua)
----@field Realm ACRealm Realm keys and the repair of the hidden Forever realm (Core/Realm.lua)
+---@field Realm ACRealm Realm keys and the Forever ruleset key migration (Core/Realm.lua)
 
 ---@class ACClient
 ---@field projectID integer WOW_PROJECT_ID of the running client
@@ -116,22 +116,23 @@
 -- Realm keys (Core/Realm.lua)
 ------------------------------------------------------------------------
 
----Input of Realm.RepairHidden().
----@class ACRealmRepairContext
+---Input of Realm.MigrateToRuleset().
+---@class ACRealmMigrateContext
 ---@field saveData table<string, table<string, ACCharacterData>> Accountant_ClassicSaveData
 ---@field zoneDB table<string, table<string, table>>? Accountant_ClassicZoneDB
 ---@field historyChars table<string, ACHistoryChar>? Accountant_ClassicHistory.chars
 ---@field history ACHistory? Used to move the history nodes
 ---@field player string Classic key of the logged-in character
----@field server string Resolved realm key of the logged-in character
+---@field server string Realm key of the logged-in character, e.g. "PvE (Asia)"
 ---@field periods ACPeriodRule[] Period rollover rules
 ---@field roll fun(server: string, name: string, charData: ACCharacterData) Rolls a record over to the current periods
 
----Result of Realm.RepairHidden().
----@class ACRealmRepairResult
----@field merged integer Characters merged into an existing record under their realm
----@field moved integer Characters moved to a realm key that had no record of them
----@field pending string[] Characters left under the hidden realm until they log in
+---Result of Realm.MigrateToRuleset().
+---@class ACRealmMigrateResult
+---@field merged integer Characters merged into an existing record under their current key
+---@field moved integer Characters moved to a current key that had no record of them
+---@field pending string[] Characters left under an older key until they log in
+---@field renamed table<string, string> "oldServer\tname" -> "newServer\tname"
 
 ------------------------------------------------------------------------
 -- Constants (Core/Constants.lua)
@@ -211,6 +212,7 @@
 ---@field totalcash integer Copper on the character at last update
 ---@field faction string? "Alliance", "Horde" or "Neutral"
 ---@field class string? Class token, e.g. "MAGE"
+---@field region string? Region written by test builds of v2.30.08; read and removed by the realm key migration
 ---@field prvday string? Previous day, set when the day rolls over
 ---@field dateweek string? Start of the current week ("mm/dd/yy", see addon:WeekStart())
 ---@field prvdateweek string? Previous week, set when the week rolls over

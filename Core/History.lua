@@ -307,7 +307,8 @@ local function mergeBuckets(src, dst)
 end
 
 ---Moves a character node to another realm key, merging it into the node already there.
----Used to repair the records saved under the hidden Forever realm (see Core/Realm.lua);
+---Used to move Forever characters from the older realm keys to the ruleset keys
+---(see Core/Realm.lua);
 ---src is the later record.
 ---@param fromServer string
 ---@param name string
