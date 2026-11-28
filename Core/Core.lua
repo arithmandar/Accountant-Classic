@@ -1141,16 +1141,12 @@ local function rollToCurrent(serverkey, charkey, charData)
 	end
 end
 
--- Region of the current character on WoW Forever, stored in options.region.
----@type string?
-local AC_REGION
-
--- On WoW Forever the realm key is the ruleset ("PvE", "PvP", "RP", ...), see
--- Core/Realm.lua. Older versions saved Forever characters under the realm name
+-- On WoW Forever the realm key is the ruleset and region ("PvE (US)", "RP (Asia)", ...),
+-- see Core/Realm.lua. Older versions saved Forever characters under the realm name
 -- ("CAMWOW TW4 Realm 1 PvE"), "" or "Forever <region> <ruleset>"; merge those records
--- into the ruleset keys.
+-- into the current keys.
 local function migrateRealmKeys()
-	if type(Accountant_ClassicSaveData) ~= "table" or not Realm.ParseRulesetKey(AC_SERVER) then return end
+	if type(Accountant_ClassicSaveData) ~= "table" or not Realm.IsCurrentKey(AC_SERVER) then return end
 	local historyDB = History:GetDB()
 	local ctx = {
 		saveData = Accountant_ClassicSaveData,
@@ -1159,7 +1155,6 @@ local function migrateRealmKeys()
 		history = History,
 		player = AC_PLAYER,
 		server = AC_SERVER,
-		region = AC_REGION,
 		periods = AC_PERIODS,
 		roll = rollToCurrent,
 	}
@@ -2472,12 +2467,9 @@ function addon:OnEnable()
 	AC_PLAYER = getPlayerStorageKey()
 	-- The history ledger is migrated together with the realm keys, so load it first.
 	History:InitDB()
-	AC_SERVER, AC_REGION = Realm.Resolve(Accountant_ClassicSaveData, AC_PLAYER, Client.isForever)
+	AC_SERVER = Realm.Resolve(AC_PLAYER, Client.isForever)
 	migrateRealmKeys()
 	initOptions()
-	if AC_REGION then
-		AccountantClassic_Profile["options"].region = AC_REGION
-	end
 	copyOptions()
 
 	self:SecureHook("RepairAllItems")

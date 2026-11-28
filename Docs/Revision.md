@@ -8,10 +8,10 @@
 
 ### v2.30.08 (Unreleased)
 - Enhancement: Tweaking the Close button's position for mainline and forever game client
-- Change: WoW Forever characters are now saved under their ruleset only, like AceDB-3.0 does on Forever: "PvE", "PvP", "RP", "RP-PvP" or "Hardcore"
-  - Forever has no realm list and character names are unique per region, so the realm part of the key is no longer needed. This also ends the different realm names on different computers (e.g. "CAMWOW TW4 Realm 1 PvE" on one PC, "Forever KR PvE" on a Mac) for the same character
-  - The region is kept as metadata in the character's options (options.region) and is not shown. Should two regions ever meet under one ruleset with the same character name, the later one is saved as "<ruleset> (<region>)", e.g. "PvE (US)"
-  - On login, the records saved under the older keys ("CAMWOW TW4 Realm 1 PvE", "Forever KR PvE", "Forever US RP", or the empty realm of v2.30.03) are merged into the ruleset keys, together with the zone breakdown, the history ledger and the remembered character selection. Characters whose ruleset cannot be read from the old key (saved under the empty realm) are moved when they log in. Beta realms are left as they are
+- Change: WoW Forever characters are now saved under their ruleset and region: "<ruleset> (<region>)", e.g. "PvE (US)", "RP-PvP (EU)" or "PvE (Asia)". The ruleset is named like AceDB-3.0 does on Forever: "PvE", "PvP", "RP", "RP-PvP" or "Hardcore"
+  - Forever has no realm list and character names are unique per region, so the realm name is no longer needed. This also ends the different realm names on different computers (e.g. "CAMWOW TW4 Realm 1 PvE" on one PC, "Forever KR PvE" on a Mac) for the same character
+  - The region stays in the key so that characters of the same name from two regions never share a record. Battle.net Asia is saved as "Asia", since KR and TW share one region and TW clients also report "KR"
+  - On login, the records saved under the older keys ("CAMWOW TW4 Realm 1 PvE", "Forever KR PvE", "Forever US RP", or the empty realm of v2.30.03) are merged into the new keys, together with the zone breakdown, the history ledger and the remembered character selection. Characters whose ruleset or region cannot be read from the old key (saved under the empty realm) are moved when they log in. Beta realms are left as they are
   - Realm names with "Roleplay" / "Role Play", and Oceania realms (e.g. "OC1"), are now recognised
 
 ### v2.30.07 (Nov. 23, 2026)

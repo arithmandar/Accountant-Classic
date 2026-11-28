@@ -14,12 +14,12 @@
 --   * "" (v2.30.03 and older after the hotfix),
 --   * "Forever <region> <ruleset>", e.g. "Forever KR PvE" (v2.30.04 - v2.30.07).
 --
--- Since v2.30.08 the realm key on Forever is the ruleset only, like AceDB-3.0 does when
--- RegionalUniqueNamesEnabled() is true: "PvE", "PvP", "RP", "RP-PvP" or "Hardcore". The
--- region is kept as metadata in options.region and is not shown. SavedVariables are
--- per installation and account, so one file normally holds a single region; should two
--- regions meet under one ruleset with the same name, the later one is saved as
--- "<ruleset> (<region>)", e.g. "PvE (US)".
+-- Since v2.30.08 the realm key on Forever is the ruleset plus the region:
+-- "<ruleset> (<region>)", e.g. "PvE (US)", "RP-PvP (EU)" or "PvE (Asia)". The ruleset
+-- is named like AceDB-3.0 does when RegionalUniqueNamesEnabled() is true ("PvE", "PvP",
+-- "RP", "RP-PvP", "Hardcore"). Battle.net Asia is stored as "Asia": KR and TW share one
+-- region and TW clients report "KR" as well. Keeping the region in the key means that
+-- characters of the same name from two regions never share a record.
 --
 -- Realm.MigrateToRuleset() merges the records under the older keys into the ruleset
 -- keys. The current character is migrated on login; other characters at the same time
@@ -48,8 +48,10 @@ local LEGACY_PREFIX = "Forever "
 -- Prefix of the Forever realm names the client gave before the hotfix.
 local REALM_PREFIX = "CAMWOW "
 
--- Realm keys used on Forever since v2.30.08.
+-- Rulesets and regions of the realm keys used on Forever since v2.30.08.
 local RULESETS = { PvE = true, PvP = true, RP = true, ["RP-PvP"] = true, Hardcore = true }
+local ASIA = "Asia"
+local KEY_REGIONS = { US = true, EU = true, CN = true, [ASIA] = true }
 
 -- GetCurrentRegion() ids, same table as AceDB-3.0.
 local REGIONS = { "US", "KR", "EU", "TW", "CN" }
@@ -171,11 +173,23 @@ local function isBetaRealm(name)
 	return strfind(strlower(name), "beta", 1, true) ~= nil
 end
 
----Ruleset realm key, e.g. "PvE", or "PvE (US)" when a region is given.
----@param ruleset string
+---Region as used in the realm key: KR and TW become "Asia".
 ---@param region string?
+---@return string?
+local function keyRegion(region)
+	if region == nil then return nil end
+	if ASIA_REGIONS[region] or region == ASIA then return ASIA end
+	return region
+end
+Realm.KeyRegion = keyRegion
+
+---Ruleset realm key, e.g. "PvE (US)" or "PvE (Asia)"; just "PvE" when the region is
+---unknown.
+---@param ruleset string
+---@param region string? "US", "KR", "TW", "EU", "CN" or "Asia"
 ---@return string
 function Realm.RulesetKey(ruleset, region)
+	region = keyRegion(region)
 	if region then return ruleset.." ("..region..")" end
 	return ruleset
 end
@@ -183,64 +197,55 @@ end
 ---Splits a ruleset realm key.
 ---@param server string
 ---@return string? ruleset nil when server is not a ruleset key
----@return string? region Set for "<ruleset> (<region>)"
+---@return string? region Region part of "<ruleset> (<region>)"
 function Realm.ParseRulesetKey(server)
 	if type(server) ~= "string" then return nil end
 	if RULESETS[server] then return server, nil end
-	local ruleset, region = strmatch(server, "^(%S+) %((%u%u)%)$")
+	local ruleset, region = strmatch(server, "^(%S+) %((%a+)%)$")
 	if ruleset and RULESETS[ruleset] then return ruleset, region end
 	return nil
 end
 
----True for the realm keys of older versions that are merged into the ruleset keys.
+---True for a realm key of the current format, "<ruleset> (<region>)".
+---@param server string
+---@return boolean
+local function isCurrentKey(server)
+	local ruleset, region = Realm.ParseRulesetKey(server)
+	return ruleset ~= nil and region ~= nil and KEY_REGIONS[region] == true
+end
+Realm.IsCurrentKey = isCurrentKey
+
+---True for the realm keys of older versions that are merged into the current keys:
+---"", "CAMWOW TW4 Realm 1 PvE", "Forever KR PvE", and the keys without (or with a
+---non-merged) region, "PvE" or "PvE (KR)", written by test builds of this change.
 ---Beta realms are left alone: they held separate copies of the characters.
 ---@param server string
 ---@return boolean
 function Realm.IsLegacyKey(server)
 	if server == HIDDEN then return true end
-	if type(server) ~= "string" or Realm.ParseRulesetKey(server) or isBetaRealm(server) then
+	if type(server) ~= "string" or isCurrentKey(server) or isBetaRealm(server) then
 		return false
 	end
+	if Realm.ParseRulesetKey(server) then return true end
 	return strsub(server, 1, #LEGACY_PREFIX) == LEGACY_PREFIX
 		or strsub(server, 1, #REALM_PREFIX) == REALM_PREFIX
 end
 
----Two regions are the same Battle.net region (an unknown region matches any).
----@param a string?
----@param b string?
----@return boolean
-local function sameRegion(a, b)
-	if not a or not b or a == b then return true end
-	return ASIA_REGIONS[a] == true and ASIA_REGIONS[b] == true
-end
-Realm.SameRegion = sameRegion
-
+---Region and ruleset of a record under an older key.
+---@param server string
 ---@param record ACCharacterData?
----@return string?
-local function recordRegion(record)
-	local options = type(record) == "table" and record.options
-	return type(options) == "table" and options.region or nil
-end
-
----Realm key for a Forever character: the ruleset, unless the plain ruleset key already
----holds a character of that name from another region.
----@param saveData table<string, table<string, ACCharacterData>>?
----@param name string Classic character key
----@param ruleset string
----@param region string?
----@return string server
-function Realm.KeyFor(saveData, name, ruleset, region)
-	saveData = saveData or {}
-	if region then
-		local own = saveData[Realm.RulesetKey(ruleset, region)]
-		if type(own) == "table" and own[name] then return Realm.RulesetKey(ruleset, region) end
+---@return string? region
+---@return string? ruleset
+local function legacyInfo(server, record)
+	local ruleset, region = Realm.ParseRulesetKey(server)
+	if not ruleset then
+		region, ruleset = Realm.ParseRealm(server)
 	end
-	local chars = saveData[ruleset]
-	local record = type(chars) == "table" and chars[name]
-	if record and not sameRegion(recordRegion(record), region) then
-		return Realm.RulesetKey(ruleset, region)
+	if not region then
+		local options = type(record) == "table" and record.options
+		region = type(options) == "table" and options.region or nil
 	end
-	return ruleset
+	return keyRegion(region), ruleset
 end
 
 ---Compares two player GUIDs ("Player-<realmID>-<characterID>").
@@ -291,23 +296,20 @@ function Realm.UsesRulesetKeys(isForever)
 end
 
 ---Realm key of the current character.
----@param saveData table?
 ---@param name string Classic character key
 ---@param isForever boolean
 ---@return string server
----@return string? region Region of the character on Forever (stored in options.region)
-function Realm.Resolve(saveData, name, isForever)
+function Realm.Resolve(name, isForever)
 	if Realm.UsesRulesetKeys(isForever) then
 		local ruleset = Realm.GetRuleset()
 		if ruleset then
-			local region = Realm.GetRegion()
-			return Realm.KeyFor(saveData, name, ruleset, region), region
+			return Realm.RulesetKey(ruleset, Realm.GetRegion())
 		end
 	end
 	local realm = Realm.GetClientRealm()
-	if realm then return realm, nil end
+	if realm then return realm end
 	-- Not expected; keep the old behaviour.
-	return HIDDEN, nil
+	return HIDDEN
 end
 
 ---Text shown for a realm key.
@@ -486,7 +488,6 @@ local function moveCharacter(ctx, from, name, target)
 		else
 			saveData[target][name] = src
 			if zoneDB and zsrc then zoneDB[target][name] = zsrc end
-			dst = src
 		end
 		fromChars[name] = nil
 	elseif zoneDB and zsrc and not zdst then
@@ -494,15 +495,10 @@ local function moveCharacter(ctx, from, name, target)
 	end
 	if zFrom then zFrom[name] = nil end
 	if zoneDB and isEmpty(zoneDB[target]) then zoneDB[target] = nil end
+	-- The region is part of the key now; drop the field written by test builds.
+	local moved = saveData[target][name]
+	if type(moved) == "table" and type(moved.options) == "table" then moved.options.region = nil end
 	if isEmpty(saveData[target]) then saveData[target] = nil end
-
-	-- Keep the region of the older key as metadata.
-	if type(dst) == "table" then
-		dst.options = dst.options or {}
-		if dst.options.region == nil then
-			dst.options.region = (Realm.ParseRealm(from))
-		end
-	end
 
 	if ctx.history and ctx.history.MoveChar then
 		local ok, historyMerged = pcall(ctx.history.MoveChar, ctx.history, from, name, target)
@@ -555,7 +551,7 @@ local function uniqueRulesetRecord(ctx, from, name)
 	local found
 	local guid = historyGUID(ctx.historyChars, from, name)
 	for server, chars in pairs(ctx.saveData) do
-		if Realm.ParseRulesetKey(server) and type(chars) == "table" and chars[name] then
+		if isCurrentKey(server) and type(chars) == "table" and chars[name] then
 			if found then return nil end
 			if Realm.CompareGUID(historyGUID(ctx.historyChars, server, name), guid) == false then
 				return nil
@@ -574,13 +570,13 @@ function Realm.NeedsMigration(ctx)
 end
 
 ---Merges the records under the older Forever realm keys ("", "CAMWOW ... PvE",
----"Forever KR PvE", ...) into the ruleset keys ("PvE", "RP", ...).
+---"Forever KR PvE", "PvE", ...) into the current keys ("PvE (Asia)", "RP (US)", ...).
 ---@param ctx ACRealmMigrateContext
 ---@return ACRealmMigrateResult
 function Realm.MigrateToRuleset(ctx)
 	local result = { merged = 0, moved = 0, pending = {}, renamed = {} }
-	if type(ctx.saveData) ~= "table" or not Realm.ParseRulesetKey(ctx.server) then return result end
-	local currentRuleset = Realm.ParseRulesetKey(ctx.server)
+	if type(ctx.saveData) ~= "table" or not isCurrentKey(ctx.server) then return result end
+	local currentRuleset, currentRegion = Realm.ParseRulesetKey(ctx.server)
 
 	local function migrate(entry, target)
 		if moveCharacter(ctx, entry.server, entry.name, target) then
@@ -593,13 +589,14 @@ function Realm.MigrateToRuleset(ctx)
 
 	local waiting = {}
 	for _, entry in ipairs(collectLegacy(ctx)) do
-		local region, ruleset = Realm.ParseRealm(entry.server)
+		local chars = ctx.saveData[entry.server]
+		local region, ruleset = legacyInfo(entry.server, type(chars) == "table" and chars[entry.name] or nil)
 		local target
-		if entry.name == ctx.player and sameRegion(region, ctx.region)
+		if entry.name == ctx.player and (region == nil or region == currentRegion)
 			and (ruleset == nil or ruleset == currentRuleset) then
 			target = ctx.server
-		elseif ruleset then
-			target = Realm.KeyFor(ctx.saveData, entry.name, ruleset, region)
+		elseif ruleset and region then
+			target = Realm.RulesetKey(ruleset, region)
 		end
 		if target then
 			migrate(entry, target)
@@ -608,8 +605,9 @@ function Realm.MigrateToRuleset(ctx)
 		end
 	end
 
-	-- Records without a ruleset (saved under ""): the single ruleset record of the same
-	-- name, if any; otherwise they wait for the character's own login.
+	-- Records without a ruleset or region (e.g. saved under ""): the single record of the
+	-- same name under a current key, if any; otherwise they wait for the character's own
+	-- login.
 	local pendingNames = {}
 	for _, entry in ipairs(waiting) do
 		local target = uniqueRulesetRecord(ctx, entry.server, entry.name)
